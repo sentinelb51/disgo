@@ -1,0 +1,8 @@
+gateway.Message{
+  Op: 11
+  S: 0
+  T: ""
+  D: (gateway.MessageDataHeartbeatACK) gateway.MessageDataHeartbeatACK{
+  }
+  RawD: bytes("null")
+}

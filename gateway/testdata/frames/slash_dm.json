@@ -1,0 +1,12 @@
+{"t":"INTERACTION_CREATE","s":17,"op":0,"d":{
+  "version":1,
+  "user":{"username":"sentinelb51","public_flags":4194304,"primary_guild":null,"id":"283622155431936000","global_name":"Sentinel","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":"a_5e1c1bb9a5d0f4bb3c8e2a7f6c3d9e12"},
+  "type":2,
+  "token":"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NjpETVBpbmdUb2tlbkZvckFQcml2YXRlQ2hhbm5lbEludGVyYWN0aW9uV2l0aE5vR3VpbGRBdEFsbEFuZFRoaXNTdHJpbmdHb2VzT25Gb3JBV2hpbGVUb01hdGNoUmVhbFRva2VuTGVuZ3Ro",
+  "locale":"en-GB","id":"1422876543210987656",
+  "entitlements":[],"entitlement_sku_ids":[],
+  "data":{"type":1,"name":"ping","id":"1302938475610293003","options":[{"value":"api.void.enterprises","type":3,"name":"host"}]},
+  "context":1,"channel_id":"1302938475610299999",
+  "channel":{"type":1,"recipients":[{"username":"sentinelb51","public_flags":4194304,"primary_guild":null,"id":"283622155431936000","global_name":"Sentinel","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":"a_5e1c1bb9a5d0f4bb3c8e2a7f6c3d9e12"}],"last_message_id":"1422876543210980000","id":"1302938475610299999","flags":0},
+  "authorizing_integration_owners":{"1":"283622155431936000"},
+  "attachment_size_limit":10485760,"application_id":"1302938475610292000","app_permissions":"562949953605632"}}

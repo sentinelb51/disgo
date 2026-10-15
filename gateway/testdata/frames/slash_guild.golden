@@ -1,0 +1,188 @@
+gateway.Message{
+  Op: 0
+  S: 1834
+  T: "INTERACTION_CREATE"
+  D: (gateway.EventInteractionCreate) gateway.EventInteractionCreate{
+    Interaction: (discord.ApplicationCommandInteraction) discord.ApplicationCommandInteraction{
+      baseInteraction: discord.baseInteraction{
+        id: 1422876543210987654
+        applicationID: 1302938475610292000
+        token: "aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NDp0N2ZKc2hQcVlXdDFxbWtKWlh5c0tBV3VnNnJ0VnVMbEpUY1pHdk5PVmZTQ0l2dTlOSzFoS3FjU3BRTnFsZWV6WnFQZ0RZSnhPYUhGY1FjT0dNV3VjTEdrSWtIclhhV0RaQ3JLb2dBdE5sd0pxWG1ld0p3NnFQVkpUT3N1bE1GeA"
+        version: 1
+        guild: &discord.InteractionGuild{
+          ID: 1102938475610293840
+          Locale: "en-US"
+          Features: [
+            "COMMUNITY"
+            "NEWS"
+            "GUILD_ONBOARDING"
+            "AUTO_MODERATION"
+            "INVITE_SPLASH"
+            "ANIMATED_ICON"
+            "MEMBER_VERIFICATION_GATE_ENABLED"
+            "PREVIEW_ENABLED"
+            "SOUNDBOARD"
+            "ENABLED_DISCOVERABLE_BEFORE"
+          ]
+        }
+        guildID: &1102938475610293840
+        channel: discord.InteractionChannel{
+          MessageChannel: (discord.GuildTextChannel) discord.GuildTextChannel{
+            id: 1102938475610293845
+            guildID: 1102938475610293840
+            position: 3
+            permissionOverwrites: nil
+            name: "general"
+            topic: &"Talk about anything. Read #rules first."
+            nsfw: false
+            lastMessageID: &1422876543210987600
+            rateLimitPerUser: 5
+            parentID: &1102938475610293841
+            lastPinTimestamp: nil
+            defaultAutoArchiveDuration: 0
+            flags: 0
+          }
+          Permissions: 2251799813685247
+        }
+        locale: "en-GB"
+        guildLocale: &"en-US"
+        member: &discord.ResolvedMember{
+          Member: discord.Member{
+            User: discord.User{
+              ID: 283622155431936000
+              Username: "sentinelb51"
+              Discriminator: "0"
+              GlobalName: &"Sentinel"
+              Avatar: &"a_5e1c1bb9a5d0f4bb3c8e2a7f6c3d9e12"
+              Banner: nil
+              AccentColor: nil
+              Bot: false
+              System: false
+              PublicFlags: 4194304
+              AvatarDecorationData: nil
+              Collectibles: nil
+              PrimaryGuild: nil
+            }
+            Nick: &"Sentinel"
+            Avatar: nil
+            Banner: nil
+            RoleIDs: [
+              1102938475610293847
+              1102938475610293850
+              1211234567890123456
+            ]
+            JoinedAt: &2021-05-01T12:34:56.789Z
+            PremiumSince: nil
+            Deaf: false
+            Mute: false
+            Flags: 2
+            Pending: false
+            CommunicationDisabledUntil: nil
+            AvatarDecorationData: nil
+            Collectibles: nil
+            GuildID: 1102938475610293840
+          }
+          Permissions: 2251799813685247
+        }
+        user: nil
+        appPermissions: &2251799813685247
+        entitlements: [
+        ]
+        authorizingIntegrationOwners: {
+          0: 1102938475610293840
+        }
+        context: 0
+        attachmentSizeLimit: 10485760
+      }
+      Data: (discord.SlashCommandInteractionData) discord.SlashCommandInteractionData{
+        id: 1302938475610293001
+        name: "ban"
+        guildID: nil
+        SubCommandName: nil
+        SubCommandGroupName: nil
+        Resolved: discord.ResolvedData{
+          Users: {
+            912345678901234567: discord.User{
+              ID: 912345678901234567
+              Username: "spammer_4821"
+              Discriminator: "0"
+              GlobalName: &"Free Nitro"
+              Avatar: &"8f3c1a9e2b7d4c6f0e1a2b3c4d5e6f70"
+              Banner: nil
+              AccentColor: nil
+              Bot: false
+              System: false
+              PublicFlags: 0
+              AvatarDecorationData: nil
+              Collectibles: nil
+              PrimaryGuild: nil
+            }
+          }
+          Members: {
+            912345678901234567: discord.ResolvedMember{
+              Member: discord.Member{
+                User: discord.User{
+                  ID: 912345678901234567
+                  Username: "spammer_4821"
+                  Discriminator: "0"
+                  GlobalName: &"Free Nitro"
+                  Avatar: &"8f3c1a9e2b7d4c6f0e1a2b3c4d5e6f70"
+                  Banner: nil
+                  AccentColor: nil
+                  Bot: false
+                  System: false
+                  PublicFlags: 0
+                  AvatarDecorationData: nil
+                  Collectibles: nil
+                  PrimaryGuild: nil
+                }
+                Nick: nil
+                Avatar: nil
+                Banner: nil
+                RoleIDs: [
+                ]
+                JoinedAt: &2026-09-30T20:11:02.114Z
+                PremiumSince: nil
+                Deaf: false
+                Mute: false
+                Flags: 0
+                Pending: false
+                CommunicationDisabledUntil: nil
+                AvatarDecorationData: nil
+                Collectibles: nil
+                GuildID: 0
+              }
+              Permissions: 1071698660929
+            }
+          }
+          Roles: nil
+          Channels: nil
+          Attachments: nil
+        }
+        Options: {
+          "delete_days": discord.SlashCommandOption{
+            Name: "delete_days"
+            Type: 4
+            Value: bytes("7")
+          }
+          "duration": discord.SlashCommandOption{
+            Name: "duration"
+            Type: 3
+            Value: bytes("\"30m\"")
+          }
+          "reason": discord.SlashCommandOption{
+            Name: "reason"
+            Type: 3
+            Value: bytes("\"posting scam links in #general\"")
+          }
+          "user": discord.SlashCommandOption{
+            Name: "user"
+            Type: 6
+            Value: bytes("\"912345678901234567\"")
+          }
+        }
+      }
+    }
+  }
+  RawD: bytes("{\"version\":1,\"type\":2,\"token\":\"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NDp0N2ZKc2hQcVlXdDFxbWtKWlh5c0tBV3VnNnJ0VnVMbEpUY1pHdk5PVmZTQ0l2dTlOSzFoS3FjU3BRTnFsZWV6WnFQZ0RZSnhPYUhGY1FjT0dNV3VjTEdrSWtIclhhV0RaQ3JLb2dBdE5sd0pxWG1ld0p3NnFQVkpUT3N1bE1GeA\",\"member\":{\"user\":{\"username\":\"sentinelb51\",\"public_flags\":4194304,\"primary_guild\":null,\"id\":\"283622155431936000\",\"global_name\":\"Sentinel\",\"display_name_styles\":null,\"discriminator\":\"0\",\"collectibles\":null,\"clan\":null,\"avatar_decoration_data\":null,\"avatar\":\"a_5e1c1bb9a5d0f4bb3c8e2a7f6c3d9e12\"},\"unusual_dm_activity_until\":null,\"roles\":[\"1102938475610293847\",\"1102938475610293850\",\"1211234567890123456\"],\"premium_since\":null,\"permissions\":\"2251799813685247\",\"pending\":false,\"nick\":\"Sentinel\",\"mute\":false,\"joined_at\":\"2021-05-01T12:34:56.789000+00:00\",\"flags\":2,\"deaf\":false,\"communication_disabled_until\":null,\"collectibles\":null,\"banner\":null,\"avatar\":null},\"locale\":\"en-GB\",\"id\":\"1422876543210987654\",\"guild_locale\":\"en-US\",\"guild_id\":\"1102938475610293840\",\"guild\":{\"locale\":\"en-US\",\"id\":\"1102938475610293840\",\"features\":[\"COMMUNITY\",\"NEWS\",\"GUILD_ONBOARDING\",\"AUTO_MODERATION\",\"INVITE_SPLASH\",\"ANIMATED_ICON\",\"MEMBER_VERIFICATION_GATE_ENABLED\",\"PREVIEW_ENABLED\",\"SOUNDBOARD\",\"ENABLED_DISCOVERABLE_BEFORE\"]},\"entitlements\":[],\"entitlement_sku_ids\":[],\"data\":{\"type\":1,\"resolved\":{\"users\":{\"912345678901234567\":{\"username\":\"spammer_4821\",\"public_flags\":0,\"primary_guild\":null,\"id\":\"912345678901234567\",\"global_name\":\"Free Nitro\",\"display_name_styles\":null,\"discriminator\":\"0\",\"collectibles\":null,\"clan\":null,\"avatar_decoration_data\":null,\"avatar\":\"8f3c1a9e2b7d4c6f0e1a2b3c4d5e6f70\"}},\"members\":{\"912345678901234567\":{\"unusual_dm_activity_until\":null,\"roles\":[],\"premium_since\":null,\"permissions\":\"1071698660929\",\"pending\":false,\"nick\":null,\"joined_at\":\"2026-09-30T20:11:02.114000+00:00\",\"flags\":0,\"communication_disabled_until\":null,\"collectibles\":null,\"banner\":null,\"avatar\":null}}},\"options\":[{\"value\":\"912345678901234567\",\"type\":6,\"name\":\"user\"},{\"value\":\"posting scam links in #general\",\"type\":3,\"name\":\"reason\"},{\"value\":\"30m\",\"type\":3,\"name\":\"duration\"},{\"value\":7,\"type\":4,\"name\":\"delete_days\"}],\"name\":\"ban\",\"id\":\"1302938475610293001\"},\"context\":0,\"channel_id\":\"1102938475610293845\",\"channel\":{\"type\":0,\"topic\":\"Talk about anything. Read #rules first.\",\"theme_color\":null,\"rate_limit_per_user\":5,\"position\":3,\"permissions\":\"2251799813685247\",\"parent_id\":\"1102938475610293841\",\"nsfw\":false,\"name\":\"general\",\"last_message_id\":\"1422876543210987600\",\"id\":\"1102938475610293845\",\"icon_emoji\":{\"name\":\"👋\",\"id\":null},\"guild_id\":\"1102938475610293840\",\"flags\":0},\"authorizing_integration_owners\":{\"0\":\"1102938475610293840\"},\"attachment_size_limit\":10485760,\"application_id\":\"1302938475610292000\",\"app_permissions\":\"2251799813685247\"}")
+}

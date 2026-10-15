@@ -1,0 +1,11 @@
+{"t":"MESSAGE_CREATE","s":2311,"op":0,"d":{
+  "type":0,"tts":false,"timestamp":"2026-09-30T22:14:05.512000+00:00","pinned":false,"nonce":"1422876543210987999",
+  "mentions":[{"username":"modjane","public_flags":64,"primary_guild":null,"member":{"roles":["1102938475610293847"],"premium_since":null,"pending":false,"nick":null,"mute":false,"joined_at":"2022-01-09T08:07:06.000000+00:00","flags":0,"deaf":false,"communication_disabled_until":null,"banner":null,"avatar":null},"id":"402938475610293847","global_name":"Jane","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":"1d2c3b4a59687f6e5d4c3b2a19087f6e"}],
+  "mention_roles":[],"mention_everyone":false,
+  "member":{"roles":[],"premium_since":null,"pending":false,"nick":null,"mute":false,"joined_at":"2026-09-30T20:11:02.114000+00:00","flags":0,"deaf":false,"communication_disabled_until":null,"banner":null,"avatar":null},
+  "id":"1422876543210988000","flags":0,"embeds":[],"edited_timestamp":null,
+  "content":"<@402938475610293847> free nitro here https://dlscord-gift.example/claim \"limited\" 🎁\nclaim fast",
+  "components":[],"channel_type":0,"channel_id":"1102938475610293845",
+  "author":{"username":"spammer_4821","public_flags":0,"primary_guild":null,"id":"912345678901234567","global_name":"Free Nitro","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":null},
+  "attachments":[{"width":512,"url":"https://cdn.discordapp.com/attachments/1102938475610293845/1422876543210988001/gift.png","size":48213,"proxy_url":"https://media.discordapp.net/attachments/1102938475610293845/1422876543210988001/gift.png","placeholder_version":1,"placeholder":"Q/eFBQBId3eAeIiId3d4h3d3eA==","id":"1422876543210988001","height":512,"filename":"gift.png","content_type":"image/png","content_scan_version":2}],
+  "guild_id":"1102938475610293840"}}

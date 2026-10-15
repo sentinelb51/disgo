@@ -1,0 +1,21 @@
+{"t":"INTERACTION_CREATE","s":2210,"op":0,"d":{
+  "version":1,"type":2,
+  "token":"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NTpMb2dnaW5nU2V0dXBUb2tlblZhbHVlVGhhdElzUXVpdGVMb25nQmVjYXVzZURpc2NvcmRUb2tlbnNBcmVMb25nQW5kUmFuZG9tTG9va2luZ0FuZFNvT25BbmRTb09uVW50aWxJdElzT3ZlclR3b0h1bmRyZWRDaGFyYWN0ZXJz",
+  "member":{"user":{"username":"modjane","public_flags":64,"primary_guild":{"tag":"VOID","identity_guild_id":"1102938475610293840","identity_enabled":true,"badge":"3c1f9e2a7b4d6c8e0f1a2b3c4d5e6f70"},"id":"402938475610293847","global_name":"Jane","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":{"sku_id":"1144058844004233369","expires_at":null,"asset":"a_c3cffc19e9784f7d0b005eecdf1b566e"},"avatar":"1d2c3b4a59687f6e5d4c3b2a19087f6e"},
+    "unusual_dm_activity_until":null,"roles":["1102938475610293847"],"premium_since":"2024-02-14T09:00:00.000000+00:00","permissions":"1099511627775","pending":false,"nick":null,"mute":false,"joined_at":"2022-01-09T08:07:06.000000+00:00","flags":0,"deaf":false,"communication_disabled_until":null,"collectibles":null,"banner":null,"avatar":null},
+  "locale":"en-US","id":"1422876543210987655","guild_locale":"en-US","guild_id":"1102938475610293840",
+  "guild":{"locale":"en-US","id":"1102938475610293840","features":["COMMUNITY","NEWS"]},
+  "entitlements":[],"entitlement_sku_ids":[],
+  "data":{"type":1,
+    "resolved":{
+      "roles":{"1102938475610293850":{"version":1726000000000,"unicode_emoji":null,"tags":{},"position":12,"permissions":"1099511627775","name":"Moderators","mentionable":true,"managed":false,"id":"1102938475610293850","icon":null,"hoist":true,"flags":0,"description":null,"colors":{"tertiary_color":null,"secondary_color":null,"primary_color":3447003},"color":3447003}},
+      "channels":{"1102938475610293899":{"type":0,"topic":null,"rate_limit_per_user":0,"position":9,"permissions":"2251799813685247","parent_id":"1102938475610293841","nsfw":false,"name":"mod-logs","last_message_id":null,"id":"1102938475610293899","guild_id":"1102938475610293840","flags":0}}},
+    "options":[{"type":2,"options":[{"type":1,"options":[
+      {"value":"1102938475610293899","type":7,"name":"channel"},
+      {"value":"1102938475610293850","type":8,"name":"role"},
+      {"value":true,"type":5,"name":"ping"}],"name":"set"}],"name":"logging"}],
+    "name":"settings","id":"1302938475610293002"},
+  "context":0,"channel_id":"1422800000000000001",
+  "channel":{"type":11,"total_message_sent":42,"thread_metadata":{"locked":false,"create_timestamp":"2026-09-29T10:00:00.000000+00:00","auto_archive_duration":1440,"archived":false,"archive_timestamp":"2026-09-29T10:00:00.000000+00:00"},"rate_limit_per_user":0,"permissions":"2251799813685247","parent_id":"1102938475610293845","owner_id":"402938475610293847","name":"setup help","message_count":41,"member_count":3,"last_message_id":"1422876543210987500","id":"1422800000000000001","guild_id":"1102938475610293840","flags":0,"applied_tags":[]},
+  "authorizing_integration_owners":{"0":"1102938475610293840"},
+  "attachment_size_limit":10485760,"application_id":"1302938475610292000","app_permissions":"2251799813685247"}}

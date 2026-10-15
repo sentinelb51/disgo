@@ -1,0 +1,205 @@
+gateway.Message{
+  Op: 0
+  S: 302
+  T: "INTERACTION_CREATE"
+  D: (gateway.EventInteractionCreate) gateway.EventInteractionCreate{
+    Interaction: (discord.ComponentInteraction) discord.ComponentInteraction{
+      baseInteraction: discord.baseInteraction{
+        id: 1422876543210987659
+        applicationID: 1302938475610292000
+        token: "aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1OTpCdXR0b25Ub2tlblZhbHVlVGhhdElzUXVpdGVMb25nQmVjYXVzZURpc2NvcmRUb2tlbnNBcmVMb25nQW5kUmFuZG9tTG9va2luZ0FuZFNv"
+        version: 1
+        guild: &discord.InteractionGuild{
+          ID: 1102938475610293840
+          Locale: "en-US"
+          Features: [
+            "COMMUNITY"
+            "NEWS"
+          ]
+        }
+        guildID: &1102938475610293840
+        channel: discord.InteractionChannel{
+          MessageChannel: (discord.GuildTextChannel) discord.GuildTextChannel{
+            id: 1102938475610293845
+            guildID: 1102938475610293840
+            position: 3
+            permissionOverwrites: nil
+            name: "general"
+            topic: nil
+            nsfw: false
+            lastMessageID: &1422876543210987600
+            rateLimitPerUser: 0
+            parentID: &1102938475610293841
+            lastPinTimestamp: nil
+            defaultAutoArchiveDuration: 0
+            flags: 0
+          }
+          Permissions: 2251799813685247
+        }
+        locale: "en-US"
+        guildLocale: &"en-US"
+        member: &discord.ResolvedMember{
+          Member: discord.Member{
+            User: discord.User{
+              ID: 402938475610293847
+              Username: "modjane"
+              Discriminator: "0"
+              GlobalName: &"Jane"
+              Avatar: &"1d2c3b4a59687f6e5d4c3b2a19087f6e"
+              Banner: nil
+              AccentColor: nil
+              Bot: false
+              System: false
+              PublicFlags: 64
+              AvatarDecorationData: nil
+              Collectibles: nil
+              PrimaryGuild: nil
+            }
+            Nick: nil
+            Avatar: nil
+            Banner: nil
+            RoleIDs: [
+              1102938475610293847
+            ]
+            JoinedAt: &2022-01-09T08:07:06Z
+            PremiumSince: nil
+            Deaf: false
+            Mute: false
+            Flags: 0
+            Pending: false
+            CommunicationDisabledUntil: nil
+            AvatarDecorationData: nil
+            Collectibles: nil
+            GuildID: 1102938475610293840
+          }
+          Permissions: 1099511627775
+        }
+        user: nil
+        appPermissions: &2251799813685247
+        entitlements: [
+        ]
+        authorizingIntegrationOwners: {
+          0: 1102938475610293840
+        }
+        context: 0
+        attachmentSizeLimit: 10485760
+      }
+      Data: (discord.ButtonInteractionData) discord.ButtonInteractionData{
+        customID: "verify:start"
+      }
+      Message: discord.Message{
+        ID: 1422876543210987601
+        GuildID: &1102938475610293840
+        Reactions: nil
+        Attachments: [
+        ]
+        TTS: false
+        Embeds: [
+          discord.Embed{
+            Title: "Verification"
+            Type: "rich"
+            Description: "Press the button below to verify. You will be sent a link."
+            URL: ""
+            Timestamp: nil
+            Color: 2303786
+            Footer: &discord.EmbedFooter{
+              Text: "VOID"
+              IconURL: ""
+              ProxyIconURL: ""
+            }
+            Image: nil
+            Thumbnail: nil
+            Video: nil
+            Provider: nil
+            Author: nil
+            Fields: [
+              discord.EmbedField{
+                Name: "Time"
+                Value: "Takes about 10 seconds"
+                Inline: &true
+              }
+            ]
+            Flags: 0
+            Components: nil
+          }
+        ]
+        Components: [
+          (discord.ActionRowComponent) discord.ActionRowComponent{
+            ID: 1
+            Components: [
+              (discord.ButtonComponent) discord.ButtonComponent{
+                ID: 2
+                Style: 1
+                Label: "Verify"
+                Emoji: nil
+                CustomID: "verify:start"
+                SkuID: 0
+                URL: ""
+                Disabled: false
+              }
+              (discord.ButtonComponent) discord.ButtonComponent{
+                ID: 3
+                Style: 5
+                Label: "Help"
+                Emoji: nil
+                CustomID: ""
+                SkuID: 0
+                URL: "https://void.enterprises/help"
+                Disabled: false
+              }
+            ]
+          }
+        ]
+        CreatedAt: 2026-09-30T21:00:00.123Z
+        Mentions: [
+        ]
+        MentionEveryone: false
+        MentionRoles: [
+        ]
+        MentionChannels: nil
+        Pinned: false
+        EditedTimestamp: nil
+        Author: discord.User{
+          ID: 1302938475610292000
+          Username: "VOID"
+          Discriminator: "4821"
+          GlobalName: nil
+          Avatar: &"0f1e2d3c4b5a69788796a5b4c3d2e1f0"
+          Banner: nil
+          AccentColor: nil
+          Bot: true
+          System: false
+          PublicFlags: 524288
+          AvatarDecorationData: nil
+          Collectibles: nil
+          PrimaryGuild: nil
+        }
+        Member: nil
+        Content: ""
+        ChannelID: 1102938475610293845
+        Type: 0
+        Flags: 0
+        MessageReference: nil
+        MessageSnapshots: nil
+        Interaction: nil
+        WebhookID: nil
+        Activity: nil
+        Application: nil
+        ApplicationID: &1302938475610292000
+        StickerItems: nil
+        ReferencedMessage: nil
+        LastUpdated: nil
+        Thread: nil
+        Position: nil
+        RoleSubscriptionData: nil
+        InteractionMetadata: nil
+        Resolved: nil
+        Poll: nil
+        Call: nil
+        SharedClientTheme: nil
+        Nonce: ""
+      }
+    }
+  }
+  RawD: bytes("{\"version\":1,\"type\":3,\"token\":\"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1OTpCdXR0b25Ub2tlblZhbHVlVGhhdElzUXVpdGVMb25nQmVjYXVzZURpc2NvcmRUb2tlbnNBcmVMb25nQW5kUmFuZG9tTG9va2luZ0FuZFNv\",\"member\":{\"user\":{\"username\":\"modjane\",\"public_flags\":64,\"primary_guild\":null,\"id\":\"402938475610293847\",\"global_name\":\"Jane\",\"display_name_styles\":null,\"discriminator\":\"0\",\"collectibles\":null,\"clan\":null,\"avatar_decoration_data\":null,\"avatar\":\"1d2c3b4a59687f6e5d4c3b2a19087f6e\"},\"unusual_dm_activity_until\":null,\"roles\":[\"1102938475610293847\"],\"premium_since\":null,\"permissions\":\"1099511627775\",\"pending\":false,\"nick\":null,\"mute\":false,\"joined_at\":\"2022-01-09T08:07:06.000000+00:00\",\"flags\":0,\"deaf\":false,\"communication_disabled_until\":null,\"collectibles\":null,\"banner\":null,\"avatar\":null},\"locale\":\"en-US\",\"guild_locale\":\"en-US\",\"guild_id\":\"1102938475610293840\",\"guild\":{\"locale\":\"en-US\",\"id\":\"1102938475610293840\",\"features\":[\"COMMUNITY\",\"NEWS\"]},\"entitlements\":[],\"entitlement_sku_ids\":[],\"id\":\"1422876543210987659\",\"message\":{\"type\":0,\"tts\":false,\"timestamp\":\"2026-09-30T21:00:00.123000+00:00\",\"pinned\":false,\"mentions\":[],\"mention_roles\":[],\"mention_everyone\":false,\"id\":\"1422876543210987601\",\"flags\":0,\"embeds\":[{\"type\":\"rich\",\"title\":\"Verification\",\"description\":\"Press the button below to verify. You will be sent a link.\",\"color\":2303786,\"footer\":{\"text\":\"VOID\"},\"fields\":[{\"value\":\"Takes about 10 seconds\",\"name\":\"Time\",\"inline\":true}],\"content_scan_version\":2}],\"edited_timestamp\":null,\"content\":\"\",\"components\":[{\"type\":1,\"id\":1,\"components\":[{\"type\":2,\"style\":1,\"label\":\"Verify\",\"id\":2,\"custom_id\":\"verify:start\"},{\"type\":2,\"style\":5,\"url\":\"https://void.enterprises/help\",\"label\":\"Help\",\"id\":3}]}],\"channel_id\":\"1102938475610293845\",\"author\":{\"username\":\"VOID\",\"public_flags\":524288,\"primary_guild\":null,\"id\":\"1302938475610292000\",\"global_name\":null,\"display_name_styles\":null,\"discriminator\":\"4821\",\"collectibles\":null,\"clan\":null,\"bot\":true,\"avatar_decoration_data\":null,\"avatar\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\"},\"attachments\":[],\"application_id\":\"1302938475610292000\"},\"data\":{\"id\":2,\"custom_id\":\"verify:start\",\"component_type\":2},\"context\":0,\"channel_id\":\"1102938475610293845\",\"channel\":{\"type\":0,\"topic\":null,\"rate_limit_per_user\":0,\"position\":3,\"permissions\":\"2251799813685247\",\"parent_id\":\"1102938475610293841\",\"nsfw\":false,\"name\":\"general\",\"last_message_id\":\"1422876543210987600\",\"id\":\"1102938475610293845\",\"guild_id\":\"1102938475610293840\",\"flags\":0},\"authorizing_integration_owners\":{\"0\":\"1102938475610293840\"},\"attachment_size_limit\":10485760,\"application_id\":\"1302938475610292000\",\"app_permissions\":\"2251799813685247\"}")
+}

@@ -1,0 +1,22 @@
+{"t":"INTERACTION_CREATE","s":1834,"op":0,"d":{
+  "version":1,"type":2,
+  "token":"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NDp0N2ZKc2hQcVlXdDFxbWtKWlh5c0tBV3VnNnJ0VnVMbEpUY1pHdk5PVmZTQ0l2dTlOSzFoS3FjU3BRTnFsZWV6WnFQZ0RZSnhPYUhGY1FjT0dNV3VjTEdrSWtIclhhV0RaQ3JLb2dBdE5sd0pxWG1ld0p3NnFQVkpUT3N1bE1GeA",
+  "member":{"user":{"username":"sentinelb51","public_flags":4194304,"primary_guild":null,"id":"283622155431936000","global_name":"Sentinel","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":"a_5e1c1bb9a5d0f4bb3c8e2a7f6c3d9e12"},
+    "unusual_dm_activity_until":null,"roles":["1102938475610293847","1102938475610293850","1211234567890123456"],"premium_since":null,"permissions":"2251799813685247","pending":false,"nick":"Sentinel","mute":false,"joined_at":"2021-05-01T12:34:56.789000+00:00","flags":2,"deaf":false,"communication_disabled_until":null,"collectibles":null,"banner":null,"avatar":null},
+  "locale":"en-GB","id":"1422876543210987654","guild_locale":"en-US","guild_id":"1102938475610293840",
+  "guild":{"locale":"en-US","id":"1102938475610293840","features":["COMMUNITY","NEWS","GUILD_ONBOARDING","AUTO_MODERATION","INVITE_SPLASH","ANIMATED_ICON","MEMBER_VERIFICATION_GATE_ENABLED","PREVIEW_ENABLED","SOUNDBOARD","ENABLED_DISCOVERABLE_BEFORE"]},
+  "entitlements":[],"entitlement_sku_ids":[],
+  "data":{"type":1,
+    "resolved":{
+      "users":{"912345678901234567":{"username":"spammer_4821","public_flags":0,"primary_guild":null,"id":"912345678901234567","global_name":"Free Nitro","display_name_styles":null,"discriminator":"0","collectibles":null,"clan":null,"avatar_decoration_data":null,"avatar":"8f3c1a9e2b7d4c6f0e1a2b3c4d5e6f70"}},
+      "members":{"912345678901234567":{"unusual_dm_activity_until":null,"roles":[],"premium_since":null,"permissions":"1071698660929","pending":false,"nick":null,"joined_at":"2026-09-30T20:11:02.114000+00:00","flags":0,"communication_disabled_until":null,"collectibles":null,"banner":null,"avatar":null}}},
+    "options":[
+      {"value":"912345678901234567","type":6,"name":"user"},
+      {"value":"posting scam links in #general","type":3,"name":"reason"},
+      {"value":"30m","type":3,"name":"duration"},
+      {"value":7,"type":4,"name":"delete_days"}],
+    "name":"ban","id":"1302938475610293001"},
+  "context":0,"channel_id":"1102938475610293845",
+  "channel":{"type":0,"topic":"Talk about anything. Read #rules first.","theme_color":null,"rate_limit_per_user":5,"position":3,"permissions":"2251799813685247","parent_id":"1102938475610293841","nsfw":false,"name":"general","last_message_id":"1422876543210987600","id":"1102938475610293845","icon_emoji":{"name":"👋","id":null},"guild_id":"1102938475610293840","flags":0},
+  "authorizing_integration_owners":{"0":"1102938475610293840"},
+  "attachment_size_limit":10485760,"application_id":"1302938475610292000","app_permissions":"2251799813685247"}}

@@ -1,0 +1,9 @@
+gateway.Message{
+  Op: 10
+  S: 0
+  T: ""
+  D: (gateway.MessageDataHello) gateway.MessageDataHello{
+    HeartbeatInterval: 41250
+  }
+  RawD: bytes("{\"heartbeat_interval\":41250,\"_trace\":[\"[\\\"gateway-prd-us-east1-c-7f3k\\\",{\\\"micros\\\":0.0}]\"]}")
+}

@@ -1,0 +1,153 @@
+gateway.Message{
+  Op: 0
+  S: 300
+  T: "INTERACTION_CREATE"
+  D: (gateway.EventInteractionCreate) gateway.EventInteractionCreate{
+    Interaction: (discord.ApplicationCommandInteraction) discord.ApplicationCommandInteraction{
+      baseInteraction: discord.baseInteraction{
+        id: 1422876543210987657
+        applicationID: 1302938475610292000
+        token: "aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NzpVc2VyTWVudVRva2VuVmFsdWVUaGF0SXNRdWl0ZUxvbmdCZWNhdXNlRGlzY29yZFRva2Vuc0FyZUxvbmdBbmRSYW5kb21Mb29raW5nQW5kU29PbkFuZFNvT24"
+        version: 1
+        guild: &discord.InteractionGuild{
+          ID: 1102938475610293840
+          Locale: "en-US"
+          Features: [
+            "COMMUNITY"
+            "NEWS"
+          ]
+        }
+        guildID: &1102938475610293840
+        channel: discord.InteractionChannel{
+          MessageChannel: (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+            id: 1102938475610293860
+            guildID: 1102938475610293840
+            position: 0
+            permissionOverwrites: nil
+            name: "Lounge"
+            bitrate: 64000
+            UserLimit: 0
+            parentID: &1102938475610293841
+            rtcRegion: ""
+            VideoQualityMode: 0
+            lastMessageID: nil
+            nsfw: false
+            rateLimitPerUser: 0
+            flags: 0
+          }
+          Permissions: 2251799813685247
+        }
+        locale: "en-US"
+        guildLocale: &"en-US"
+        member: &discord.ResolvedMember{
+          Member: discord.Member{
+            User: discord.User{
+              ID: 402938475610293847
+              Username: "modjane"
+              Discriminator: "0"
+              GlobalName: &"Jane"
+              Avatar: &"1d2c3b4a59687f6e5d4c3b2a19087f6e"
+              Banner: nil
+              AccentColor: nil
+              Bot: false
+              System: false
+              PublicFlags: 64
+              AvatarDecorationData: nil
+              Collectibles: nil
+              PrimaryGuild: nil
+            }
+            Nick: nil
+            Avatar: nil
+            Banner: nil
+            RoleIDs: [
+              1102938475610293847
+            ]
+            JoinedAt: &2022-01-09T08:07:06Z
+            PremiumSince: nil
+            Deaf: false
+            Mute: false
+            Flags: 0
+            Pending: false
+            CommunicationDisabledUntil: nil
+            AvatarDecorationData: nil
+            Collectibles: nil
+            GuildID: 1102938475610293840
+          }
+          Permissions: 1099511627775
+        }
+        user: nil
+        appPermissions: &2251799813685247
+        entitlements: [
+        ]
+        authorizingIntegrationOwners: {
+          0: 1102938475610293840
+        }
+        context: 0
+        attachmentSizeLimit: 10485760
+      }
+      Data: (discord.UserCommandInteractionData) discord.UserCommandInteractionData{
+        id: 1302938475610293004
+        name: "Report"
+        guildID: nil
+        Resolved: discord.UserCommandResolved{
+          Users: {
+            912345678901234567: discord.User{
+              ID: 912345678901234567
+              Username: "spammer_4821"
+              Discriminator: "0"
+              GlobalName: &"Free Nitro"
+              Avatar: nil
+              Banner: nil
+              AccentColor: nil
+              Bot: false
+              System: false
+              PublicFlags: 0
+              AvatarDecorationData: nil
+              Collectibles: nil
+              PrimaryGuild: nil
+            }
+          }
+          Members: {
+            912345678901234567: discord.ResolvedMember{
+              Member: discord.Member{
+                User: discord.User{
+                  ID: 912345678901234567
+                  Username: "spammer_4821"
+                  Discriminator: "0"
+                  GlobalName: &"Free Nitro"
+                  Avatar: nil
+                  Banner: nil
+                  AccentColor: nil
+                  Bot: false
+                  System: false
+                  PublicFlags: 0
+                  AvatarDecorationData: nil
+                  Collectibles: nil
+                  PrimaryGuild: nil
+                }
+                Nick: nil
+                Avatar: nil
+                Banner: nil
+                RoleIDs: [
+                ]
+                JoinedAt: &2026-09-30T20:11:02.114Z
+                PremiumSince: nil
+                Deaf: false
+                Mute: false
+                Flags: 0
+                Pending: false
+                CommunicationDisabledUntil: nil
+                AvatarDecorationData: nil
+                Collectibles: nil
+                GuildID: 0
+              }
+              Permissions: 1071698660929
+            }
+          }
+        }
+        targetID: 912345678901234567
+      }
+    }
+  }
+  RawD: bytes("{\"version\":1,\"type\":2,\"token\":\"aW50ZXJhY3Rpb246MTQyMjg3NjU0MzIxMDk4NzY1NzpVc2VyTWVudVRva2VuVmFsdWVUaGF0SXNRdWl0ZUxvbmdCZWNhdXNlRGlzY29yZFRva2Vuc0FyZUxvbmdBbmRSYW5kb21Mb29raW5nQW5kU29PbkFuZFNvT24\",\"member\":{\"user\":{\"username\":\"modjane\",\"public_flags\":64,\"primary_guild\":null,\"id\":\"402938475610293847\",\"global_name\":\"Jane\",\"display_name_styles\":null,\"discriminator\":\"0\",\"collectibles\":null,\"clan\":null,\"avatar_decoration_data\":null,\"avatar\":\"1d2c3b4a59687f6e5d4c3b2a19087f6e\"},\"unusual_dm_activity_until\":null,\"roles\":[\"1102938475610293847\"],\"premium_since\":null,\"permissions\":\"1099511627775\",\"pending\":false,\"nick\":null,\"mute\":false,\"joined_at\":\"2022-01-09T08:07:06.000000+00:00\",\"flags\":0,\"deaf\":false,\"communication_disabled_until\":null,\"collectibles\":null,\"banner\":null,\"avatar\":null},\"locale\":\"en-US\",\"guild_locale\":\"en-US\",\"guild_id\":\"1102938475610293840\",\"guild\":{\"locale\":\"en-US\",\"id\":\"1102938475610293840\",\"features\":[\"COMMUNITY\",\"NEWS\"]},\"entitlements\":[],\"entitlement_sku_ids\":[],\"id\":\"1422876543210987657\",\"data\":{\"type\":2,\"target_id\":\"912345678901234567\",\"resolved\":{\"users\":{\"912345678901234567\":{\"username\":\"spammer_4821\",\"public_flags\":0,\"primary_guild\":null,\"id\":\"912345678901234567\",\"global_name\":\"Free Nitro\",\"display_name_styles\":null,\"discriminator\":\"0\",\"collectibles\":null,\"clan\":null,\"avatar_decoration_data\":null,\"avatar\":null}},\"members\":{\"912345678901234567\":{\"unusual_dm_activity_until\":null,\"roles\":[],\"premium_since\":null,\"permissions\":\"1071698660929\",\"pending\":false,\"nick\":null,\"joined_at\":\"2026-09-30T20:11:02.114000+00:00\",\"flags\":0,\"communication_disabled_until\":null,\"collectibles\":null,\"banner\":null,\"avatar\":null}}},\"name\":\"Report\",\"id\":\"1302938475610293004\"},\"context\":0,\"channel_id\":\"1102938475610293860\",\"channel\":{\"user_limit\":0,\"type\":2,\"rtc_region\":null,\"rate_limit_per_user\":0,\"position\":0,\"permissions\":\"2251799813685247\",\"parent_id\":\"1102938475610293841\",\"nsfw\":false,\"name\":\"Lounge\",\"last_message_id\":null,\"id\":\"1102938475610293860\",\"guild_id\":\"1102938475610293840\",\"flags\":0,\"bitrate\":64000},\"authorizing_integration_owners\":{\"0\":\"1102938475610293840\"},\"attachment_size_limit\":10485760,\"application_id\":\"1302938475610292000\",\"app_permissions\":\"2251799813685247\"}")
+}
