@@ -1,6 +1,12 @@
+// Raises this file above the module's go 1.24, for encoding/json/v2
+
+//go:build go1.27
+
 package gateway
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"strconv"
 
@@ -20,17 +26,32 @@ type Message struct {
 	RawD json.RawMessage `json:"-"`
 }
 
+type rawMessage struct {
+	Op Opcode          `json:"op"`
+	S  int             `json:"s,omitempty"`
+	T  EventType       `json:"t,omitempty"`
+	D  json.RawMessage `json:"d,omitempty"`
+}
+
 func (e *Message) UnmarshalJSON(data []byte) error {
-	var v struct {
-		Op Opcode          `json:"op"`
-		S  int             `json:"s,omitempty"`
-		T  EventType       `json:"t,omitempty"`
-		D  json.RawMessage `json:"d,omitempty"`
-	}
+	var v rawMessage
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
+	return e.unmarshal(v, data)
+}
 
+// UnmarshalJSONFrom decodes the frame as it streams in. Handed to UnmarshalJSON instead, the frame is read in full
+// by the decoder and then again by UnmarshalJSON; here only d is read twice, once to keep it as RawD
+func (e *Message) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	var v rawMessage
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+		return err
+	}
+	return e.unmarshal(v, v.D)
+}
+
+func (e *Message) unmarshal(v rawMessage, data []byte) error {
 	var (
 		messageData MessageData
 		err         error

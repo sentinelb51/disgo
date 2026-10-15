@@ -1,8 +1,15 @@
+// Raises this file above the module's go 1.24, for encoding/json/v2
+
+//go:build go1.27
+
 package gateway
 
 import (
 	"bytes"
 	"context"
+	jsonv1 "encoding/json"
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"io"
 	"log/slog"
@@ -22,6 +29,10 @@ const (
 	CompressionZlibStream  CompressionType = "zlib-stream"
 	CompressionZstdStream  CompressionType = "zstd-stream"
 )
+
+// decodeOptions are encoding/json's, but for its legacy errors, which validate a whole value before decoding it:
+// a second pass over every frame, to keep a malformed one from half filling a Message nothing then reads
+var decodeOptions = jsonv2.JoinOptions(jsonv1.DefaultOptionsV1(), jsonv1.ReportErrorsWithLegacySemantics(false))
 
 // IsStreamCompression returns whether the compression affects the whole stream
 func (t CompressionType) IsStreamCompression() bool {
@@ -77,6 +88,9 @@ type transport interface {
 type baseTransport struct {
 	conn   *websocket.Conn
 	logger *slog.Logger
+
+	// decoder is reset for each message, keeping the buffer the last one grew. Only the listen goroutine reads
+	decoder *jsontext.Decoder
 }
 
 func (t *baseTransport) parseMessage(r io.Reader) (*Message, error) {
@@ -92,8 +106,19 @@ func (t *baseTransport) parseMessage(r io.Reader) (*Message, error) {
 		}()
 	}
 
+	// One decoder for every message, where json.NewDecoder grew a fresh buffer to the frame's size each time.
+	// A bytes.Buffer is hidden from jsontext, as json.NewDecoder hides it
+	if _, ok := r.(*bytes.Buffer); ok {
+		r = struct{ io.Reader }{r}
+	}
+	if t.decoder == nil {
+		t.decoder = jsontext.NewDecoder(r, decodeOptions)
+	} else {
+		t.decoder.Reset(r, decodeOptions)
+	}
+
 	var message Message
-	err := json.NewDecoder(r).Decode(&message)
+	err := jsonv2.UnmarshalDecode(t.decoder, &message)
 	if err != nil {
 		t.logger.Error("error while parsing gateway message", slog.Any("err", err))
 		return nil, err
