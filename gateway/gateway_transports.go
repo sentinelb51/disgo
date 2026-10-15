@@ -1,7 +1,3 @@
-// Raises this file above the module's go 1.24, for encoding/json/v2
-
-//go:build go1.27
-
 package gateway
 
 import (

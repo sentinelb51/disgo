@@ -1,6 +1,6 @@
 module github.com/disgoorg/disgo
 
-go 1.24.0
+go 1.27.0
 
 require (
 	github.com/disgoorg/godave v0.3.0
