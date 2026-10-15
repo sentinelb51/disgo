@@ -393,8 +393,9 @@ func UnmarshalEventData(data []byte, eventType EventType) (EventData, error) {
 		eventData = d
 
 	case EventTypeInteractionCreate:
+		// Called directly: json.Unmarshal would read the whole payload once before handing it over
 		var d EventInteractionCreate
-		err = json.Unmarshal(data, &d)
+		err = d.UnmarshalJSON(data)
 		eventData = d
 
 	case EventTypeInviteCreate:

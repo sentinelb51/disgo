@@ -21,54 +21,49 @@ func (i *ComponentInteraction) UnmarshalJSON(data []byte) error {
 		Data    json.RawMessage `json:"data"`
 		Message Message         `json:"message"`
 	}
-	if err := json.Unmarshal(data, &interaction); err != nil {
+	if err := unmarshalOnce(data, &interaction); err != nil {
 		return err
 	}
 
-	var cType struct {
-		Type ComponentType `json:"component_type"`
-	}
-	if err := json.Unmarshal(interaction.Data, &cType); err != nil {
-		return err
-	}
-
+	// The type is peeked, and each data's UnmarshalJSON called directly, rather than the data read twice more
 	var (
 		interactionData ComponentInteractionData
 		err             error
 	)
-	switch cType.Type {
+	cType, _ := peek(interaction.Data, "component_type", "")
+	switch ComponentType(peekInt(cType)) {
 	case ComponentTypeButton:
 		var v ButtonInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	case ComponentTypeStringSelectMenu:
 		var v StringSelectMenuInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	case ComponentTypeUserSelectMenu:
 		var v UserSelectMenuInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	case ComponentTypeRoleSelectMenu:
 		var v RoleSelectMenuInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	case ComponentTypeMentionableSelectMenu:
 		var v MentionableSelectMenuInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	case ComponentTypeChannelSelectMenu:
 		var v ChannelSelectMenuInteractionData
-		err = json.Unmarshal(interaction.Data, &v)
+		err = v.UnmarshalJSON(interaction.Data)
 		interactionData = v
 
 	default:
-		return fmt.Errorf("unknown component interaction data with type %d received", cType.Type)
+		return fmt.Errorf("unknown component interaction data with type %d received", peekInt(cType))
 	}
 	if err != nil {
 		return err

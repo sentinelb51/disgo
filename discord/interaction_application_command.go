@@ -15,40 +15,33 @@ type ApplicationCommandInteraction struct {
 }
 
 func (i *ApplicationCommandInteraction) UnmarshalJSON(data []byte) error {
+	// The data is decoded in the interaction's pass, into the fields of every command type: decoded raw, probed
+	// for its type, then decoded as that type, it was read three times over
 	var interaction struct {
 		rawInteraction
-		Data json.RawMessage `json:"data"`
+		Data rawApplicationCommandData `json:"data"`
 	}
-	if err := json.Unmarshal(data, &interaction); err != nil {
-		return err
-	}
-
-	var cType struct {
-		Type ApplicationCommandType `json:"type"`
-	}
-	if err := json.Unmarshal(interaction.Data, &cType); err != nil {
+	if err := unmarshalOnce(data, &interaction); err != nil {
 		return err
 	}
 
 	var (
 		interactionData ApplicationCommandInteractionData
-		err             error
+		raw             = interaction.Data
 	)
-	switch cType.Type {
+	switch raw.Type {
 	case ApplicationCommandTypeSlash:
 		v := SlashCommandInteractionData{}
-		err = json.Unmarshal(interaction.Data, &v)
+		v.build(raw.slash())
 		interactionData = v
 
 	case ApplicationCommandTypeUser:
-		v := UserCommandInteractionData{}
-		err = json.Unmarshal(interaction.Data, &v)
-		interactionData = v
+		resolved := UserCommandResolved{Users: raw.Resolved.Users, Members: raw.Resolved.Members}
+		addMemberUsers(resolved.Members, resolved.Users)
+		interactionData = UserCommandInteractionData{id: raw.ID, name: raw.Name, guildID: raw.GuildID, Resolved: resolved, targetID: raw.TargetID}
 
 	case ApplicationCommandTypeMessage:
-		v := MessageCommandInteractionData{}
-		err = json.Unmarshal(interaction.Data, &v)
-		interactionData = v
+		v := MessageCommandInteractionData{id: raw.ID, name: raw.Name, guildID: raw.GuildID, Resolved: MessageCommandResolved{Messages: raw.Resolved.Messages}, targetID: raw.TargetID}
 		if interaction.GuildID != nil {
 			for id := range v.Resolved.Messages {
 				msg := v.Resolved.Messages[id]
@@ -56,16 +49,13 @@ func (i *ApplicationCommandInteraction) UnmarshalJSON(data []byte) error {
 				v.Resolved.Messages[id] = msg
 			}
 		}
-	case ApplicationCommandTypePrimaryEntryPoint:
-		v := EntryPointCommandInteractionData{}
-		err = json.Unmarshal(interaction.Data, &v)
 		interactionData = v
 
+	case ApplicationCommandTypePrimaryEntryPoint:
+		interactionData = EntryPointCommandInteractionData{id: raw.ID, name: raw.Name}
+
 	default:
-		return fmt.Errorf("unknown application rawInteraction data with type %d received", cType.Type)
-	}
-	if err != nil {
-		return err
+		return fmt.Errorf("unknown application rawInteraction data with type %d received", raw.Type)
 	}
 
 	i.id = interaction.ID
@@ -198,6 +188,11 @@ func (d *SlashCommandInteractionData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &iData); err != nil {
 		return err
 	}
+	d.build(iData)
+	return nil
+}
+
+func (d *SlashCommandInteractionData) build(iData rawSlashCommandInteractionData) {
 	d.id = iData.ID
 	d.name = iData.Name
 	d.guildID = iData.GuildID
@@ -229,7 +224,91 @@ func (d *SlashCommandInteractionData) UnmarshalJSON(data []byte) error {
 			d.Options[option.name()] = option.(SlashCommandOption)
 		}
 	}
-	return nil
+}
+
+// rawApplicationCommandData holds the data of every application command type, so that it decodes with the
+// interaction before its type is known
+type rawApplicationCommandData struct {
+	ID       snowflake.ID                  `json:"id"`
+	Name     string                        `json:"name"`
+	Type     ApplicationCommandType        `json:"type"`
+	GuildID  *snowflake.ID                 `json:"guild_id,omitempty"`
+	Resolved rawApplicationCommandResolved `json:"resolved"`
+	Options  []rawSlashCommandOption       `json:"options"`
+	TargetID snowflake.ID                  `json:"target_id"`
+}
+
+type rawApplicationCommandResolved struct {
+	Users       map[snowflake.ID]User            `json:"users,omitempty"`
+	Members     map[snowflake.ID]ResolvedMember  `json:"members,omitempty"`
+	Roles       map[snowflake.ID]Role            `json:"roles,omitempty"`
+	Channels    map[snowflake.ID]ResolvedChannel `json:"channels,omitempty"`
+	Attachments map[snowflake.ID]Attachment      `json:"attachments,omitempty"`
+	Messages    map[snowflake.ID]Message         `json:"messages,omitempty"`
+}
+
+// rawSlashCommandOption is an option, subcommand or group alike, told apart by type once decoded
+type rawSlashCommandOption struct {
+	Name    string                       `json:"name"`
+	Type    ApplicationCommandOptionType `json:"type"`
+	Value   json.RawMessage              `json:"value"`
+	Options []rawSlashCommandOption      `json:"options"`
+}
+
+// slash is the data as rawSlashCommandInteractionData.UnmarshalJSON decodes it
+func (d rawApplicationCommandData) slash() rawSlashCommandInteractionData {
+	resolved := ResolvedData{Users: d.Resolved.Users, Members: d.Resolved.Members, Roles: d.Resolved.Roles, Channels: d.Resolved.Channels, Attachments: d.Resolved.Attachments}
+	addMemberUsers(resolved.Members, resolved.Users)
+
+	iData := rawSlashCommandInteractionData{ID: d.ID, Name: d.Name, Type: d.Type, GuildID: d.GuildID, Resolved: resolved}
+	if len(d.Options) > 0 {
+		iData.Options = make([]internalSlashCommandOption, len(d.Options))
+		for index, option := range d.Options {
+			switch option.Type {
+			case ApplicationCommandOptionTypeSubCommand:
+				iData.Options[index] = option.subCommand()
+
+			case ApplicationCommandOptionTypeSubCommandGroup:
+				group := SlashCommandOptionSubCommandGroup{Name: option.Name, Type: option.Type}
+				if option.Options != nil {
+					group.Options = make([]SlashCommandOptionSubCommand, len(option.Options))
+					for subIndex, subCommand := range option.Options {
+						group.Options[subIndex] = subCommand.subCommand()
+					}
+				}
+				iData.Options[index] = group
+
+			default:
+				iData.Options[index] = option.option()
+			}
+		}
+	}
+	return iData
+}
+
+func (o rawSlashCommandOption) subCommand() SlashCommandOptionSubCommand {
+	subCommand := SlashCommandOptionSubCommand{Name: o.Name, Type: o.Type}
+	if o.Options != nil {
+		subCommand.Options = make([]SlashCommandOption, len(o.Options))
+		for index, option := range o.Options {
+			subCommand.Options[index] = option.option()
+		}
+	}
+	return subCommand
+}
+
+func (o rawSlashCommandOption) option() SlashCommandOption {
+	return SlashCommandOption{Name: o.Name, Type: o.Type, Value: o.Value}
+}
+
+// addMemberUsers gives each member its user, which Discord sends apart, as ResolvedData.UnmarshalJSON does
+func addMemberUsers(members map[snowflake.ID]ResolvedMember, users map[snowflake.ID]User) {
+	for id, member := range members {
+		if user, ok := users[id]; ok {
+			member.User = user
+			members[id] = member
+		}
+	}
 }
 
 func (d SlashCommandInteractionData) MarshalJSON() ([]byte, error) {

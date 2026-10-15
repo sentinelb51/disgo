@@ -169,122 +169,116 @@ type UnmarshalComponent struct {
 }
 
 func (u *UnmarshalComponent) UnmarshalJSON(data []byte) error {
-	var cType struct {
-		Type ComponentType `json:"type"`
-	}
-
-	if err := json.Unmarshal(data, &cType); err != nil {
-		return err
-	}
-
 	var (
 		component Component
 		err       error
 	)
 
-	switch cType.Type {
+	// The type is peeked rather than probed, and the component decoded in one pass
+	cType, _ := peek(data, "type", "")
+	switch ComponentType(peekInt(cType)) {
 	case ComponentTypeActionRow:
 		var v ActionRowComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeButton:
 		var v ButtonComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeStringSelectMenu:
 		var v StringSelectMenuComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeTextInput:
 		var v TextInputComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeUserSelectMenu:
 		var v UserSelectMenuComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeRoleSelectMenu:
 		var v RoleSelectMenuComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeMentionableSelectMenu:
 		var v MentionableSelectMenuComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeChannelSelectMenu:
 		var v ChannelSelectMenuComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeSection:
 		var v SectionComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeTextDisplay:
 		var v TextDisplayComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeThumbnail:
 		var v ThumbnailComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeMediaGallery:
 		var v MediaGalleryComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeFile:
 		var v FileComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeSeparator:
 		var v SeparatorComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeContainer:
 		var v ContainerComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeLabel:
 		var v LabelComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeFileUpload:
 		var v FileUploadComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeRadioGroup:
 		var v RadioGroupComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeCheckboxGroup:
 		var v CheckboxGroupComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 
 	case ComponentTypeCheckbox:
 		var v CheckboxComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 	default:
 		var v UnknownComponent
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		component = v
 	}
 	if err != nil {
@@ -355,7 +349,7 @@ func (c *ActionRowComponent) UnmarshalJSON(data []byte) error {
 		ID         int                  `json:"id,omitempty"`
 		Components []UnmarshalComponent `json:"components"`
 	}
-	if err := json.Unmarshal(data, &actionRowComponent); err != nil {
+	if err := unmarshalOnce(data, &actionRowComponent); err != nil {
 		return err
 	}
 

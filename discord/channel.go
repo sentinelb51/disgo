@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -162,80 +163,196 @@ type UnmarshalChannel struct {
 }
 
 func (u *UnmarshalChannel) UnmarshalJSON(data []byte) error {
-	var cType struct {
-		Type ChannelType `json:"type"`
-	}
-
-	if err := json.Unmarshal(data, &cType); err != nil {
-		return err
-	}
-
-	var (
-		channel Channel
-		err     error
-	)
-
-	switch cType.Type {
-	case ChannelTypeGuildText:
-		var v GuildTextChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeDM:
-		var v DMChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildVoice:
-		var v GuildVoiceChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGroupDM:
-		var v GroupDMChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildCategory:
-		var v GuildCategoryChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildNews:
-		var v GuildNewsChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildNewsThread, ChannelTypeGuildPublicThread, ChannelTypeGuildPrivateThread:
-		var v GuildThread
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildStageVoice:
-		var v GuildStageVoiceChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildForum:
-		var v GuildForumChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	case ChannelTypeGuildMedia:
-		var v GuildMediaChannel
-		err = json.Unmarshal(data, &v)
-		channel = v
-
-	default:
-		err = fmt.Errorf("unknown channel with type %d received", cType.Type)
-	}
-
+	cType, _ := peek(data, "type", "")
+	channel, err := unmarshalChannel(data, ChannelType(peekInt(cType)))
 	if err != nil {
 		return err
 	}
 
 	u.Channel = channel
 	return nil
+}
+
+// unmarshalChannel calls each channel's UnmarshalJSON directly: through json.Unmarshal the channel is read once
+// more before the method is handed it
+func unmarshalChannel(data []byte, channelType ChannelType) (Channel, error) {
+	var (
+		channel Channel
+		err     error
+	)
+
+	switch channelType {
+	case ChannelTypeGuildText:
+		var v GuildTextChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeDM:
+		var v DMChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildVoice:
+		var v GuildVoiceChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGroupDM:
+		var v GroupDMChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildCategory:
+		var v GuildCategoryChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildNews:
+		var v GuildNewsChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildNewsThread, ChannelTypeGuildPublicThread, ChannelTypeGuildPrivateThread:
+		var v GuildThread
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildStageVoice:
+		var v GuildStageVoiceChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildForum:
+		var v GuildForumChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	case ChannelTypeGuildMedia:
+		var v GuildMediaChannel
+		err = v.UnmarshalJSON(data)
+		channel = v
+
+	default:
+		err = fmt.Errorf("unknown channel with type %d received", channelType)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return channel, nil
+}
+
+// peek returns the raw values of up to two top-level keys of the object in data, reading only as far as it must
+// to find them. Probing a type by decoding into a one-field struct reads the whole object; the type comes first
+// in Discord's payloads, so this reads a few bytes. A key that is absent, or data that isn't an object, reads nil.
+//
+// data is trusted to be valid JSON: it is decoded in full right after, which reports any syntax error. Keys match
+// byte for byte and the first of duplicates wins, where encoding/json folds case and keeps the last; Discord
+// sends neither
+func peek(data []byte, first, second string) (firstValue, secondValue []byte) {
+	index := peekSpace(data, 0)
+	if index == len(data) || data[index] != '{' {
+		return nil, nil
+	}
+
+	wanted := 1
+	if second != "" {
+		wanted = 2
+	}
+
+	for found := 0; found < wanted; {
+		index = peekSpace(data, index+1)
+		if index == len(data) || data[index] != '"' {
+			return firstValue, secondValue
+		}
+
+		end := peekValue(data, index)
+		key := data[index+1 : max(end-1, index+1)]
+
+		index = peekSpace(data, end)
+		if index == len(data) || data[index] != ':' {
+			return firstValue, secondValue
+		}
+
+		start := peekSpace(data, index+1)
+		index = peekValue(data, start)
+
+		switch {
+		case firstValue == nil && string(key) == first:
+			firstValue = data[start:index]
+			found++
+		case secondValue == nil && second != "" && string(key) == second:
+			secondValue = data[start:index]
+			found++
+		}
+
+		index = peekSpace(data, index)
+		if index == len(data) || data[index] != ',' {
+			return firstValue, secondValue
+		}
+	}
+
+	return firstValue, secondValue
+}
+
+// peekValue returns the index just past the JSON value starting at index
+func peekValue(data []byte, index int) int {
+	if index == len(data) {
+		return index
+	}
+
+	switch data[index] {
+	case '"':
+		for index++; index < len(data); index++ {
+			switch data[index] {
+			case '\\':
+				index++
+			case '"':
+				return index + 1
+			}
+		}
+		return len(data)
+
+	case '{', '[':
+		depth := 0
+		for ; index < len(data); index++ {
+			switch data[index] {
+			case '"':
+				index = peekValue(data, index) - 1
+			case '{', '[':
+				depth++
+			case '}', ']':
+				if depth--; depth == 0 {
+					return index + 1
+				}
+			}
+		}
+		return len(data)
+	}
+
+	for ; index < len(data); index++ {
+		switch data[index] {
+		case ',', '}', ']', ' ', '\t', '\n', '\r':
+			return index
+		}
+	}
+	return index
+}
+
+func peekSpace(data []byte, index int) int {
+	for index < len(data) && (data[index] == ' ' || data[index] == '\t' || data[index] == '\n' || data[index] == '\r') {
+		index++
+	}
+	return index
+}
+
+// peekInt reads a peeked number, or zero for anything else, which every caller reports as an unknown type
+func peekInt(value []byte) int {
+	number, err := strconv.Atoi(string(value))
+	if err != nil {
+		return 0
+	}
+	return number
 }
 
 var (
@@ -263,7 +380,7 @@ type GuildTextChannel struct {
 
 func (c *GuildTextChannel) UnmarshalJSON(data []byte) error {
 	var v guildTextChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -389,7 +506,7 @@ type DMChannel struct {
 
 func (c *DMChannel) UnmarshalJSON(data []byte) error {
 	var v dmChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -461,7 +578,7 @@ type GroupDMChannel struct {
 
 func (c *GroupDMChannel) UnmarshalJSON(data []byte) error {
 	var v groupDMChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -560,7 +677,7 @@ type GuildVoiceChannel struct {
 
 func (c *GuildVoiceChannel) UnmarshalJSON(data []byte) error {
 	var v guildVoiceChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -702,7 +819,7 @@ type GuildCategoryChannel struct {
 
 func (c *GuildCategoryChannel) UnmarshalJSON(data []byte) error {
 	var v guildCategoryChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -800,7 +917,7 @@ type GuildNewsChannel struct {
 
 func (c *GuildNewsChannel) UnmarshalJSON(data []byte) error {
 	var v guildNewsChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -940,7 +1057,7 @@ type GuildThread struct {
 
 func (c *GuildThread) UnmarshalJSON(data []byte) error {
 	var v guildThread
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -1092,7 +1209,7 @@ type GuildStageVoiceChannel struct {
 
 func (c *GuildStageVoiceChannel) UnmarshalJSON(data []byte) error {
 	var v guildStageVoiceChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -1242,7 +1359,7 @@ type GuildForumChannel struct {
 
 func (c *GuildForumChannel) UnmarshalJSON(data []byte) error {
 	var v guildForumChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 
@@ -1359,7 +1476,7 @@ type GuildMediaChannel struct {
 
 func (c *GuildMediaChannel) UnmarshalJSON(data []byte) error {
 	var v guildMediaChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := v.UnmarshalJSON(data); err != nil {
 		return err
 	}
 

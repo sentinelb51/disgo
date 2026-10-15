@@ -17,7 +17,7 @@ func (i *AutocompleteInteraction) UnmarshalJSON(data []byte) error {
 		rawInteraction
 		Data AutocompleteInteractionData `json:"data"`
 	}
-	if err := json.Unmarshal(data, &interaction); err != nil {
+	if err := unmarshalOnce(data, &interaction); err != nil {
 		return err
 	}
 

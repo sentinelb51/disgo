@@ -21,7 +21,7 @@ func (i *ModalSubmitInteraction) UnmarshalJSON(data []byte) error {
 		Data    ModalSubmitInteractionData `json:"data"`
 		Message *Message                   `json:"message,omitempty"`
 	}
-	if err := json.Unmarshal(data, &interaction); err != nil {
+	if err := unmarshalOnce(data, &interaction); err != nil {
 		return err
 	}
 

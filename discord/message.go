@@ -145,7 +145,7 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 		message
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

@@ -1,6 +1,12 @@
+// Raises this file above the module's go 1.24, for encoding/json/v2
+
+//go:build go1.27
+
 package discord
 
 import (
+	jsonv1 "encoding/json"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"time"
 
@@ -73,53 +79,58 @@ type Interaction interface {
 }
 
 func UnmarshalInteraction(data []byte) (Interaction, error) {
-	var iType struct {
-		Type InteractionType `json:"type"`
-	}
-
-	if err := json.Unmarshal(data, &iType); err != nil {
-		return nil, err
-	}
-
 	var (
 		interaction Interaction
 		err         error
 	)
 
-	switch iType.Type {
+	// The type is peeked, and each interaction's UnmarshalJSON called directly: through json.Unmarshal the
+	// payload is read once more before the method is handed it
+	iType, _ := peek(data, "type", "")
+	switch InteractionType(peekInt(iType)) {
 	case InteractionTypePing:
 		v := PingInteraction{}
-		err = json.Unmarshal(data, &v)
+		err = v.UnmarshalJSON(data)
 		interaction = v
 
 	case InteractionTypeApplicationCommand:
 		v := ApplicationCommandInteraction{}
-		err = json.Unmarshal(data, &v)
+		err = v.UnmarshalJSON(data)
 		interaction = v
 
 	case InteractionTypeComponent:
 		v := ComponentInteraction{}
-		err = json.Unmarshal(data, &v)
+		err = v.UnmarshalJSON(data)
 		interaction = v
 
 	case InteractionTypeAutocomplete:
 		v := AutocompleteInteraction{}
-		err = json.Unmarshal(data, &v)
+		err = v.UnmarshalJSON(data)
 		interaction = v
 
 	case InteractionTypeModalSubmit:
 		v := ModalSubmitInteraction{}
-		err = json.Unmarshal(data, &v)
+		err = v.UnmarshalJSON(data)
 		interaction = v
 
 	default:
-		err = fmt.Errorf("unknown rawInteraction with type %d received", iType.Type)
+		err = fmt.Errorf("unknown rawInteraction with type %d received", peekInt(iType))
 	}
 	if err != nil {
 		return nil, err
 	}
 
 	return interaction, nil
+}
+
+// decodeOptions are encoding/json's, but for its legacy errors, which validate a whole value before decoding it
+var decodeOptions = jsonv2.JoinOptions(jsonv1.DefaultOptionsV1(), jsonv1.ReportErrorsWithLegacySemantics(false))
+
+// unmarshalOnce decodes data in one pass where json.Unmarshal takes two, the first only to validate it. Errors
+// are worded as encoding/json/v2 words them, and a malformed payload may leave v half filled; every caller
+// returns the error and drops v
+func unmarshalOnce(data []byte, v any) error {
+	return jsonv2.Unmarshal(data, v, decodeOptions)
 }
 
 type ResolvedData struct {
@@ -179,22 +190,26 @@ type InteractionChannel struct {
 }
 
 func (c *InteractionChannel) UnmarshalJSON(data []byte) error {
-	var v struct {
-		Permissions Permissions `json:"permissions"`
+	// One peek for the type and permissions, where each was probed by decoding the whole channel
+	cType, rawPermissions := peek(data, "type", "permissions")
+
+	var permissions Permissions
+	if rawPermissions != nil {
+		if err := permissions.UnmarshalJSON(rawPermissions); err != nil {
+			return err
+		}
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+
+	channel, err := unmarshalChannel(data, ChannelType(peekInt(cType)))
+	if err != nil {
 		return err
 	}
-	var vc UnmarshalChannel
-	if err := json.Unmarshal(data, &vc); err != nil {
-		return err
-	}
-	msgChannel, ok := vc.Channel.(MessageChannel)
+	msgChannel, ok := channel.(MessageChannel)
 	if !ok {
-		return fmt.Errorf("unknown channel type: %T", vc.Channel)
+		return fmt.Errorf("unknown channel type: %T", channel)
 	}
 	c.MessageChannel = msgChannel
-	c.Permissions = v.Permissions
+	c.Permissions = permissions
 
 	return nil
 }
