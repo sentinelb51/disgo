@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -58,6 +59,32 @@ func TestInteraction_MarshalJSON(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, want) {
 				t.Errorf("got %+v, want %+v from %s", got, want, data)
+			}
+		})
+	}
+}
+
+// TestInteractionChannel_MarshalJSON marshals interactions without a channel, as a ping has none
+func TestInteractionChannel_MarshalJSON(t *testing.T) {
+	for _, interaction := range []Interaction{
+		PingInteraction{id: 1, applicationID: 2, token: "token", version: 1},
+		ComponentInteraction{
+			baseInteraction: baseInteraction{id: 1, applicationID: 2, token: "token", version: 1},
+			Data:            ButtonInteractionData{customID: "verify:start"},
+		},
+	} {
+		t.Run(fmt.Sprintf("%T", interaction), func(t *testing.T) {
+			data, err := json.Marshal(interaction)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			decoded, err := UnmarshalInteraction(data)
+			if err != nil {
+				t.Fatalf("%v: %s", err, data)
+			}
+			if channel := decoded.Channel(); channel.MessageChannel != nil {
+				t.Errorf("got channel %+v from %s", channel, data)
 			}
 		})
 	}

@@ -186,6 +186,10 @@ type InteractionChannel struct {
 }
 
 func (c *InteractionChannel) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+
 	// One peek for the type and permissions, where each was probed by decoding the whole channel
 	cType, rawPermissions := peek(data, "type", "permissions")
 
@@ -211,6 +215,11 @@ func (c *InteractionChannel) UnmarshalJSON(data []byte) error {
 }
 
 func (c InteractionChannel) MarshalJSON() ([]byte, error) {
+	// A ping has no channel, and the channel's null can't be merged with the permissions
+	if c.MessageChannel == nil {
+		return []byte("null"), nil
+	}
+
 	mData, err := json.Marshal(c.MessageChannel)
 	if err != nil {
 		return nil, err
