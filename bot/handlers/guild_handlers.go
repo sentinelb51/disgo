@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/disgoorg/snowflake/v2"
+
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -140,23 +142,7 @@ func gatewayHandlerGuildDelete(client *bot.Client, sequenceNumber int, shardID i
 	}
 
 	guild, _ := client.Caches.RemoveGuild(event.ID)
-	client.Caches.RemoveVoiceStatesByGuildID(event.ID)
-	client.Caches.RemovePresencesByGuildID(event.ID)
-	// TODO: figure out a better way to remove thread members from cache via guild id without requiring cached GuildThreads
-	for channel := range client.Caches.Channels() {
-		if guildThread, ok := channel.(discord.GuildThread); ok && guildThread.GuildID() == event.ID {
-			client.Caches.RemoveThreadMembersByThreadID(guildThread.ID())
-		}
-	}
-	client.Caches.RemoveChannelsByGuildID(event.ID)
-	client.Caches.RemoveEmojisByGuildID(event.ID)
-	client.Caches.RemoveStickersByGuildID(event.ID)
-	client.Caches.RemoveRolesByGuildID(event.ID)
-	client.Caches.RemoveMembersByGuildID(event.ID)
-	client.Caches.RemoveStageInstancesByGuildID(event.ID)
-	client.Caches.RemoveGuildScheduledEventsByGuildID(event.ID)
-	client.Caches.RemoveGuildSoundboardSoundsByGuildID(event.ID)
-	client.Caches.RemoveMessagesByGuildID(event.ID)
+	removeGuildEntities(client, event.ID)
 
 	genericGuildEvent := &events.GenericGuild{
 		GenericEvent: events.NewGenericEvent(client, sequenceNumber, shardID),
@@ -173,6 +159,42 @@ func gatewayHandlerGuildDelete(client *bot.Client, sequenceNumber int, shardID i
 			GenericGuild: genericGuildEvent,
 			Guild:        guild,
 		})
+	}
+}
+
+// removeGuildEntities removes everything cached for the given guilds except the guilds themselves. It walks the
+// channel cache once, however many guilds it is given.
+func removeGuildEntities(client *bot.Client, guildIDs ...snowflake.ID) {
+	if len(guildIDs) == 0 {
+		return
+	}
+	removed := make(map[snowflake.ID]struct{}, len(guildIDs))
+	for _, guildID := range guildIDs {
+		removed[guildID] = struct{}{}
+		client.Caches.RemoveVoiceStatesByGuildID(guildID)
+		client.Caches.RemovePresencesByGuildID(guildID)
+		client.Caches.RemoveEmojisByGuildID(guildID)
+		client.Caches.RemoveStickersByGuildID(guildID)
+		client.Caches.RemoveRolesByGuildID(guildID)
+		client.Caches.RemoveMembersByGuildID(guildID)
+		client.Caches.RemoveStageInstancesByGuildID(guildID)
+		client.Caches.RemoveGuildScheduledEventsByGuildID(guildID)
+		client.Caches.RemoveGuildSoundboardSoundsByGuildID(guildID)
+		client.Caches.RemoveMessagesByGuildID(guildID)
+	}
+
+	// TODO: figure out a better way to remove thread members from cache via guild id without requiring cached GuildThreads
+	var channels []discord.GuildChannel
+	for channel := range client.Caches.Channels() {
+		if _, ok := removed[channel.GuildID()]; ok {
+			channels = append(channels, channel)
+		}
+	}
+	for _, channel := range channels {
+		if _, ok := channel.(discord.GuildThread); ok {
+			client.Caches.RemoveThreadMembersByThreadID(channel.ID())
+		}
+		client.Caches.RemoveChannel(channel.ID())
 	}
 }
 
