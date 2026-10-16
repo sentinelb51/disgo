@@ -299,6 +299,7 @@ func (EventThreadListSync) eventData()   {}
 
 type EventThreadMemberUpdate struct {
 	discord.ThreadMember
+	GuildID snowflake.ID `json:"guild_id"`
 }
 
 func (EventThreadMemberUpdate) messageData() {}
