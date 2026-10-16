@@ -307,10 +307,9 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 	// the heartbeat lives as long as this connection: closeWithCode cancels it together with closing the connection
 	heartbeatCtx, heartbeatCancel := context.WithCancel(context.Background())
 	g.heartbeatCancel = heartbeatCancel
-	g.connMu.Unlock()
-
-	// reset rate limiter when connecting
+	// reset rate limiter when connecting, under connMu like every other use of it
 	g.config.RateLimiter.Reset()
+	g.connMu.Unlock()
 
 	g.statusMu.Lock()
 	g.status = StatusWaitingForHello

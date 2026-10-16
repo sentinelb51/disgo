@@ -612,3 +612,43 @@ func TestGatewayFailedResume(t *testing.T) {
 		})
 	}
 }
+
+// slowResetRateLimiter is the default RateLimiter, with every Reset after the first slowed down
+type slowResetRateLimiter struct {
+	RateLimiter
+	resets    int
+	resetting chan struct{}
+}
+
+func (l *slowResetRateLimiter) Reset() {
+	l.resets++
+	if l.resets > 1 {
+		close(l.resetting)
+		time.Sleep(100 * time.Millisecond)
+	}
+	l.RateLimiter.Reset()
+}
+
+// Close while a reconnect resets the rate limiter
+func TestGatewayCloseWhileReconnecting(t *testing.T) {
+	t.Parallel()
+
+	rateLimiter := &slowResetRateLimiter{RateLimiter: NewRateLimiter(), resetting: make(chan struct{})}
+	g := newTestGateway(t, func(n int, c *testConn) {
+		if n > 0 {
+			c.serve(time.Minute, nil)
+			return
+		}
+		c.serve(time.Minute, func() { _ = c.conn.UnderlyingConn().Close() })
+	}, WithRateLimiter(rateLimiter))
+	openTestGateway(t, g)
+
+	select {
+	case <-rateLimiter.resetting:
+	case <-time.After(5 * time.Second):
+		t.Fatal("no reconnect")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	g.Close(ctx)
+}
