@@ -186,7 +186,7 @@ func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) 
 		b.mu.Unlock()
 		b = current
 	}
-	l.config.Logger.Debug("locked rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
+	l.config.Logger.LogAttrs(context.Background(), slog.LevelDebug, "locked rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 
 	now := time.Now()
 
@@ -222,7 +222,7 @@ func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) 
 		return nil
 	}
 	defer func() {
-		l.config.Logger.Debug("unlocking rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
+		l.config.Logger.LogAttrs(context.Background(), slog.LevelDebug, "unlocking rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 		b.mu.Unlock()
 	}()
 
@@ -250,7 +250,7 @@ func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) 
 	resetAfterHeader := rs.Header.Get("X-RateLimit-Reset-After")
 	retryAfterHeader := rs.Header.Get("Retry-After")
 
-	l.config.Logger.Debug("ratelimit response headers", slog.Int("code", rs.StatusCode), slog.Bool("global", global), slog.Bool("cloudflare", cloudflare), slog.String("remaining", remainingHeader), slog.String("limit", limitHeader), slog.String("reset", resetHeader), slog.String("reset_after", resetAfterHeader), slog.String("retry_after", retryAfterHeader))
+	l.config.Logger.LogAttrs(context.Background(), slog.LevelDebug, "ratelimit response headers", slog.Int("code", rs.StatusCode), slog.Bool("global", global), slog.Bool("cloudflare", cloudflare), slog.String("remaining", remainingHeader), slog.String("limit", limitHeader), slog.String("reset", resetHeader), slog.String("reset_after", resetAfterHeader), slog.String("retry_after", retryAfterHeader))
 
 	// we hit a rate limit. let's see if it was global cloudflare or a route specific one
 	if rs.StatusCode == http.StatusTooManyRequests {
