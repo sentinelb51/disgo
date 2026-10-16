@@ -510,6 +510,8 @@ func (g *gatewayImpl) sendHeartbeat() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), g.heartbeatInterval)
 	defer cancel()
+	// taken before sending: the ACK can be read, and lastHeartbeatReceived set, before sendInternal returns
+	sent := time.Now()
 	if err := g.sendInternal(ctx, InternalCommandType, OpcodeHeartbeat, MessageDataHeartbeat(sequence)); err != nil {
 		if errors.Is(err, discord.ErrShardNotConnected) || errors.Is(err, syscall.EPIPE) {
 			return
@@ -522,7 +524,7 @@ func (g *gatewayImpl) sendHeartbeat() {
 		return
 	}
 	g.heartbeatMu.Lock()
-	g.lastHeartbeatSent = time.Now()
+	g.lastHeartbeatSent = sent
 	g.heartbeatMu.Unlock()
 }
 

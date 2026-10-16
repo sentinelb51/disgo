@@ -187,3 +187,47 @@ func TestGatewayLatency(t *testing.T) {
 		time.Sleep(time.Millisecond)
 	}
 }
+
+// slowUnlockRateLimiter lets every command through, but returns from Unlock only a while after the command was
+// written, as a busy process may
+type slowUnlockRateLimiter struct{ delay time.Duration }
+
+func (slowUnlockRateLimiter) Close(context.Context)                              {}
+func (slowUnlockRateLimiter) Reset()                                             {}
+func (slowUnlockRateLimiter) Wait(context.Context, RateLimiterCommandType) error { return nil }
+func (l slowUnlockRateLimiter) Unlock()                                          { time.Sleep(l.delay) }
+
+// A heartbeat ACK read before sendHeartbeat returns still answers that heartbeat
+func TestGatewayHeartbeatACKBeforeSendReturns(t *testing.T) {
+	t.Parallel()
+
+	closed := make(chan error, 1)
+	g := newTestGateway(t, func(n int, c *testConn) {
+		if err := c.write(OpcodeHello, 0, "", `{"heartbeat_interval":100}`); err != nil {
+			return
+		}
+		for {
+			frame, err := c.read()
+			if err != nil {
+				closed <- err
+				return
+			}
+			switch frame.Op {
+			case OpcodeIdentify:
+				err = c.write(OpcodeDispatch, 1, EventTypeReady, `{"v":10,"session_id":"session"}`)
+			case OpcodeHeartbeat:
+				err = c.write(OpcodeHeartbeatACK, 0, "", "")
+			}
+			if err != nil {
+				return
+			}
+		}
+	}, WithRateLimiter(slowUnlockRateLimiter{delay: 20 * time.Millisecond}))
+	openTestGateway(t, g)
+
+	select {
+	case err := <-closed:
+		t.Fatalf("gateway closed a healthy connection: %v", err)
+	case <-time.After(500 * time.Millisecond):
+	}
+}
