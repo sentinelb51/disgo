@@ -11,6 +11,12 @@ import (
 )
 
 func gatewayHandlerGuildCreate(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventGuildCreate) {
+	if event.Unavailable {
+		// during an outage the payload is only an unavailable guild object
+		gatewayHandlerGuildDelete(client, sequenceNumber, shardID, gateway.EventGuildDelete{UnavailableGuild: discord.UnavailableGuild{ID: event.ID, Unavailable: true}})
+		return
+	}
+
 	wasUnready := client.Caches.IsGuildUnready(event.ID)
 	wasUnavailable := client.Caches.IsGuildUnavailable(event.ID)
 
