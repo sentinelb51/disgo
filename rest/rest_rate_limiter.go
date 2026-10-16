@@ -200,12 +200,15 @@ func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) 
 	}
 	bucketHeader := rs.Header.Get("X-RateLimit-Bucket")
 
-	// if we don't have a bucket header, we can't update anything
-	if bucketHeader == "" {
+	// if we don't have a bucket header, we can't update anything, except on a 429:
+	// global and cloudflare rate limit responses come without a bucket header
+	if bucketHeader == "" && rs.StatusCode != http.StatusTooManyRequests {
 		return nil
 	}
 
-	b.ID = bucketHeader
+	if bucketHeader != "" {
+		b.ID = bucketHeader
+	}
 
 	global := rs.Header.Get("X-RateLimit-Global") != ""
 	cloudflare := rs.Header.Get("via") == ""
