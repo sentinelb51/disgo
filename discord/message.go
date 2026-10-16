@@ -188,6 +188,19 @@ type MessageThread struct {
 	Member ThreadMember `json:"member"`
 }
 
+// UnmarshalJSON also fills Member, which GuildThread's UnmarshalJSON, promoted, would leave zero
+func (t *MessageThread) UnmarshalJSON(data []byte) error {
+	if err := t.GuildThread.UnmarshalJSON(data); err != nil {
+		return err
+	}
+
+	t.Member = ThreadMember{}
+	if t.GuildThread.Member != nil {
+		t.Member = *t.GuildThread.Member
+	}
+	return nil
+}
+
 type MessageSticker struct {
 	ID         snowflake.ID      `json:"id"`
 	Name       string            `json:"name"`

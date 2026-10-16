@@ -27,3 +27,21 @@ func BenchmarkMessage_UnmarshalJSON(b *testing.B) {
 		})
 	}
 }
+
+func TestMessageThread_UnmarshalJSON(t *testing.T) {
+	data := []byte(`{"id":"3","channel_id":"2","thread":{"id":"4","type":11,"guild_id":"1","parent_id":"2","name":"thread","thread_metadata":{"archived":false,"auto_archive_duration":1440,"archive_timestamp":"2026-09-30T22:14:05.512000+00:00","locked":false},"member":{"id":"4","user_id":"5","join_timestamp":"2026-09-30T22:14:05.512000+00:00","flags":1}}}`)
+
+	var message Message
+	if err := message.UnmarshalJSON(data); err != nil {
+		t.Fatal(err)
+	}
+	if message.Thread == nil {
+		t.Fatal("thread not decoded")
+	}
+	if message.Thread.ID() != 4 || message.Thread.Name() != "thread" {
+		t.Errorf("thread decoded as %+v", message.Thread.GuildThread)
+	}
+	if member := message.Thread.Member; member.ThreadID != 4 || member.UserID != 5 || member.Flags != 1 {
+		t.Errorf("thread member decoded as %+v", member)
+	}
+}
