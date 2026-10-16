@@ -139,29 +139,25 @@ func (e *eventManagerImpl) HandleHTTPEvent(respondFunc httpserver.RespondFunc, e
 }
 
 func (e *eventManagerImpl) DispatchEvent(event Event) {
-	defer func() {
-		if r := recover(); r != nil {
-			e.logger.Error("recovered from panic in event listener", slog.Any("arg", r), slog.String("stack", string(xdebug.Stack(3))))
-			return
-		}
-	}()
 	e.eventListenerMu.Lock()
 	defer e.eventListenerMu.Unlock()
 	for _, listener := range e.eventListeners {
 		if e.asyncEventsEnabled {
-			go func() {
-				defer func() {
-					if r := recover(); r != nil {
-						e.logger.Error("recovered from panic in event listener", slog.Any("arg", r), slog.String("stack", string(xdebug.Stack(3))))
-						return
-					}
-				}()
-				listener.OnEvent(event)
-			}()
+			go e.dispatch(listener, event)
 			continue
 		}
-		listener.OnEvent(event)
+		e.dispatch(listener, event)
 	}
+}
+
+// dispatch calls the listener, recovering from its panic so the other listeners still get the event.
+func (e *eventManagerImpl) dispatch(listener EventListener, event Event) {
+	defer func() {
+		if r := recover(); r != nil {
+			e.logger.Error("recovered from panic in event listener", slog.Any("arg", r), slog.String("stack", string(xdebug.Stack(3))))
+		}
+	}()
+	listener.OnEvent(event)
 }
 
 func (e *eventManagerImpl) AddEventListeners(listeners ...EventListener) {
