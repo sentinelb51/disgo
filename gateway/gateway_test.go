@@ -80,6 +80,12 @@ func (c *testConn) serve(heartbeatInterval time.Duration, ready func()) {
 // newTestGateway starts a fake gateway that hands each connection to handle, and a Gateway that dials it
 func newTestGateway(t *testing.T, handle func(n int, c *testConn), opts ...ConfigOpt) Gateway {
 	t.Helper()
+	return newTestGatewayWithHandler(t, handle, func(Gateway, EventType, int, EventData) {}, opts...)
+}
+
+// newTestGatewayWithHandler is newTestGateway, with the Gateway's events going to eventHandler
+func newTestGatewayWithHandler(t *testing.T, handle func(n int, c *testConn), eventHandler EventHandlerFunc, opts ...ConfigOpt) Gateway {
+	t.Helper()
 
 	var (
 		upgrader websocket.Upgrader
@@ -115,7 +121,7 @@ func newTestGateway(t *testing.T, handle func(n int, c *testConn), opts ...Confi
 		WithCompression(CompressionNone),
 		WithLogger(slog.New(slog.NewTextHandler(io.Discard, nil))),
 	}, opts...)
-	return New("token", func(Gateway, EventType, int, EventData) {}, opts...)
+	return New("token", eventHandler, opts...)
 }
 
 func openTestGateway(t *testing.T, g Gateway) {
@@ -333,5 +339,37 @@ func TestGatewayPresenceWhileIdentifying(t *testing.T) {
 
 	if presence := nextIdentify(t, identified); !strings.Contains(presence, `"status":"idle"`) {
 		t.Fatalf("identify presence: %s, want the idle status sent", presence)
+	}
+}
+
+// The heartbeat ACK event carries the time of the ACK before it, and of this one
+func TestGatewayHeartbeatAckEvent(t *testing.T) {
+	t.Parallel()
+
+	acks := make(chan EventHeartbeatAck, 16)
+	g := newTestGatewayWithHandler(t, func(n int, c *testConn) { c.serve(10*time.Millisecond, nil) }, func(_ Gateway, eventType EventType, _ int, event EventData) {
+		if eventType == EventTypeHeartbeatAck {
+			select {
+			case acks <- event.(EventHeartbeatAck):
+			default:
+			}
+		}
+	})
+	openTestGateway(t, g)
+
+	var previous time.Time
+	for i := range 3 {
+		select {
+		case ack := <-acks:
+			if i > 0 && !ack.LastHeartbeat.Equal(previous) {
+				t.Fatalf("ack %d: LastHeartbeat %s, want the previous ack's %s", i, ack.LastHeartbeat, previous)
+			}
+			if !ack.LastHeartbeat.Before(ack.NewHeartbeat) {
+				t.Fatalf("ack %d: LastHeartbeat %s is not before NewHeartbeat %s", i, ack.LastHeartbeat, ack.NewHeartbeat)
+			}
+			previous = ack.NewHeartbeat
+		case <-time.After(5 * time.Second):
+			t.Fatal("no heartbeat ack")
+		}
 	}
 }

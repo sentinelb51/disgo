@@ -808,10 +808,11 @@ func (g *gatewayImpl) listen(heartbeatCtx context.Context, conn transport, ready
 		case OpcodeHeartbeatACK:
 			newHeartbeat := time.Now()
 			g.heartbeatMu.Lock()
+			lastHeartbeat := g.lastHeartbeatReceived
 			g.lastHeartbeatReceived = newHeartbeat
 			g.heartbeatMu.Unlock()
 			g.eventHandlerFunc(g, EventTypeHeartbeatAck, message.S, EventHeartbeatAck{
-				LastHeartbeat: newHeartbeat,
+				LastHeartbeat: lastHeartbeat,
 				NewHeartbeat:  newHeartbeat,
 			})
 
