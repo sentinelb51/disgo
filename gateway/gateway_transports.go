@@ -6,6 +6,7 @@ import (
 	jsonv1 "encoding/json"
 	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -71,7 +72,7 @@ var syncFlush = []byte{0x00, 0x00, 0xff, 0xff}
 //   - [zlibStreamTransport]: for connections using zlib-stream compression.
 //   - [zlibPayloadTransport]: for connections using zlib payload compression or no compression.
 type transport interface {
-	// ReceiveMessage returns the complete received [Message]. Message will be nil if it failed to parse it
+	// ReceiveMessage returns the complete received [Message]. Message will be nil, with no error, if its data failed to parse
 	ReceiveMessage() (*Message, error)
 	// WriteMessage writes a byte message to the underlying connection
 	WriteMessage(message Message) error
@@ -117,6 +118,12 @@ func (t *baseTransport) parseMessage(r io.Reader) (*Message, error) {
 	err := jsonv2.UnmarshalDecode(t.decoder, &message)
 	if err != nil {
 		t.logger.Error("error while parsing gateway message", slog.Any("err", err))
+		// The frame was read whole and only its data didn't decode (a channel type this version doesn't know, say):
+		// skip it. As an error it would drop the connection, and the resume would replay the same frame
+		var dataErr *messageDataError
+		if errors.As(err, &dataErr) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

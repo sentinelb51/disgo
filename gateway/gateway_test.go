@@ -1,8 +1,10 @@
 package gateway
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -14,6 +16,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/klauspost/compress/zlib"
+	"github.com/klauspost/compress/zstd"
 
 	"github.com/disgoorg/disgo/discord"
 )
@@ -31,6 +35,9 @@ type testConn struct {
 	t    *testing.T
 	conn *websocket.Conn
 	mu   sync.Mutex
+
+	// compress, if not nil, compresses a frame as the next part of the connection's stream
+	compress func(frame []byte) []byte
 }
 
 func (c *testConn) write(op Opcode, s int, t EventType, d string) error {
@@ -40,7 +47,48 @@ func (c *testConn) write(op Opcode, s int, t EventType, d string) error {
 	if d != "" {
 		frame.D = json.RawMessage(d)
 	}
-	return c.conn.WriteJSON(frame)
+	data, err := json.Marshal(frame)
+	if err != nil {
+		return err
+	}
+	if c.compress != nil {
+		return c.conn.WriteMessage(websocket.BinaryMessage, c.compress(data))
+	}
+	return c.conn.WriteMessage(websocket.TextMessage, data)
+}
+
+// streamCompressor compresses frames as Discord's zlib-stream and zstd-stream do: one stream for the connection,
+// flushed after every frame
+func streamCompressor(t *testing.T, compression CompressionType) func(frame []byte) []byte {
+	var (
+		buf bytes.Buffer
+		w   interface {
+			io.Writer
+			Flush() error
+		}
+	)
+	switch compression {
+	case CompressionZlibStream:
+		w = zlib.NewWriter(&buf)
+	case CompressionZstdStream:
+		enc, err := zstd.NewWriter(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		w = enc
+	default:
+		return nil
+	}
+	return func(frame []byte) []byte {
+		buf.Reset()
+		if _, err := w.Write(frame); err != nil {
+			t.Error(err)
+		}
+		if err := w.Flush(); err != nil {
+			t.Error(err)
+		}
+		return bytes.Clone(buf.Bytes())
+	}
 }
 
 func (c *testConn) read() (testFrame, error) {
@@ -107,7 +155,7 @@ func newTestGatewayWithHandler(t *testing.T, handle func(n int, c *testConn), ev
 		wg.Add(1)
 		defer wg.Done()
 		defer conn.Close()
-		handle(i, &testConn{t: t, conn: conn})
+		handle(i, &testConn{t: t, conn: conn, compress: streamCompressor(t, CompressionType(r.URL.Query().Get("compress")))})
 	}))
 	t.Cleanup(func() {
 		server.CloseClientConnections()
@@ -371,5 +419,47 @@ func TestGatewayHeartbeatAckEvent(t *testing.T) {
 		case <-time.After(5 * time.Second):
 			t.Fatal("no heartbeat ack")
 		}
+	}
+}
+
+// A frame whose data doesn't decode, such as a channel of a type this version doesn't know, is skipped: the frame was
+// read whole, and the connection and its stream go on
+func TestGatewaySkipsUndecodableData(t *testing.T) {
+	t.Parallel()
+
+	for _, compression := range []CompressionType{CompressionNone, CompressionZlibStream, CompressionZstdStream} {
+		t.Run(compression.String(), func(t *testing.T) {
+			t.Parallel()
+
+			closed := make(chan error, 1)
+			g := newTestGateway(t, func(n int, c *testConn) {
+				if n > 0 {
+					closed <- errors.New("reconnected")
+					return
+				}
+				c.serve(time.Minute, func() {
+					_ = c.write(OpcodeDispatch, 2, EventTypeChannelCreate, `{"id":"1","type":999}`)
+					_ = c.write(OpcodeDispatch, 3, "TEST_EVENT", `{}`)
+				})
+			}, WithCompression(compression))
+			openTestGateway(t, g)
+
+			deadline := time.After(5 * time.Second)
+			for {
+				if sequence := g.LastSequenceReceived(); sequence != nil && *sequence == 3 {
+					break
+				}
+				select {
+				case err := <-closed:
+					t.Fatalf("connection closed: %v", err)
+				case <-deadline:
+					t.Fatalf("last sequence received: %v, want 3", g.LastSequenceReceived())
+				case <-time.After(time.Millisecond):
+				}
+			}
+			if status := g.Status(); status != StatusReady {
+				t.Fatalf("status: %s, want Ready", status)
+			}
+		})
 	}
 }

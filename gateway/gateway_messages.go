@@ -119,7 +119,7 @@ func (e *Message) unmarshal(v rawMessage, data []byte) error {
 		messageData = d
 	}
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal message data: %s: %w", string(data), err)
+		return &messageDataError{err: fmt.Errorf("failed to unmarshal message data: %s: %w", string(data), err)}
 	}
 	e.Op = v.Op
 	e.S = v.S
@@ -128,6 +128,14 @@ func (e *Message) unmarshal(v rawMessage, data []byte) error {
 	e.RawD = v.D
 	return nil
 }
+
+// messageDataError is a Message whose frame was read whole, but whose data did not decode
+type messageDataError struct {
+	err error
+}
+
+func (e *messageDataError) Error() string { return e.err.Error() }
+func (e *messageDataError) Unwrap() error { return e.err }
 
 // MessageData is the interface for all message data types
 type MessageData interface {
