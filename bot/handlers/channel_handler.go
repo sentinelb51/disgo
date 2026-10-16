@@ -36,7 +36,8 @@ func gatewayHandlerChannelUpdate(client *bot.Client, sequenceNumber int, shardID
 		OldChannel: oldGuildChannel,
 	})
 
-	if event.Type() == discord.ChannelTypeGuildText || event.Type() == discord.ChannelTypeGuildNews {
+	switch event.Type() {
+	case discord.ChannelTypeGuildText, discord.ChannelTypeGuildNews, discord.ChannelTypeGuildForum, discord.ChannelTypeGuildMedia:
 		if member, ok := client.Caches.Member(event.GuildID(), client.ID()); ok &&
 			client.Caches.MemberPermissionsInChannel(event.GuildChannel, member).Missing(discord.PermissionViewChannel) {
 			for _, guildThread := range client.Caches.GuildThreadsInChannel(event.ID()) {
