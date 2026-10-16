@@ -507,3 +507,108 @@ func TestGatewayCloseStopsReconnect(t *testing.T) {
 		t.Fatalf("status: %s, want Disconnected", status)
 	}
 }
+
+// resumeServer serves a session that the first connection identifies and drops after READY. failResume answers the
+// first RESUME instead of the server. It reports the opcode each later connection starts with, and the close code the
+// client sends on the connection where the resume failed
+func resumeServer(failResume func(c *testConn), started chan<- Opcode, clientClose chan<- int) func(n int, c *testConn) {
+	return func(n int, c *testConn) {
+		if err := c.write(OpcodeHello, 0, "", `{"heartbeat_interval":60000}`); err != nil {
+			return
+		}
+		frame, err := c.read()
+		if err != nil {
+			return
+		}
+		if n > 0 {
+			started <- frame.Op
+		}
+		switch {
+		case n == 0 && frame.Op == OpcodeIdentify:
+			_ = c.write(OpcodeDispatch, 1, EventTypeReady, `{"v":10,"session_id":"session"}`)
+			_ = c.conn.UnderlyingConn().Close()
+			return
+		case n == 1 && frame.Op == OpcodeResume:
+			failResume(c)
+			for {
+				if _, err = c.read(); err != nil {
+					var closeErr *websocket.CloseError
+					if errors.As(err, &closeErr) {
+						clientClose <- closeErr.Code
+					} else {
+						clientClose <- 0
+					}
+					return
+				}
+			}
+		}
+		// later connections: ready or resumed
+		switch frame.Op {
+		case OpcodeIdentify:
+			_ = c.write(OpcodeDispatch, 2, EventTypeReady, `{"v":10,"session_id":"session2"}`)
+		case OpcodeResume:
+			_ = c.write(OpcodeDispatch, 0, EventTypeResumed, `{}`)
+		}
+		for {
+			if _, err = c.read(); err != nil {
+				return
+			}
+		}
+	}
+}
+
+// A resume that fails before RESUMED keeps the session to resume on the next try, unless Discord ended it
+func TestGatewayFailedResume(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range []struct {
+		name       string
+		failResume func(c *testConn)
+		want       Opcode
+	}{
+		{"reconnect", func(c *testConn) { _ = c.write(OpcodeReconnect, 0, "", "") }, OpcodeResume},
+		{"resumable invalid session", func(c *testConn) { _ = c.write(OpcodeInvalidSession, 0, "", "true") }, OpcodeResume},
+		{"dropped", func(c *testConn) { _ = c.conn.UnderlyingConn().Close() }, OpcodeResume},
+		{"invalid session", func(c *testConn) { _ = c.write(OpcodeInvalidSession, 0, "", "false") }, OpcodeIdentify},
+		{"invalid seq", func(c *testConn) {
+			_ = c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(CloseEventCodeInvalidSeq.Code, "Invalid seq"))
+		}, OpcodeIdentify},
+		{"session timed out", func(c *testConn) {
+			_ = c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(CloseEventCodeSessionTimed.Code, "Session timed out"))
+		}, OpcodeIdentify},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			started := make(chan Opcode, 4)
+			clientClose := make(chan int, 1)
+			g := newTestGateway(t, resumeServer(tt.failResume, started, clientClose))
+			openTestGateway(t, g)
+
+			next := func() Opcode {
+				select {
+				case op := <-started:
+					return op
+				case <-time.After(10 * time.Second):
+					t.Fatal("no connection")
+					return 0
+				}
+			}
+			if op := next(); op != OpcodeResume {
+				t.Fatalf("after the drop the gateway sent opcode %d, want a resume", op)
+			}
+			if op := next(); op != tt.want {
+				t.Fatalf("after the failed resume the gateway sent opcode %d, want %d", op, tt.want)
+			}
+			if tt.want == OpcodeResume {
+				select {
+				case code := <-clientClose:
+					if code == websocket.CloseNormalClosure || code == websocket.CloseGoingAway {
+						t.Fatalf("the gateway closed the resumed session with %d, which ends it at Discord", code)
+					}
+				default:
+				}
+			}
+		})
+	}
+}

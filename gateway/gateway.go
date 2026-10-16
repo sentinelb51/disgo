@@ -335,7 +335,8 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 		if err != nil {
 			closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			g.closeWithCode(closeCtx, websocket.CloseNormalClosure, "Shutting down")
+			// not CloseNormalClosure, which would end the session at Discord and here: a resume that failed is tried again
+			g.closeWithCode(closeCtx, websocket.CloseServiceRestart, "reconnecting")
 			return fmt.Errorf("failed to open gateway connection: %w", err)
 		}
 	}
@@ -647,6 +648,18 @@ func (g *gatewayImpl) listen(heartbeatCtx context.Context, conn transport, ready
 	for {
 		message, err := conn.ReceiveMessage()
 		if err != nil {
+			// these end the session, whether it was ready or still resuming
+			var closeError *websocket.CloseError
+			if errors.As(err, &closeError) {
+				if closeCode := CloseEventCodeByCode(closeError.Code); closeCode == CloseEventCodeInvalidSeq || closeCode == CloseEventCodeSessionTimed {
+					g.sessionMu.Lock()
+					g.config.LastSequenceReceived = nil
+					g.config.SessionID = nil
+					g.config.ResumeURL = nil
+					g.sessionMu.Unlock()
+				}
+			}
+
 			g.statusMu.Lock()
 			if g.status != StatusReady {
 				g.statusMu.Unlock()
@@ -664,18 +677,10 @@ func (g *gatewayImpl) listen(heartbeatCtx context.Context, conn transport, ready
 			}
 
 			reconnect := true
-			var closeError *websocket.CloseError
-			if errors.As(err, &closeError) {
+			if closeError != nil {
 				closeCode := CloseEventCodeByCode(closeError.Code)
 				reconnect = closeCode.Reconnect
 
-				if closeCode == CloseEventCodeInvalidSeq {
-					g.sessionMu.Lock()
-					g.config.LastSequenceReceived = nil
-					g.config.SessionID = nil
-					g.config.ResumeURL = nil
-					g.sessionMu.Unlock()
-				}
 				msg := "gateway close received"
 				args := []any{
 					slog.Bool("reconnect", reconnect),
