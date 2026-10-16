@@ -969,8 +969,10 @@ func (c *cachesImpl) MemberPermissions(member discord.Member) discord.Permission
 		permissions = publicRole.Permissions
 	}
 
-	for _, role := range c.MemberRoles(member) {
-		permissions = permissions.Add(role.Permissions)
+	for _, roleID := range member.RoleIDs {
+		if role, ok := c.Role(member.GuildID, roleID); ok {
+			permissions = permissions.Add(role.Permissions)
+		}
 	}
 	if permissions.Has(discord.PermissionAdministrator) {
 		return discord.PermissionsAll

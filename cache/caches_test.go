@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/disgoorg/json/v2"
@@ -52,5 +53,28 @@ func TestMemberPermissionsEveryoneAdministrator(t *testing.T) {
 	member := discord.Member{GuildID: 1, User: discord.User{ID: 5}}
 	if perms := caches.MemberPermissions(member); perms != discord.PermissionsAll {
 		t.Errorf("@everyone has ADMINISTRATOR: got %s, want all permissions", perms)
+	}
+}
+
+func BenchmarkMemberPermissions(b *testing.B) {
+	for _, guildRoles := range []int{5, 50, 250} {
+		b.Run(fmt.Sprintf("roles=%d", guildRoles), func(b *testing.B) {
+			caches := New(WithCaches(FlagGuilds, FlagRoles))
+			caches.AddGuild(discord.CacheGuild{Guild: discord.Guild{ID: 1, OwnerID: 99}})
+			caches.AddRole(discord.Role{ID: 1, GuildID: 1, Permissions: discord.PermissionViewChannel})
+			member := discord.Member{GuildID: 1, User: discord.User{ID: 5}}
+			for i := range guildRoles {
+				id := snowflake.ID(100 + i)
+				caches.AddRole(discord.Role{ID: id, GuildID: 1, Permissions: discord.PermissionSendMessages})
+				if i%(guildRoles/3) == 0 {
+					member.RoleIDs = append(member.RoleIDs, id)
+				}
+			}
+
+			b.ReportAllocs()
+			for b.Loop() {
+				caches.MemberPermissions(member)
+			}
+		})
 	}
 }
