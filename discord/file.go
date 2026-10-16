@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/textproto"
+	"strings"
 
 	"github.com/disgoorg/json/v2"
 
@@ -52,7 +53,7 @@ func PayloadWithFiles(v any, files ...*File) (*MultipartBuffer, error) {
 		} else {
 			name = file.Name
 		}
-		part, err = writer.CreatePart(partHeader(fmt.Sprintf(`form-data; name="files[%d]"; filename="%s"`, i, name), "application/octet-stream"))
+		part, err = writer.CreatePart(partHeader(fmt.Sprintf(`form-data; name="files[%d]"; filename="%s"`, i, quoteEscaper.Replace(name)), "application/octet-stream"))
 		if err != nil {
 			return nil, err
 		}
@@ -67,6 +68,9 @@ func PayloadWithFiles(v any, files ...*File) (*MultipartBuffer, error) {
 		ContentType: writer.FormDataContentType(),
 	}, nil
 }
+
+// quoteEscaper escapes a quoted header parameter, as mime/multipart does for CreateFormFile
+var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"", "\r", "%0D", "\n", "%0A")
 
 func partHeader(contentDisposition string, contentType string) textproto.MIMEHeader {
 	return textproto.MIMEHeader{
