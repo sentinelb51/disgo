@@ -28,3 +28,18 @@ func TestUser_DefaultAvatarURL(t *testing.T) {
 		})
 	}
 }
+
+func TestUser_GuildTagURL(t *testing.T) {
+	guildID := snowflake.ID(2)
+	badge := "2c4b4b2f1a"
+	user := User{ID: 1, PrimaryGuild: &PrimaryGuild{IdentityGuildID: &guildID, Badge: &badge}}
+
+	want := "https://cdn.discordapp.com/guild-tag-badges/2/2c4b4b2f1a.png"
+	got := user.GuildTagURL()
+	if got == nil {
+		t.Fatal("got no URL")
+	}
+	if *got != want {
+		t.Errorf("got %s, want %s", *got, want)
+	}
+}

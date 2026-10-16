@@ -170,6 +170,8 @@ func formatAssetURL(cdnRoute *CDNEndpoint, opts []CDNOpt, params ...any) string 
 			return ""
 		}
 		lastStringParam = *ptrStr
+		// the URL gets the hash, not the pointer's address
+		params[len(params)-1] = lastStringParam
 	}
 
 	// some endpoints have a_ prefix for animated images except the AvatarDecoration endpoint does not like this
