@@ -116,7 +116,10 @@ func (l *rateLimiterImpl) Close(ctx context.Context) {
 		wg.Add(1)
 		b := l.buckets[i]
 		go func() {
-			_ = b.mu.CLock(ctx)
+			// once we hold the bucket, its pending request is done
+			if b.mu.CLock(ctx) == nil {
+				b.mu.Unlock()
+			}
 			wg.Done()
 		}()
 	}

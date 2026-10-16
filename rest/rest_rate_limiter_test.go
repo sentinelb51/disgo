@@ -302,3 +302,28 @@ func TestRateLimiterCleanupDuringWait(t *testing.T) {
 	cancel()
 	cleanups.Wait()
 }
+
+func TestRateLimiterAfterClose(t *testing.T) {
+	l := NewRateLimiter(WithCleanupInterval(time.Hour))
+	endpoint := GetGatewayBot.Compile(nil)
+	if err := l.Wait(context.Background(), endpoint); err != nil {
+		t.Fatal(err)
+	}
+	_ = l.Unlock(endpoint, nil)
+
+	l.Close(context.Background())
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	l.Close(ctx)
+	if ctx.Err() != nil {
+		t.Error("second Close blocked on the buckets the first one locked")
+	}
+
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if err := l.Wait(ctx, endpoint); err != nil {
+		t.Fatalf("request after Close on a route used before: %v", err)
+	}
+	_ = l.Unlock(endpoint, nil)
+}
