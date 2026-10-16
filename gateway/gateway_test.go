@@ -47,8 +47,9 @@ func (c *testConn) read() (testFrame, error) {
 	return frame, err
 }
 
-// serve plays Discord: HELLO, then READY on IDENTIFY, RESUMED on RESUME and an ACK on every HEARTBEAT
-func (c *testConn) serve(heartbeatInterval time.Duration) {
+// serve plays Discord: HELLO, then READY on IDENTIFY, RESUMED on RESUME and an ACK on every HEARTBEAT.
+// ready, if not nil, runs after READY
+func (c *testConn) serve(heartbeatInterval time.Duration, ready func()) {
 	if err := c.write(OpcodeHello, 0, "", `{"heartbeat_interval":`+strconv.Itoa(int(heartbeatInterval/time.Millisecond))+`}`); err != nil {
 		return
 	}
@@ -60,6 +61,9 @@ func (c *testConn) serve(heartbeatInterval time.Duration) {
 		switch frame.Op {
 		case OpcodeIdentify:
 			err = c.write(OpcodeDispatch, 1, EventTypeReady, `{"v":10,"session_id":"session","resume_gateway_url":"`+c.conn.LocalAddr().String()+`"}`)
+			if err == nil && ready != nil {
+				ready()
+			}
 		case OpcodeResume:
 			err = c.write(OpcodeDispatch, 0, EventTypeResumed, `{}`)
 		case OpcodeHeartbeat:
@@ -131,10 +135,42 @@ func openTestGateway(t *testing.T, g Gateway) {
 func TestGatewayCloseStopsHeartbeat(t *testing.T) {
 	t.Parallel()
 
-	g := newTestGateway(t, func(n int, c *testConn) { c.serve(time.Minute) })
+	g := newTestGateway(t, func(n int, c *testConn) { c.serve(time.Minute, nil) })
 	openTestGateway(t, g)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	g.Close(ctx)
+}
+
+// The sequence and session are written by the read loop and read by the caller, the heartbeat and reconnects
+func TestGatewaySessionState(t *testing.T) {
+	t.Parallel()
+
+	const last = 200
+	g := newTestGateway(t, func(n int, c *testConn) {
+		c.serve(time.Minute, func() {
+			for s := 2; s <= last; s++ {
+				if err := c.write(OpcodeDispatch, s, "TEST_EVENT", `{}`); err != nil {
+					return
+				}
+			}
+		})
+	})
+	openTestGateway(t, g)
+
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		sequence := g.LastSequenceReceived()
+		if sequence != nil && *sequence == last {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("last sequence received: %v, want %d", sequence, last)
+		}
+		time.Sleep(time.Millisecond)
+	}
+	if sessionID := g.SessionID(); sessionID == nil || *sessionID != "session" {
+		t.Fatalf("session id: %v, want session", sessionID)
+	}
 }
