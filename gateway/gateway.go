@@ -180,6 +180,7 @@ type gatewayImpl struct {
 	sessionMu sync.Mutex
 
 	heartbeatInterval     time.Duration
+	heartbeatMu           sync.Mutex // guards lastHeartbeatSent and lastHeartbeatReceived
 	lastHeartbeatSent     time.Time
 	lastHeartbeatReceived time.Time
 }
@@ -259,7 +260,9 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 
 	gatewayURL := wsURL + "?" + values.Encode()
 
+	g.heartbeatMu.Lock()
 	g.lastHeartbeatSent = time.Now()
+	g.heartbeatMu.Unlock()
 	conn, rs, err := g.config.Dialer.DialContext(ctx, gatewayURL, nil)
 	if err != nil {
 		var body []byte
@@ -395,6 +398,8 @@ func (g *gatewayImpl) sendInternal(ctx context.Context, commandType RateLimiterC
 }
 
 func (g *gatewayImpl) Latency() time.Duration {
+	g.heartbeatMu.Lock()
+	defer g.heartbeatMu.Unlock()
 	return g.lastHeartbeatReceived.Sub(g.lastHeartbeatSent)
 }
 
@@ -463,7 +468,9 @@ func (g *gatewayImpl) reconnect() {
 func (g *gatewayImpl) heartbeat(ctx context.Context) {
 	defer g.config.Logger.Debug("exiting heartbeat goroutine")
 
+	g.heartbeatMu.Lock()
 	g.lastHeartbeatReceived = time.Now()
+	g.heartbeatMu.Unlock()
 
 	// Send heartbeats periodically every `heartbeat_interval`
 	heartbeatTicker := time.NewTicker(g.heartbeatInterval)
@@ -473,8 +480,11 @@ func (g *gatewayImpl) heartbeat(ctx context.Context) {
 			return
 
 		case <-heartbeatTicker.C:
-			if g.lastHeartbeatSent.After(g.lastHeartbeatReceived) {
-				lastHeartbeatAgo := time.Since(g.lastHeartbeatReceived)
+			g.heartbeatMu.Lock()
+			lastHeartbeatSent, lastHeartbeatReceived := g.lastHeartbeatSent, g.lastHeartbeatReceived
+			g.heartbeatMu.Unlock()
+			if lastHeartbeatSent.After(lastHeartbeatReceived) {
+				lastHeartbeatAgo := time.Since(lastHeartbeatReceived)
 				g.config.Logger.Warn("ACK of last heartbeat not received, connection went zombie", slog.Duration("last_heartbeat_ago", lastHeartbeatAgo))
 				closeCtx, closeCancel := context.WithTimeout(context.Background(), 5*time.Second)
 				g.CloseWithCode(closeCtx, websocket.CloseServiceRestart, "heartbeat ACK not received")
@@ -511,7 +521,9 @@ func (g *gatewayImpl) sendHeartbeat() {
 		go g.reconnect()
 		return
 	}
+	g.heartbeatMu.Lock()
 	g.lastHeartbeatSent = time.Now()
+	g.heartbeatMu.Unlock()
 }
 
 func (g *gatewayImpl) identify() error {
@@ -759,9 +771,11 @@ func (g *gatewayImpl) listen(heartbeatCtx context.Context, conn transport, ready
 
 		case OpcodeHeartbeatACK:
 			newHeartbeat := time.Now()
+			g.heartbeatMu.Lock()
 			g.lastHeartbeatReceived = newHeartbeat
+			g.heartbeatMu.Unlock()
 			g.eventHandlerFunc(g, EventTypeHeartbeatAck, message.S, EventHeartbeatAck{
-				LastHeartbeat: g.lastHeartbeatReceived,
+				LastHeartbeat: newHeartbeat,
 				NewHeartbeat:  newHeartbeat,
 			})
 

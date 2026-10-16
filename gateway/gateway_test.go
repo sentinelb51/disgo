@@ -174,3 +174,16 @@ func TestGatewaySessionState(t *testing.T) {
 		t.Fatalf("session id: %v, want session", sessionID)
 	}
 }
+
+// Latency reads the heartbeat times the heartbeat goroutine and the read loop write
+func TestGatewayLatency(t *testing.T) {
+	t.Parallel()
+
+	g := newTestGateway(t, func(n int, c *testConn) { c.serve(10*time.Millisecond, nil) })
+	openTestGateway(t, g)
+
+	for range 200 {
+		_ = g.Latency()
+		time.Sleep(time.Millisecond)
+	}
+}
