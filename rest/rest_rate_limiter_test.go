@@ -135,3 +135,40 @@ func TestRateLimiterGlobalConcurrentAccess(t *testing.T) {
 	})
 	wg.Wait()
 }
+
+func TestRateLimiterExhaustedBucketWaitsForGlobal(t *testing.T) {
+	l := NewRateLimiter(WithCleanupInterval(time.Hour))
+	exhausted := GetGatewayBot.Compile(nil)
+	global := GetCurrentUser.Compile(nil)
+
+	if err := l.Wait(context.Background(), exhausted); err != nil {
+		t.Fatal(err)
+	}
+	if err := l.Unlock(exhausted, newRateLimitResponse(http.StatusOK, map[string]string{
+		"X-RateLimit-Bucket":      "abcd1234",
+		"X-RateLimit-Limit":       "5",
+		"X-RateLimit-Remaining":   "0",
+		"X-RateLimit-Reset-After": "0.2",
+	})); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := l.Wait(context.Background(), global); err != nil {
+		t.Fatal(err)
+	}
+	start := time.Now()
+	if err := l.Unlock(global, newRateLimitResponse(http.StatusTooManyRequests, map[string]string{
+		"Retry-After":        "1",
+		"X-RateLimit-Global": "true",
+	})); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := l.Wait(context.Background(), exhausted); err != nil {
+		t.Fatal(err)
+	}
+	if waited := time.Since(start); waited < 900*time.Millisecond {
+		t.Errorf("request went out %s into a 1s global rate limit", waited)
+	}
+	_ = l.Unlock(exhausted, nil)
+}

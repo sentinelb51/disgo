@@ -161,15 +161,15 @@ func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) 
 		return err
 	}
 
-	var until time.Time
 	now := time.Now()
 
-	if b.Remaining == 0 && b.Reset.After(now) {
+	l.globalMu.Lock()
+	until := l.global
+	l.globalMu.Unlock()
+
+	// an exhausted bucket waits for its reset or the global rate limit, whichever ends later
+	if b.Remaining == 0 && b.Reset.After(until) {
 		until = b.Reset
-	} else {
-		l.globalMu.Lock()
-		until = l.global
-		l.globalMu.Unlock()
 	}
 
 	if until.After(now) {
