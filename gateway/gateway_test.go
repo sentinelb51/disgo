@@ -744,3 +744,41 @@ func TestGatewaySendWhileClosing(t *testing.T) {
 		t.Fatal("Send did not return")
 	}
 }
+
+// Close while the read loop decodes a compressed stream
+func TestGatewayCloseWhileReading(t *testing.T) {
+	t.Parallel()
+
+	for _, compression := range []CompressionType{CompressionZlibStream, CompressionZstdStream} {
+		t.Run(compression.String(), func(t *testing.T) {
+			t.Parallel()
+
+			g := newTestGateway(t, func(n int, c *testConn) {
+				c.serve(time.Minute, func() {
+					go func() {
+						for s := 2; ; s++ {
+							if err := c.write(OpcodeDispatch, s, "TEST_EVENT", `{"padding":"`+strings.Repeat("x", 4096)+`"}`); err != nil {
+								return
+							}
+						}
+					}()
+				})
+			}, WithCompression(compression))
+			openTestGateway(t, g)
+
+			deadline := time.Now().Add(5 * time.Second)
+			for {
+				if sequence := g.LastSequenceReceived(); sequence != nil && *sequence > 100 {
+					break
+				}
+				if time.Now().After(deadline) {
+					t.Fatal("no events")
+				}
+				time.Sleep(time.Millisecond)
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			g.Close(ctx)
+		})
+	}
+}
