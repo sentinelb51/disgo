@@ -185,9 +185,10 @@ func (d *ButtonInteractionData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (d *ButtonInteractionData) MarshalJSON() ([]byte, error) {
+func (d ButtonInteractionData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rawButtonInteractionData{
-		Custom: d.customID,
+		ComponentType: d.Type(),
+		Custom:        d.customID,
 	})
 }
 

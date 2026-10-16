@@ -640,7 +640,7 @@ func (d *UserCommandInteractionData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (d *UserCommandInteractionData) MarshalJSON() ([]byte, error) {
+func (d UserCommandInteractionData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rawUserCommandInteractionData{
 		ID:       d.id,
 		Name:     d.name,
@@ -738,7 +738,7 @@ func (d *MessageCommandInteractionData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (d *MessageCommandInteractionData) MarshalJSON() ([]byte, error) {
+func (d MessageCommandInteractionData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rawMessageCommandInteractionData{
 		ID:       d.id,
 		Name:     d.name,
@@ -803,7 +803,7 @@ func (d *EntryPointCommandInteractionData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (d *EntryPointCommandInteractionData) MarshalJSON() ([]byte, error) {
+func (d EntryPointCommandInteractionData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rawEntryPointCommandInteractionData{
 		ID:   d.id,
 		Name: d.name,
