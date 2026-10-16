@@ -3,8 +3,12 @@ package handlers
 import (
 	"testing"
 
+	"github.com/disgoorg/json/v2"
+
+	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/discord"
+	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
 )
 
@@ -25,5 +29,31 @@ func TestThreadMembersUpdateCachesMemberInGuild(t *testing.T) {
 	}
 	if _, ok := client.Caches.Member(100, 5); ok {
 		t.Error("member cached under the thread ID")
+	}
+}
+
+func TestThreadMemberUpdate(t *testing.T) {
+	client := newTestClient(t, cache.FlagChannels|cache.FlagThreadMembers)
+	var thread discord.GuildThread
+	if err := json.Unmarshal([]byte(`{"id":"100","type":11,"guild_id":"1","parent_id":"20"}`), &thread); err != nil {
+		t.Fatal(err)
+	}
+	client.Caches.AddChannel(thread)
+	client.Caches.AddThreadMember(discord.ThreadMember{ThreadID: 100, UserID: 5, Flags: 1})
+	var got *events.ThreadMemberUpdate
+	client.AddEventListeners(bot.NewListenerFunc(func(e *events.ThreadMemberUpdate) { got = e }))
+
+	GetGatewayHandlers()[gateway.EventTypeThreadMemberUpdate].HandleGatewayEvent(client, 0, 0, gateway.EventThreadMemberUpdate{
+		ThreadMember: discord.ThreadMember{ThreadID: 100, UserID: 5, Flags: 2},
+	})
+
+	if member, ok := client.Caches.ThreadMember(100, 5); !ok || member.Flags != 2 {
+		t.Errorf("cached thread member = %+v, %t, want flags 2", member, ok)
+	}
+	if got == nil {
+		t.Fatal("ThreadMemberUpdate not dispatched")
+	}
+	if got.GuildID != 1 || got.ThreadID != 100 || got.ThreadMemberID != 5 || got.ThreadMember.Flags != 2 || got.OldThreadMember.Flags != 1 {
+		t.Errorf("ThreadMemberUpdate = %+v, old %+v", got.GenericThreadMember, got.OldThreadMember)
 	}
 }

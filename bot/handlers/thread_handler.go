@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"github.com/disgoorg/snowflake/v2"
+
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -71,8 +73,26 @@ func gatewayHandlerThreadListSync(client *bot.Client, sequenceNumber int, shardI
 	}
 }
 
-func gatewayHandlerThreadMemberUpdate(_ *bot.Client, _ int, _ int, _ gateway.EventData) {
-	// ThreadMembersUpdate kinda handles this already?
+func gatewayHandlerThreadMemberUpdate(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventThreadMemberUpdate) {
+	oldThreadMember, _ := client.Caches.ThreadMember(event.ThreadID, event.UserID)
+	client.Caches.AddThreadMember(event.ThreadMember)
+
+	// the payload's guild_id isn't decoded, so take it from the cached thread
+	var guildID snowflake.ID
+	if thread, ok := client.Caches.GuildThread(event.ThreadID); ok {
+		guildID = thread.GuildID()
+	}
+
+	client.EventManager.DispatchEvent(&events.ThreadMemberUpdate{
+		GenericThreadMember: &events.GenericThreadMember{
+			GenericEvent:   events.NewGenericEvent(client, sequenceNumber, shardID),
+			GuildID:        guildID,
+			ThreadID:       event.ThreadID,
+			ThreadMemberID: event.UserID,
+			ThreadMember:   event.ThreadMember,
+		},
+		OldThreadMember: oldThreadMember,
+	})
 }
 
 func gatewayHandlerThreadMembersUpdate(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventThreadMembersUpdate) {
