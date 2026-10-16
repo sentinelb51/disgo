@@ -233,13 +233,22 @@ func unmarshalChannel(data []byte, channelType ChannelType) (Channel, error) {
 		channel = v
 
 	default:
-		err = fmt.Errorf("unknown channel with type %d received", channelType)
+		err = unknownChannelTypeError{channelType: channelType}
 	}
 
 	if err != nil {
 		return nil, err
 	}
 	return channel, nil
+}
+
+// unknownChannelTypeError is a channel of a type this package doesn't model
+type unknownChannelTypeError struct {
+	channelType ChannelType
+}
+
+func (e unknownChannelTypeError) Error() string {
+	return fmt.Sprintf("unknown channel with type %d received", e.channelType)
 }
 
 // peek returns the raw values of up to two top-level keys of the object in data, reading only as far as it must
