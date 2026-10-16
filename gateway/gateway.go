@@ -392,9 +392,8 @@ func (g *gatewayImpl) Status() Status {
 }
 
 func (g *gatewayImpl) Send(ctx context.Context, op Opcode, d MessageData) error {
-	g.statusMu.Lock()
-	defer g.statusMu.Unlock()
-	if g.status != StatusReady {
+	// not held while sending: closeWithCode takes statusMu under connMu, which sendInternal waits for
+	if g.Status() != StatusReady {
 		return discord.ErrShardNotReady
 	}
 

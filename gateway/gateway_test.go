@@ -689,3 +689,58 @@ func TestGatewayOpenTimeoutStopsListen(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 }
+
+// blockingCloseRateLimiter is the default RateLimiter, whose Close waits for release once it was entered
+type blockingCloseRateLimiter struct {
+	RateLimiter
+	closing chan struct{}
+	release chan struct{}
+}
+
+func (l *blockingCloseRateLimiter) Close(ctx context.Context) {
+	close(l.closing)
+	<-l.release
+	l.RateLimiter.Close(ctx)
+}
+
+// A Send that starts while the connection is being closed returns, and so does the close
+func TestGatewaySendWhileClosing(t *testing.T) {
+	t.Parallel()
+
+	rateLimiter := &blockingCloseRateLimiter{RateLimiter: NewRateLimiter(), closing: make(chan struct{}), release: make(chan struct{})}
+	g := newTestGateway(t, func(n int, c *testConn) { c.serve(time.Minute, nil) }, WithRateLimiter(rateLimiter))
+	// no Close at cleanup: it would hang where the test fails
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := g.Open(ctx); err != nil {
+		t.Fatal(err)
+	}
+
+	closed := make(chan struct{})
+	go func() {
+		defer close(closed)
+		g.Close(ctx)
+	}()
+	<-rateLimiter.closing
+
+	sent := make(chan error, 1)
+	go func() {
+		sent <- g.Send(ctx, OpcodePresenceUpdate, MessageDataPresenceUpdate{Status: discord.OnlineStatusIdle})
+	}()
+	time.Sleep(100 * time.Millisecond)
+	close(rateLimiter.release)
+
+	select {
+	case <-closed:
+	case <-time.After(2 * time.Second):
+		t.Fatal("Close did not return: deadlocked with Send")
+	}
+	select {
+	case err := <-sent:
+		if err == nil {
+			t.Fatal("Send on a closed connection succeeded")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Send did not return")
+	}
+}
