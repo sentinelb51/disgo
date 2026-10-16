@@ -84,7 +84,7 @@ func gatewayHandlerThreadMembersUpdate(client *bot.Client, sequenceNumber int, s
 	}
 
 	for _, addedMember := range event.AddedMembers {
-		addedMember.Member.GuildID = event.ID
+		addedMember.Member.GuildID = event.GuildID
 		client.Caches.AddThreadMember(addedMember.ThreadMember)
 		client.Caches.AddMember(addedMember.Member)
 
