@@ -78,3 +78,21 @@ func BenchmarkMemberPermissions(b *testing.B) {
 		})
 	}
 }
+
+// An update that the policy rejects must not leave the previous version cached.
+func TestPutPolicyRejectedUpdateRemoves(t *testing.T) {
+	textOnly := func(channel discord.GuildChannel) bool { return channel.Type() == discord.ChannelTypeGuildText }
+	caches := New(WithCaches(FlagMembers, FlagChannels), WithMemberCachePolicy(PolicyMembersPending), WithChannelCachePolicy(textOnly))
+
+	caches.AddMember(discord.Member{GuildID: 1, User: discord.User{ID: 5}, Pending: true})
+	caches.AddMember(discord.Member{GuildID: 1, User: discord.User{ID: 5}, Pending: false})
+	if member, ok := caches.Member(1, 5); ok {
+		t.Errorf("member that completed screening still cached as %+v", member)
+	}
+
+	caches.AddChannel(guildChannel(t, `{"id":"20","type":0,"guild_id":"1"}`))
+	caches.AddChannel(guildChannel(t, `{"id":"20","type":5,"guild_id":"1"}`))
+	if channel, ok := caches.Channel(20); ok {
+		t.Errorf("channel converted to a type the policy excludes still cached as type %d", channel.Type())
+	}
+}

@@ -82,11 +82,16 @@ func (c *defaultGroupedCache[T]) Put(groupID snowflake.ID, id snowflake.ID, enti
 	if c.flags.Missing(c.neededFlags) {
 		return
 	}
-	if c.policy != nil && !c.policy(entity) {
-		return
-	}
+	// evaluated before locking: a policy may read other caches
+	keep := c.policy == nil || c.policy(entity)
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	if !keep {
+		// an update the policy rejects must not leave the previous version cached
+		delete(c.cache[groupID], id)
+		return
+	}
 
 	if c.cache == nil {
 		c.cache = make(map[snowflake.ID]map[snowflake.ID]T)
