@@ -52,32 +52,26 @@ type UnmarshalPermissionOverwrite struct {
 }
 
 func (o *UnmarshalPermissionOverwrite) UnmarshalJSON(data []byte) error {
-	var oType struct {
-		Type PermissionOverwriteType `json:"type"`
-	}
-
-	if err := json.Unmarshal(data, &oType); err != nil {
-		return err
-	}
-
 	var (
 		overwrite PermissionOverwrite
 		err       error
 	)
 
-	switch oType.Type {
+	// The type is peeked rather than probed, and the overwrite decoded in one pass, as channels are
+	oType, _ := peek(data, "type", "")
+	switch PermissionOverwriteType(peekInt(oType)) {
 	case PermissionOverwriteTypeRole:
 		var v RolePermissionOverwrite
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		overwrite = v
 
 	case PermissionOverwriteTypeMember:
 		var v MemberPermissionOverwrite
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		overwrite = v
 
 	default:
-		err = fmt.Errorf("unknown permission overwrite with type %d received", oType.Type)
+		err = fmt.Errorf("unknown permission overwrite with type %d received", peekInt(oType))
 	}
 
 	if err != nil {
