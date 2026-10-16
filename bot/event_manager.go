@@ -127,11 +127,18 @@ type eventManagerImpl struct {
 }
 
 func (e *eventManagerImpl) HandleGatewayEvent(gateway gateway.Gateway, eventType gateway.EventType, sequenceNumber int, event gateway.EventData) {
-	if handler, ok := e.gatewayHandlers[eventType]; ok {
-		handler.HandleGatewayEvent(e.client, sequenceNumber, gateway.ShardID(), event)
-	} else {
+	handler, ok := e.gatewayHandlers[eventType]
+	if !ok {
 		e.logger.Warn("no handler for Gateway event found", slog.Any("event_type", eventType))
+		return
 	}
+	// a panic here runs on the gateway's read loop, which nothing above recovers: it would end the process
+	defer func() {
+		if r := recover(); r != nil {
+			e.logger.Error("recovered from panic in gateway event handler", slog.Any("event_type", eventType), slog.Any("arg", r), slog.String("stack", string(xdebug.Stack(3))))
+		}
+	}()
+	handler.HandleGatewayEvent(e.client, sequenceNumber, gateway.ShardID(), event)
 }
 
 func (e *eventManagerImpl) HandleHTTPEvent(respondFunc httpserver.RespondFunc, event httpserver.EventInteractionCreate) {
