@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -651,4 +652,40 @@ func TestGatewayCloseWhileReconnecting(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	g.Close(ctx)
+}
+
+// listenGoroutines counts the read loops running in this process
+func listenGoroutines() int {
+	buf := make([]byte, 1<<20)
+	return strings.Count(string(buf[:runtime.Stack(buf, true)]), "(*gatewayImpl).listen(")
+}
+
+// An Open whose context ends before READY leaves no read loop behind. Not parallel: it counts goroutines
+func TestGatewayOpenTimeoutStopsListen(t *testing.T) {
+	g := newTestGateway(t, func(n int, c *testConn) {
+		// never READY
+		if err := c.write(OpcodeHello, 0, "", `{"heartbeat_interval":60000}`); err != nil {
+			return
+		}
+		for {
+			if _, err := c.read(); err != nil {
+				return
+			}
+		}
+	})
+	before := listenGoroutines()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
+	defer cancel()
+	if err := g.Open(ctx); !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("open: %v, want %v", err, context.DeadlineExceeded)
+	}
+
+	deadline := time.Now().Add(2 * time.Second)
+	for listenGoroutines() > before {
+		if time.Now().After(deadline) {
+			t.Fatalf("%d read loops left running after Open failed", listenGoroutines()-before)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
 }

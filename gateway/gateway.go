@@ -316,7 +316,8 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 	g.statusMu.Unlock()
 
 	var readyOnce sync.Once
-	readyChan := make(chan error)
+	// buffered: once open returned on ctx.Done, nothing receives, and listen must not block on its send
+	readyChan := make(chan error, 1)
 	go g.listen(heartbeatCtx, t, func(err error) { // nolint:gosec
 		readyOnce.Do(func() {
 			readyChan <- err
