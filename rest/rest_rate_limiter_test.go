@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -237,5 +239,25 @@ func TestClientCloseWaitsForPendingRequest(t *testing.T) {
 	case <-closed:
 	case <-ctx.Done():
 		t.Fatal("Close did not return once the pending request finished")
+	}
+}
+
+func countCleanupGoroutines() int {
+	buf := make([]byte, 1<<20)
+	n := runtime.Stack(buf, true)
+	return strings.Count(string(buf[:n]), "(*rateLimiterImpl).cleanup(")
+}
+
+func TestRateLimiterCloseStopsCleanup(t *testing.T) {
+	before := countCleanupGoroutines()
+	l := NewRateLimiter(WithCleanupInterval(time.Hour))
+	l.Close(context.Background())
+
+	deadline := time.Now().Add(time.Second)
+	for countCleanupGoroutines() > before {
+		if time.Now().After(deadline) {
+			t.Fatal("cleanup goroutine still running after Close")
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
 }

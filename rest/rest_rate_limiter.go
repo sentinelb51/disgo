@@ -43,12 +43,14 @@ func NewRateLimiter(opts ...RateLimiterConfigOpt) RateLimiter {
 	cfg := defaultRateLimiterConfig()
 	cfg.apply(opts)
 
+	ctx, cancel := context.WithCancel(context.Background())
 	rateLimiter := &rateLimiterImpl{
-		config:  cfg,
-		buckets: map[string]*bucket{},
+		config:      cfg,
+		buckets:     map[string]*bucket{},
+		stopCleanup: cancel,
 	}
 
-	go rateLimiter.cleanup()
+	go rateLimiter.cleanup(ctx)
 
 	return rateLimiter
 }
@@ -63,16 +65,25 @@ type rateLimiterImpl struct {
 	// Hash + Major Parameter -> bucket
 	buckets   map[string]*bucket
 	bucketsMu sync.Mutex
+
+	// stops the cleanup goroutine
+	stopCleanup context.CancelFunc
 }
 
 func (l *rateLimiterImpl) MaxRetries() int {
 	return l.config.MaxRetries
 }
 
-func (l *rateLimiterImpl) cleanup() {
+func (l *rateLimiterImpl) cleanup(ctx context.Context) {
 	ticker := time.NewTicker(l.config.CleanupInterval)
-	for range ticker.C {
-		l.doCleanup()
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			l.doCleanup()
+		}
 	}
 }
 
@@ -97,6 +108,8 @@ func (l *rateLimiterImpl) doCleanup() {
 }
 
 func (l *rateLimiterImpl) Close(ctx context.Context) {
+	l.stopCleanup()
+
 	var wg sync.WaitGroup
 	l.bucketsMu.Lock()
 	for i := range l.buckets {
