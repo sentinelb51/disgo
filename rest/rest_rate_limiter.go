@@ -144,9 +144,7 @@ func (l *rateLimiterImpl) getRouteHash(endpoint *CompiledEndpoint) string {
 	return hash
 }
 
-func (l *rateLimiterImpl) getBucket(endpoint *CompiledEndpoint, create bool) *bucket {
-	hash := l.getRouteHash(endpoint)
-
+func (l *rateLimiterImpl) getBucket(hash string, create bool) *bucket {
 	l.config.Logger.Debug("locking buckets")
 	l.bucketsMu.Lock()
 	defer func() {
@@ -170,9 +168,20 @@ func (l *rateLimiterImpl) getBucket(endpoint *CompiledEndpoint, create bool) *bu
 }
 
 func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) error {
-	b := l.getBucket(endpoint, true)
-	if err := b.mu.CLock(ctx); err != nil {
-		return err
+	hash := l.getRouteHash(endpoint)
+	b := l.getBucket(hash, true)
+	for {
+		if err := b.mu.CLock(ctx); err != nil {
+			return err
+		}
+		// the cleanup may have removed the bucket before we locked it,
+		// but Unlock has to find the bucket we hold
+		current := l.getBucket(hash, true)
+		if current == b {
+			break
+		}
+		b.mu.Unlock()
+		b = current
 	}
 	l.config.Logger.Debug("locked rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 
@@ -205,7 +214,7 @@ func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) 
 }
 
 func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) error {
-	b := l.getBucket(endpoint, false)
+	b := l.getBucket(l.getRouteHash(endpoint), false)
 	if b == nil {
 		return nil
 	}

@@ -261,3 +261,44 @@ func TestRateLimiterCloseStopsCleanup(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 }
+
+// The cleanup removes unlocked buckets whose reset has passed, which may race with a Wait that has fetched
+// the bucket but not locked it yet. Unlock must still release the bucket Wait locked.
+func TestRateLimiterCleanupDuringWait(t *testing.T) {
+	l := NewRateLimiter(WithCleanupInterval(time.Hour)).(*rateLimiterImpl)
+	defer l.Close(context.Background())
+	endpoint := GetGatewayBot.Compile(nil)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	var cleanups sync.WaitGroup
+	cleanups.Go(func() {
+		for ctx.Err() == nil {
+			l.doCleanup()
+		}
+	})
+
+	var requests sync.WaitGroup
+	for range 4 {
+		requests.Go(func() {
+			for range 5000 {
+				if err := l.Wait(context.Background(), endpoint); err != nil {
+					t.Error(err)
+					return
+				}
+				_ = l.Unlock(endpoint, nil)
+			}
+		})
+	}
+	done := make(chan struct{})
+	go func() {
+		requests.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(20 * time.Second):
+		t.Error("requests stuck on a bucket the cleanup removed")
+	}
+	cancel()
+	cleanups.Wait()
+}
