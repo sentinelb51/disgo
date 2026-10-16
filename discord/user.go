@@ -128,7 +128,7 @@ func (u User) DefaultAvatarURL(opts ...CDNOpt) string {
 		return ""
 	}
 	index := discriminator % 5
-	if index == 0 { // new username system
+	if discriminator == 0 { // new username system
 		index = int((u.ID >> 22) % 6)
 	}
 	return formatAssetURL(DefaultUserAvatar, opts, index)
