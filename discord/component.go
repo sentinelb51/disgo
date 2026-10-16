@@ -174,12 +174,13 @@ func (u *UnmarshalComponent) UnmarshalJSON(data []byte) error {
 		err       error
 	)
 
-	// The type is peeked rather than probed, and the component decoded in one pass
+	// The type is peeked rather than probed, and the component decoded in one pass. Components that nest others
+	// have their UnmarshalJSON called directly: through unmarshalOnce they are read once more before it runs
 	cType, _ := peek(data, "type", "")
 	switch ComponentType(peekInt(cType)) {
 	case ComponentTypeActionRow:
 		var v ActionRowComponent
-		err = unmarshalOnce(data, &v)
+		err = v.UnmarshalJSON(data)
 		component = v
 
 	case ComponentTypeButton:
@@ -219,7 +220,7 @@ func (u *UnmarshalComponent) UnmarshalJSON(data []byte) error {
 
 	case ComponentTypeSection:
 		var v SectionComponent
-		err = unmarshalOnce(data, &v)
+		err = v.UnmarshalJSON(data)
 		component = v
 
 	case ComponentTypeTextDisplay:
@@ -249,12 +250,12 @@ func (u *UnmarshalComponent) UnmarshalJSON(data []byte) error {
 
 	case ComponentTypeContainer:
 		var v ContainerComponent
-		err = unmarshalOnce(data, &v)
+		err = v.UnmarshalJSON(data)
 		component = v
 
 	case ComponentTypeLabel:
 		var v LabelComponent
-		err = unmarshalOnce(data, &v)
+		err = v.UnmarshalJSON(data)
 		component = v
 
 	case ComponentTypeFileUpload:
@@ -807,7 +808,7 @@ func (c *SectionComponent) UnmarshalJSON(data []byte) error {
 		Components []UnmarshalComponent `json:"components"`
 		Accessory  *UnmarshalComponent  `json:"accessory"`
 	}
-	if err := json.Unmarshal(data, &sectionComponent); err != nil {
+	if err := unmarshalOnce(data, &sectionComponent); err != nil {
 		return err
 	}
 
@@ -1263,7 +1264,7 @@ func (c *ContainerComponent) UnmarshalJSON(data []byte) error {
 		Spoiler     bool                 `json:"spoiler,omitempty"`
 		Components  []UnmarshalComponent `json:"components"`
 	}
-	if err := json.Unmarshal(data, &containerComponent); err != nil {
+	if err := unmarshalOnce(data, &containerComponent); err != nil {
 		return err
 	}
 
@@ -1392,7 +1393,7 @@ func (c *LabelComponent) UnmarshalJSON(data []byte) error {
 		Description string             `json:"description,omitempty"`
 		Component   UnmarshalComponent `json:"component"`
 	}
-	if err := json.Unmarshal(data, &labelComponent); err != nil {
+	if err := unmarshalOnce(data, &labelComponent); err != nil {
 		return err
 	}
 
