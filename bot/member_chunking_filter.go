@@ -27,7 +27,7 @@ func MemberChunkingFilterIncludeGuildIDs(guildIDs ...snowflake.ID) MemberChunkin
 // MemberChunkingFilterExcludeGuildIDs returns a MemberChunkingFilter which excludes the given guildIDs.
 func MemberChunkingFilterExcludeGuildIDs(guildIDs ...snowflake.ID) MemberChunkingFilter {
 	return func(guildID snowflake.ID) bool {
-		return slices.Contains(guildIDs, guildID)
+		return !slices.Contains(guildIDs, guildID)
 	}
 }
 
