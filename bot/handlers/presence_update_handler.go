@@ -116,7 +116,7 @@ func isActivityUpdated(old discord.Activity, new discord.Activity) bool {
 	return old.Name != new.Name ||
 		old.Type != new.Type ||
 		compareStringPtr(old.URL, new.URL) ||
-		old.CreatedAt.Equal(new.CreatedAt) ||
+		!old.CreatedAt.Equal(new.CreatedAt) ||
 		compareActivityTimestampsPtr(old.Timestamps, new.Timestamps) ||
 		compareStringPtr(old.SyncID, new.SyncID) ||
 		old.ApplicationID != new.ApplicationID ||
@@ -131,7 +131,7 @@ func isActivityUpdated(old discord.Activity, new discord.Activity) bool {
 		compareActivitySecretsPtr(old.Secrets, new.Secrets) ||
 		compareBoolPtr(old.Instance, new.Instance) ||
 		old.Flags != new.Flags ||
-		slices.Equal(old.Buttons, new.Buttons)
+		!slices.Equal(old.Buttons, new.Buttons)
 }
 
 func compareActivityTimestampsPtr(old *discord.ActivityTimestamps, new *discord.ActivityTimestamps) bool {
@@ -141,7 +141,7 @@ func compareActivityTimestampsPtr(old *discord.ActivityTimestamps, new *discord.
 	if old == nil || new == nil {
 		return true
 	}
-	return old.Start.Equal(new.Start) && old.End.Equal(new.End)
+	return !old.Start.Equal(new.Start) || !old.End.Equal(new.End)
 }
 
 func compareBoolPtr(old *bool, new *bool) bool {
