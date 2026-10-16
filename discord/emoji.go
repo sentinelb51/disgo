@@ -27,11 +27,17 @@ func (e Emoji) Reaction() string {
 	if e.Name == "" {
 		return ""
 	}
+	if e.ID == 0 { // unicode emoji, as in a MessageReaction
+		return e.Name
+	}
 	return reaction(e.Name, e.ID)
 }
 
 // Mention returns the string used to send the Emoji
 func (e Emoji) Mention() string {
+	if e.ID == 0 { // unicode emoji
+		return e.Name
+	}
 	if e.Animated {
 		return AnimatedEmojiMention(e.ID, e.Name)
 	}
