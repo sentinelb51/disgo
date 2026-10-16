@@ -156,10 +156,10 @@ func (l *rateLimiterImpl) getBucket(endpoint *CompiledEndpoint, create bool) *bu
 
 func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) error {
 	b := l.getBucket(endpoint, true)
-	l.config.Logger.Debug("locking rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 	if err := b.mu.CLock(ctx); err != nil {
 		return err
 	}
+	l.config.Logger.Debug("locked rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 
 	now := time.Now()
 

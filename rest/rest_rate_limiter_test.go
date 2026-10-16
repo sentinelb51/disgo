@@ -172,3 +172,28 @@ func TestRateLimiterExhaustedBucketWaitsForGlobal(t *testing.T) {
 	}
 	_ = l.Unlock(exhausted, nil)
 }
+
+// Run with -race: one request updates its bucket in Unlock while the next one waits for that bucket.
+func TestRateLimiterBucketConcurrentAccess(t *testing.T) {
+	l := NewRateLimiter(WithCleanupInterval(time.Hour))
+	endpoint := GetGatewayBot.Compile(nil)
+
+	var wg sync.WaitGroup
+	for range 2 {
+		wg.Go(func() {
+			for range 100 {
+				if err := l.Wait(context.Background(), endpoint); err != nil {
+					t.Error(err)
+					return
+				}
+				_ = l.Unlock(endpoint, newRateLimitResponse(http.StatusOK, map[string]string{
+					"X-RateLimit-Bucket":      "abcd1234",
+					"X-RateLimit-Limit":       "5",
+					"X-RateLimit-Remaining":   "4",
+					"X-RateLimit-Reset-After": "1",
+				}))
+			}
+		})
+	}
+	wg.Wait()
+}
