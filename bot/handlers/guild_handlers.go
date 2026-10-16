@@ -75,6 +75,7 @@ func gatewayHandlerGuildCreate(client *bot.Client, sequenceNumber int, shardID i
 
 	if wasUnready {
 		client.Caches.SetGuildUnready(event.ID, false)
+		client.Caches.SetGuildUnavailable(event.ID, false)
 		client.EventManager.DispatchEvent(&events.GuildReady{
 			GenericGuild: genericGuildEvent,
 			Guild:        event.CacheGuild,
