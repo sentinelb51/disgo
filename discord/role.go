@@ -3,6 +3,7 @@ package discord
 import (
 	"time"
 
+	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/omit"
 	"github.com/disgoorg/snowflake/v2"
 )
@@ -64,6 +65,32 @@ type RoleTag struct {
 	SubscriptionListingID *snowflake.ID `json:"subscription_listing_id,omitempty"`
 	AvailableForPurchase  bool          `json:"available_for_purchase"`
 	GuildConnections      bool          `json:"guild_connections"`
+}
+
+// UnmarshalJSON decodes PremiumSubscriber, AvailableForPurchase and GuildConnections, which Discord sends as null
+// when true and leaves out when false: decoded as plain bools they were never true
+func (t *RoleTag) UnmarshalJSON(data []byte) error {
+	type roleTag RoleTag
+	var v struct {
+		PremiumSubscriber    json.RawMessage `json:"premium_subscriber"`
+		AvailableForPurchase json.RawMessage `json:"available_for_purchase"`
+		GuildConnections     json.RawMessage `json:"guild_connections"`
+		roleTag
+	}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	*t = RoleTag(v.roleTag)
+	t.PremiumSubscriber = roleTagSet(v.PremiumSubscriber)
+	t.AvailableForPurchase = roleTagSet(v.AvailableForPurchase)
+	t.GuildConnections = roleTagSet(v.GuildConnections)
+	return nil
+}
+
+// roleTagSet reports whether a tag is set: present as null, as Discord sends it, or true, as RoleTag marshals it
+func roleTagSet(value json.RawMessage) bool {
+	return value != nil && string(value) != "false"
 }
 
 type RoleFlags int
