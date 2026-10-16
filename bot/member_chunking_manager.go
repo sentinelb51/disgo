@@ -88,6 +88,11 @@ type chunkingRequest struct {
 	memberFilterFunc func(member discord.Member) bool
 
 	chunks int
+	closed bool
+
+	// cancelled is closed on cancel, to stop HandleChunk waiting to send on memberChan
+	cancelled  chan struct{}
+	cancelOnce sync.Once
 }
 
 type memberChunkingManagerImpl struct {
@@ -114,6 +119,9 @@ func (m *memberChunkingManagerImpl) HandleChunk(payload gateway.EventGuildMember
 
 	request.Lock()
 	defer request.Unlock()
+	if request.closed {
+		return
+	}
 
 	for _, member := range payload.Members {
 		// try to cache member
@@ -121,7 +129,10 @@ func (m *memberChunkingManagerImpl) HandleChunk(payload gateway.EventGuildMember
 		if request.memberFilterFunc != nil && !request.memberFilterFunc(member) {
 			continue
 		}
-		request.memberChan <- member
+		select {
+		case request.memberChan <- member:
+		case <-request.cancelled:
+		}
 	}
 
 	// all chunks sent cleanup
@@ -132,7 +143,12 @@ func (m *memberChunkingManagerImpl) HandleChunk(payload gateway.EventGuildMember
 	request.chunks++
 }
 
+// cleanupRequest closes the request's member channel and forgets the request. The caller must hold the request's lock.
 func cleanupRequest(m *memberChunkingManagerImpl, request *chunkingRequest) {
+	if request.closed {
+		return
+	}
+	request.closed = true
 	close(request.memberChan)
 	m.chunkingRequestsMu.Lock()
 	delete(m.chunkingRequests, request.nonce)
@@ -164,6 +180,7 @@ func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context,
 		nonce:            nonce,
 		memberChan:       memberChan,
 		memberFilterFunc: memberFilterFunc,
+		cancelled:        make(chan struct{}),
 	}
 
 	m.chunkingRequestsMu.Lock()
@@ -180,6 +197,9 @@ func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context,
 	}
 
 	return memberChan, func() {
+		request.cancelOnce.Do(func() { close(request.cancelled) })
+		request.Lock()
+		defer request.Unlock()
 		cleanupRequest(m, request)
 	}, shard.Send(ctx, gateway.OpcodeRequestGuildMembers, command)
 }
