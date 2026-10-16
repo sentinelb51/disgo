@@ -3,8 +3,6 @@ package handlers
 import (
 	"testing"
 
-	"github.com/disgoorg/json/v2"
-
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/discord"
@@ -33,18 +31,15 @@ func TestThreadMembersUpdateCachesMemberInGuild(t *testing.T) {
 }
 
 func TestThreadMemberUpdate(t *testing.T) {
-	client := newTestClient(t, cache.FlagChannels|cache.FlagThreadMembers)
-	var thread discord.GuildThread
-	if err := json.Unmarshal([]byte(`{"id":"100","type":11,"guild_id":"1","parent_id":"20"}`), &thread); err != nil {
-		t.Fatal(err)
-	}
-	client.Caches.AddChannel(thread)
+	// no thread cached: the guild comes from the payload
+	client := newTestClient(t, cache.FlagThreadMembers)
 	client.Caches.AddThreadMember(discord.ThreadMember{ThreadID: 100, UserID: 5, Flags: 1})
 	var got *events.ThreadMemberUpdate
 	client.AddEventListeners(bot.NewListenerFunc(func(e *events.ThreadMemberUpdate) { got = e }))
 
 	GetGatewayHandlers()[gateway.EventTypeThreadMemberUpdate].HandleGatewayEvent(client, 0, 0, gateway.EventThreadMemberUpdate{
 		ThreadMember: discord.ThreadMember{ThreadID: 100, UserID: 5, Flags: 2},
+		GuildID:      1,
 	})
 
 	if member, ok := client.Caches.ThreadMember(100, 5); !ok || member.Flags != 2 {

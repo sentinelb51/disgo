@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"github.com/disgoorg/snowflake/v2"
-
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -77,16 +75,10 @@ func gatewayHandlerThreadMemberUpdate(client *bot.Client, sequenceNumber int, sh
 	oldThreadMember, _ := client.Caches.ThreadMember(event.ThreadID, event.UserID)
 	client.Caches.AddThreadMember(event.ThreadMember)
 
-	// the payload's guild_id isn't decoded, so take it from the cached thread
-	var guildID snowflake.ID
-	if thread, ok := client.Caches.GuildThread(event.ThreadID); ok {
-		guildID = thread.GuildID()
-	}
-
 	client.EventManager.DispatchEvent(&events.ThreadMemberUpdate{
 		GenericThreadMember: &events.GenericThreadMember{
 			GenericEvent:   events.NewGenericEvent(client, sequenceNumber, shardID),
-			GuildID:        guildID,
+			GuildID:        event.GuildID,
 			ThreadID:       event.ThreadID,
 			ThreadMemberID: event.UserID,
 			ThreadMember:   event.ThreadMember,
