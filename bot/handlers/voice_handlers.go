@@ -29,6 +29,7 @@ func gatewayHandlerVoiceChannelStartTimeUpdate(client *bot.Client, sequenceNumbe
 
 func gatewayHandlerVoiceStateUpdate(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventVoiceStateUpdate) {
 	member := event.Member
+	member.GuildID = event.GuildID // populate unset field
 
 	oldVoiceState, oldOk := client.Caches.VoiceState(event.GuildID, event.UserID)
 	if event.ChannelID == nil {
