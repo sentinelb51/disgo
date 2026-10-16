@@ -357,7 +357,7 @@ func (c *ActionRowComponent) UnmarshalJSON(data []byte) error {
 	c.ID = actionRowComponent.ID
 	components := make([]InteractiveComponent, 0, len(actionRowComponent.Components))
 	for _, component := range actionRowComponent.Components {
-		components = append(components, component.Component.(InteractiveComponent))
+		components = append(components, placeComponent[InteractiveComponent](component.Component))
 	}
 	c.Components = components
 	return nil
@@ -816,12 +816,12 @@ func (c *SectionComponent) UnmarshalJSON(data []byte) error {
 
 	components := make([]SectionSubComponent, 0, len(sectionComponent.Components))
 	for _, component := range sectionComponent.Components {
-		components = append(components, component.Component.(SectionSubComponent))
+		components = append(components, placeComponent[SectionSubComponent](component.Component))
 	}
 	c.Components = components
 
 	if sectionComponent.Accessory != nil {
-		c.Accessory = sectionComponent.Accessory.Component.(SectionAccessoryComponent)
+		c.Accessory = placeComponent[SectionAccessoryComponent](sectionComponent.Accessory.Component)
 	} else {
 		c.Accessory = nil
 	}
@@ -1274,7 +1274,7 @@ func (c *ContainerComponent) UnmarshalJSON(data []byte) error {
 
 	components := make([]ContainerSubComponent, 0, len(containerComponent.Components))
 	for _, component := range containerComponent.Components {
-		components = append(components, component.Component.(ContainerSubComponent))
+		components = append(components, placeComponent[ContainerSubComponent](component.Component))
 	}
 	c.Components = components
 	return nil
@@ -1400,7 +1400,7 @@ func (c *LabelComponent) UnmarshalJSON(data []byte) error {
 	c.ID = labelComponent.ID
 	c.Label = labelComponent.Label
 	c.Description = labelComponent.Description
-	c.Component = labelComponent.Component.Component.(LabelSubComponent)
+	c.Component = placeComponent[LabelSubComponent](labelComponent.Component.Component)
 	return nil
 }
 
@@ -1902,6 +1902,17 @@ func (c *UnknownComponent) UnmarshalJSON(data []byte) error {
 	c.ID = unknownComponent.ID
 	c.Data = data
 	return nil
+}
+
+// placeComponent returns the component as the kind of component its place holds. One whose type can't be there
+// is returned as an UnknownComponent, as one of an unknown type is, rather than panicking in the decoder. Its
+// data is the component marshaled again, which can't fail for a component just decoded
+func placeComponent[T Component](component Component) T {
+	if placed, ok := component.(T); ok {
+		return placed
+	}
+	data, _ := component.MarshalJSON()
+	return any(UnknownComponent{ComponentType: component.Type(), ID: component.GetID(), Data: data}).(T)
 }
 
 func (c UnknownComponent) Type() ComponentType {

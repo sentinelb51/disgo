@@ -410,7 +410,7 @@ type MessageCall struct {
 func unmarshalComponents(components []UnmarshalComponent) []LayoutComponent {
 	c := make([]LayoutComponent, len(components))
 	for i := range components {
-		c[i] = components[i].Component.(LayoutComponent)
+		c[i] = placeComponent[LayoutComponent](components[i].Component)
 	}
 	return c
 }
