@@ -20,6 +20,13 @@ func gatewayHandlerHeartbeatAck(client *bot.Client, sequenceNumber int, shardID 
 	})
 }
 
+func gatewayHandlerRateLimited(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventRateLimited) {
+	client.EventManager.DispatchEvent(&events.GatewayRateLimited{
+		GenericEvent:     events.NewGenericEvent(client, sequenceNumber, shardID),
+		EventRateLimited: event,
+	})
+}
+
 func gatewayHandlerReady(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventReady) {
 	client.Caches.SetSelfUser(event.User)
 
