@@ -43,3 +43,14 @@ func TestMemberPermissionsInChannelMemberOverwriteWins(t *testing.T) {
 		t.Errorf("member overwrite allows SEND_MESSAGES, role overwrite denies it: got %s, want it allowed", perms)
 	}
 }
+
+func TestMemberPermissionsEveryoneAdministrator(t *testing.T) {
+	caches := New(WithCaches(FlagGuilds, FlagRoles))
+	caches.AddGuild(discord.CacheGuild{Guild: discord.Guild{ID: 1, OwnerID: 99}})
+	caches.AddRole(discord.Role{ID: 1, GuildID: 1, Permissions: discord.PermissionAdministrator})
+
+	member := discord.Member{GuildID: 1, User: discord.User{ID: 5}}
+	if perms := caches.MemberPermissions(member); perms != discord.PermissionsAll {
+		t.Errorf("@everyone has ADMINISTRATOR: got %s, want all permissions", perms)
+	}
+}

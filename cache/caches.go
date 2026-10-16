@@ -971,9 +971,9 @@ func (c *cachesImpl) MemberPermissions(member discord.Member) discord.Permission
 
 	for _, role := range c.MemberRoles(member) {
 		permissions = permissions.Add(role.Permissions)
-		if permissions.Has(discord.PermissionAdministrator) {
-			return discord.PermissionsAll
-		}
+	}
+	if permissions.Has(discord.PermissionAdministrator) {
+		return discord.PermissionsAll
 	}
 	if member.CommunicationDisabledUntil != nil && member.CommunicationDisabledUntil.After(time.Now()) {
 		permissions &= discord.PermissionViewChannel | discord.PermissionReadMessageHistory
