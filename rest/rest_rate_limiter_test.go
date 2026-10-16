@@ -104,3 +104,34 @@ func TestClientWaitsOnRateLimitWithoutBucket(t *testing.T) {
 		})
 	}
 }
+
+// Run with -race: Unlock records a global rate limit while requests on other buckets read it in Wait.
+func TestRateLimiterGlobalConcurrentAccess(t *testing.T) {
+	l := NewRateLimiter(WithCleanupInterval(time.Hour))
+	global := GetGatewayBot.Compile(nil)
+	other := GetCurrentUser.Compile(nil)
+
+	var wg sync.WaitGroup
+	wg.Go(func() {
+		for range 100 {
+			if err := l.Wait(context.Background(), global); err != nil {
+				t.Error(err)
+				return
+			}
+			_ = l.Unlock(global, newRateLimitResponse(http.StatusTooManyRequests, map[string]string{
+				"Retry-After":        "0",
+				"X-RateLimit-Global": "true",
+			}))
+		}
+	})
+	wg.Go(func() {
+		for range 100 {
+			if err := l.Wait(context.Background(), other); err != nil {
+				t.Error(err)
+				return
+			}
+			_ = l.Unlock(other, nil)
+		}
+	})
+	wg.Wait()
+}

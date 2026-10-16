@@ -57,7 +57,8 @@ type rateLimiterImpl struct {
 	config rateLimiterConfig
 
 	// global Rate Limit
-	global time.Time
+	global   time.Time
+	globalMu sync.Mutex
 
 	// Hash + Major Parameter -> bucket
 	buckets   map[string]*bucket
@@ -113,7 +114,9 @@ func (l *rateLimiterImpl) Reset() {
 	l.bucketsMu.Lock()
 	defer l.bucketsMu.Unlock()
 
+	l.globalMu.Lock()
 	l.global = time.Time{}
+	l.globalMu.Unlock()
 	clear(l.buckets)
 }
 
@@ -164,7 +167,9 @@ func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) 
 	if b.Remaining == 0 && b.Reset.After(now) {
 		until = b.Reset
 	} else {
+		l.globalMu.Lock()
 		until = l.global
+		l.globalMu.Unlock()
 	}
 
 	if until.After(now) {
@@ -228,10 +233,14 @@ func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) 
 		}
 		reset := time.Now().Add(time.Second * time.Duration(retryAfter))
 		if global {
+			l.globalMu.Lock()
 			l.global = reset
+			l.globalMu.Unlock()
 			l.config.Logger.Warn("global rate limit exceeded", slog.Int("retry_after", retryAfter))
 		} else if cloudflare {
+			l.globalMu.Lock()
 			l.global = reset
+			l.globalMu.Unlock()
 			l.config.Logger.Warn("cloudflare rate limit exceeded", slog.Int("retry_after", retryAfter))
 		} else {
 			b.Remaining = 0
