@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 type chunkingGateway struct {
 	gateway.Gateway
 	nonce string
+	err   error
 }
 
 func (g *chunkingGateway) Intents() gateway.Intents {
@@ -22,7 +24,7 @@ func (g *chunkingGateway) Intents() gateway.Intents {
 
 func (g *chunkingGateway) Send(_ context.Context, _ gateway.Opcode, data gateway.MessageData) error {
 	g.nonce = data.(gateway.MessageDataRequestGuildMembers).Nonce
-	return nil
+	return g.err
 }
 
 func newChunkingManager() (*memberChunkingManagerImpl, *chunkingGateway) {
@@ -82,4 +84,16 @@ func TestMemberChunkingCancelDuringChunk(t *testing.T) {
 
 	// the request's last chunk arrives after it was cancelled
 	m.HandleChunk(chunk(g.nonce, 2))
+}
+
+func TestMemberChunkingSendError(t *testing.T) {
+	m, g := newChunkingManager()
+	g.err = errors.New("not sent")
+
+	if _, err := m.RequestMembers(context.Background(), 1, 2); !errors.Is(err, g.err) {
+		t.Fatalf("err = %v, want %v", err, g.err)
+	}
+	if len(m.chunkingRequests) != 0 {
+		t.Error("request that was never sent is still registered")
+	}
 }

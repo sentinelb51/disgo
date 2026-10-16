@@ -196,12 +196,17 @@ func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context,
 		Nonce:     nonce,
 	}
 
-	return memberChan, func() {
+	cancel := func() {
 		request.cancelOnce.Do(func() { close(request.cancelled) })
 		request.Lock()
 		defer request.Unlock()
 		cleanupRequest(m, request)
-	}, shard.Send(ctx, gateway.OpcodeRequestGuildMembers, command)
+	}
+	if err = shard.Send(ctx, gateway.OpcodeRequestGuildMembers, command); err != nil {
+		// no chunks will come for a request that was never sent
+		cancel()
+	}
+	return memberChan, cancel, err
 }
 
 func (m *memberChunkingManagerImpl) requestGuildMembers(ctx context.Context, guildID snowflake.ID, query *string, limit *int, userIDs []snowflake.ID, memberFilterFunc func(member discord.Member) bool) ([]discord.Member, error) {
