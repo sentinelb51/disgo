@@ -197,3 +197,45 @@ func TestRateLimiterBucketConcurrentAccess(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+func TestClientCloseWaitsForPendingRequest(t *testing.T) {
+	received := make(chan struct{})
+	release := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		close(received)
+		<-release
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer srv.Close()
+
+	client := NewClient("token", WithURL(srv.URL), WithHTTPClient(srv.Client()), WithRateLimiterConfigOpts(WithCleanupInterval(time.Hour)))
+	done := make(chan error, 1)
+	go func() {
+		done <- client.Do(GetGatewayBot.Compile(nil), nil, nil)
+	}()
+	<-received
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	closed := make(chan struct{})
+	go func() {
+		client.Close(ctx)
+		close(closed)
+	}()
+	time.Sleep(100 * time.Millisecond)
+	close(release)
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("pending request did not finish while Close waited for it")
+	}
+	select {
+	case <-closed:
+	case <-ctx.Done():
+		t.Fatal("Close did not return once the pending request finished")
+	}
+}

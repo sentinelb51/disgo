@@ -107,6 +107,8 @@ func (l *rateLimiterImpl) Close(ctx context.Context) {
 			wg.Done()
 		}()
 	}
+	// pending requests need bucketsMu in Unlock to release their bucket
+	l.bucketsMu.Unlock()
 	wg.Wait()
 }
 
