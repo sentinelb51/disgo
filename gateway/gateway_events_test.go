@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/disgoorg/json/v2"
+
+	"github.com/disgoorg/disgo/discord"
 )
 
 // THREAD_MEMBER_UPDATE is a thread member with the guild_id of its thread
@@ -31,5 +33,28 @@ func TestEventThreadMemberUpdateGuildID(t *testing.T) {
 	}
 	if !bytes.Contains(data, []byte(`"id":"1300000000000000001"`)) || !bytes.Contains(data, []byte(`"user_id":"1300000000000000002"`)) {
 		t.Fatalf("thread member lost: %s", data)
+	}
+}
+
+// The role events fill guild_id from their role when marshalled, as values too
+func TestEventGuildRoleMarshalJSON(t *testing.T) {
+	role := discord.Role{ID: 1300000000000000001, GuildID: 1300000000000000002}
+	for name, event := range map[string]any{
+		"create": EventGuildRoleCreate{Role: role},
+		"update": EventGuildRoleUpdate{Role: role},
+	} {
+		data, err := json.Marshal(event)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var v struct {
+			GuildID string `json:"guild_id"`
+		}
+		if err = json.Unmarshal(data, &v); err != nil {
+			t.Fatal(err)
+		}
+		if v.GuildID != "1300000000000000002" {
+			t.Errorf("%s: guild_id %q, not taken from the role: %s", name, v.GuildID, data)
+		}
 	}
 }

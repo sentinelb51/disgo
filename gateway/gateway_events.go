@@ -525,10 +525,10 @@ func (e *EventGuildRoleCreate) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e *EventGuildRoleCreate) MarshalJSON() ([]byte, error) {
+func (e EventGuildRoleCreate) MarshalJSON() ([]byte, error) {
 	type eventGuildRoleCreate EventGuildRoleCreate
 	e.GuildID = e.Role.GuildID
-	return json.Marshal(eventGuildRoleCreate(*e))
+	return json.Marshal(eventGuildRoleCreate(e))
 }
 
 func (EventGuildRoleCreate) messageData() {}
@@ -558,10 +558,10 @@ func (e *EventGuildRoleUpdate) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e *EventGuildRoleUpdate) MarshalJSON() ([]byte, error) {
+func (e EventGuildRoleUpdate) MarshalJSON() ([]byte, error) {
 	type eventGuildRoleUpdate EventGuildRoleUpdate
 	e.GuildID = e.Role.GuildID
-	return json.Marshal(eventGuildRoleUpdate(*e))
+	return json.Marshal(eventGuildRoleUpdate(e))
 }
 
 func (EventGuildRoleUpdate) messageData() {}
