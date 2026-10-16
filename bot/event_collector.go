@@ -27,20 +27,39 @@ func WaitForEvent[E Event](client *Client, ctx context.Context, filterFunc func(
 // The close function needs to be called to stop the event collector.
 func NewEventCollector[E Event](client *Client, filterFunc func(e E) bool) (<-chan E, func()) {
 	ch := make(chan E)
-	var once sync.Once
+	done := make(chan struct{})
+	var (
+		once sync.Once
+		mu   sync.RWMutex
+	)
 
 	handler := NewListenerFunc(func(e E) {
 		if !filterFunc(e) {
 			return
 		}
-		ch <- e
+		// ch is closed under mu's write lock, after done
+		mu.RLock()
+		defer mu.RUnlock()
+		select {
+		case <-done:
+			return
+		default:
+		}
+		select {
+		case ch <- e:
+		case <-done:
+		}
 	})
 	client.EventManager.AddEventListeners(handler)
 
 	return ch, func() {
 		once.Do(func() {
+			// release a listener blocked on ch first: a sync dispatch holds the lock RemoveEventListeners waits for
+			close(done)
 			client.EventManager.RemoveEventListeners(handler)
+			mu.Lock()
 			close(ch)
+			mu.Unlock()
 		})
 	}
 }
