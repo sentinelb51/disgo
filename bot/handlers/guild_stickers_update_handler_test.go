@@ -40,3 +40,19 @@ func TestGuildStickersUpdateUpdatesCache(t *testing.T) {
 		t.Error("created sticker not cached")
 	}
 }
+
+func TestGuildStickersUpdateAvailability(t *testing.T) {
+	client := newTestClient(t, cache.FlagStickers)
+	guildID := snowflake.ID(1)
+	available, unavailable := true, false
+	client.Caches.AddSticker(discord.Sticker{ID: 10, GuildID: &guildID, Name: "s", Available: &available})
+
+	gatewayHandlerGuildStickersUpdate(client, 0, 0, gateway.EventGuildStickersUpdate{
+		GuildID:  guildID,
+		Stickers: []discord.Sticker{{ID: 10, GuildID: &guildID, Name: "s", Available: &unavailable}},
+	})
+
+	if sticker, ok := client.Caches.Sticker(guildID, 10); !ok || sticker.Available == nil || *sticker.Available {
+		t.Errorf("cached sticker = %+v, %t, want it unavailable", sticker, ok)
+	}
+}

@@ -90,5 +90,8 @@ func isStickerUpdated(old discord.Sticker, new discord.Sticker) bool {
 	if old.Tags != new.Tags {
 		return true
 	}
+	if compareBoolPtr(old.Available, new.Available) {
+		return true
+	}
 	return false
 }

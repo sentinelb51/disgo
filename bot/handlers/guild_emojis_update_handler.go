@@ -89,5 +89,8 @@ func isEmojiUpdated(old discord.Emoji, new discord.Emoji) bool {
 	if !slices.Equal(old.Roles, new.Roles) {
 		return true
 	}
+	if old.Available != new.Available {
+		return true
+	}
 	return false
 }
