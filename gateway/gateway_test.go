@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
+	"github.com/disgoorg/disgo/discord"
 )
 
 // testFrame is a frame as the fake gateway reads and writes it
@@ -229,5 +231,107 @@ func TestGatewayHeartbeatACKBeforeSendReturns(t *testing.T) {
 	case err := <-closed:
 		t.Fatalf("gateway closed a healthy connection: %v", err)
 	case <-time.After(500 * time.Millisecond):
+	}
+}
+
+// presenceServer reports the presence of every IDENTIFY, and invalidates the first session on its first PRESENCE_UPDATE,
+// so the Gateway identifies again
+func presenceServer(identified chan<- string) func(n int, c *testConn) {
+	return func(n int, c *testConn) {
+		if err := c.write(OpcodeHello, 0, "", `{"heartbeat_interval":60000}`); err != nil {
+			return
+		}
+		invalidated := false
+		for {
+			frame, err := c.read()
+			if err != nil {
+				return
+			}
+			switch frame.Op {
+			case OpcodeIdentify:
+				var d struct {
+					Presence json.RawMessage `json:"presence"`
+				}
+				_ = json.Unmarshal(frame.D, &d)
+				identified <- string(d.Presence)
+				err = c.write(OpcodeDispatch, 1, EventTypeReady, `{"v":10,"session_id":"session"}`)
+			case OpcodePresenceUpdate:
+				if n == 0 && !invalidated {
+					invalidated = true
+					err = c.write(OpcodeInvalidSession, 0, "", "false")
+				}
+			}
+			if err != nil {
+				return
+			}
+		}
+	}
+}
+
+func nextIdentify(t *testing.T, identified <-chan string) string {
+	t.Helper()
+
+	select {
+	case presence := <-identified:
+		return presence
+	case <-time.After(10 * time.Second):
+		t.Fatal("no identify")
+		return ""
+	}
+}
+
+// A presence sent is sent again when the Gateway identifies again
+func TestGatewayPresenceKeptForIdentify(t *testing.T) {
+	t.Parallel()
+
+	identified := make(chan string, 2)
+	g := newTestGateway(t, presenceServer(identified))
+	openTestGateway(t, g)
+	nextIdentify(t, identified)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := g.Send(ctx, OpcodePresenceUpdate, MessageDataPresenceUpdate{Status: discord.OnlineStatusDND}); err != nil {
+		t.Fatal(err)
+	}
+
+	if presence := nextIdentify(t, identified); !strings.Contains(presence, `"status":"dnd"`) {
+		t.Fatalf("identify presence: %s, want the dnd status sent", presence)
+	}
+}
+
+// Changing the presence, as bot.Client.SetPresence does, while the Gateway identifies
+func TestGatewayPresenceWhileIdentifying(t *testing.T) {
+	t.Parallel()
+
+	identified := make(chan string, 2)
+	g := newTestGateway(t, presenceServer(identified), WithPresenceOpts(WithOnlineStatus(discord.OnlineStatusOnline)))
+	openTestGateway(t, g)
+	nextIdentify(t, identified)
+
+	done := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		for {
+			select {
+			case <-done:
+				return
+			default:
+			}
+			presence := g.Presence()
+			WithOnlineStatus(discord.OnlineStatusIdle)(presence)
+			_ = g.Send(ctx, OpcodePresenceUpdate, *presence)
+			time.Sleep(time.Millisecond)
+		}
+	}()
+	defer wg.Wait()
+	defer close(done)
+
+	if presence := nextIdentify(t, identified); !strings.Contains(presence, `"status":"idle"`) {
+		t.Fatalf("identify presence: %s, want the idle status sent", presence)
 	}
 }

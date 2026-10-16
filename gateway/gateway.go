@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net"
 	"net/url"
+	"slices"
 	"strconv"
 	"sync"
 	"syscall"
@@ -147,7 +148,8 @@ type Gateway interface {
 	// This is calculated by the time it takes to send a heartbeat and receive a heartbeat ack by discord.
 	Latency() time.Duration
 
-	// Presence returns the current presence of the Gateway.
+	// Presence returns a copy of the current presence of the Gateway: the one set with WithPresenceOpts, or the last
+	// one sent with OpcodePresenceUpdate. It is sent again when the Gateway identifies.
 	Presence() *MessageDataPresenceUpdate
 }
 
@@ -177,7 +179,8 @@ type gatewayImpl struct {
 	status          Status
 	statusMu        sync.Mutex
 	// sessionMu guards config.SessionID, config.ResumeURL and config.LastSequenceReceived
-	sessionMu sync.Mutex
+	sessionMu  sync.Mutex
+	presenceMu sync.Mutex // guards config.Presence
 
 	heartbeatInterval     time.Duration
 	heartbeatMu           sync.Mutex // guards lastHeartbeatSent and lastHeartbeatReceived
@@ -374,7 +377,26 @@ func (g *gatewayImpl) Send(ctx context.Context, op Opcode, d MessageData) error 
 		return discord.ErrShardNotReady
 	}
 
-	return g.sendInternal(ctx, NormalCommandType, op, d)
+	if err := g.sendInternal(ctx, NormalCommandType, op, d); err != nil {
+		return err
+	}
+
+	// keep the presence sent, so the next identify sends it again
+	if op == OpcodePresenceUpdate {
+		var presence MessageDataPresenceUpdate
+		switch p := d.(type) {
+		case MessageDataPresenceUpdate:
+			presence = p
+		case *MessageDataPresenceUpdate:
+			presence = *p
+		default:
+			return nil
+		}
+		g.presenceMu.Lock()
+		g.config.Presence = &presence
+		g.presenceMu.Unlock()
+	}
+	return nil
 }
 
 func (g *gatewayImpl) sendInternal(ctx context.Context, commandType RateLimiterCommandType, op Opcode, d MessageData) error {
@@ -404,7 +426,15 @@ func (g *gatewayImpl) Latency() time.Duration {
 }
 
 func (g *gatewayImpl) Presence() *MessageDataPresenceUpdate {
-	return g.config.Presence
+	g.presenceMu.Lock()
+	defer g.presenceMu.Unlock()
+	if g.config.Presence == nil {
+		return nil
+	}
+	// a copy: the stored one is read by identify on another goroutine, and changed only by Send
+	presence := *g.config.Presence
+	presence.Activities = slices.Clone(presence.Activities)
+	return &presence
 }
 
 func (g *gatewayImpl) doReconnect(ctx context.Context) error {
@@ -534,6 +564,10 @@ func (g *gatewayImpl) identify() error {
 	g.statusMu.Unlock()
 	g.config.Logger.Debug("sending Identify command")
 
+	g.presenceMu.Lock()
+	presence := g.config.Presence
+	g.presenceMu.Unlock()
+
 	identify := MessageDataIdentify{
 		Token: g.token,
 		Properties: IdentifyCommandDataProperties{
@@ -544,7 +578,7 @@ func (g *gatewayImpl) identify() error {
 		Compress:       g.config.Compression.IsPayloadCompression(),
 		LargeThreshold: g.config.LargeThreshold,
 		Intents:        g.config.Intents,
-		Presence:       g.config.Presence,
+		Presence:       presence,
 		Shard:          &[2]int{g.ShardID(), g.ShardCount()},
 		Capabilities:   g.config.Capabilities,
 	}
