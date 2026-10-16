@@ -184,3 +184,26 @@ func TestGuildDeleteRemovesGuildEntities(t *testing.T) {
 		t.Errorf("RolesLen(other guild) = %d, want 1", n)
 	}
 }
+
+// Leaving a guild drops it from the unready and unavailable sets, so GuildsReady still fires when it was the last
+// unready guild.
+func TestGuildDeleteLeftForgetsState(t *testing.T) {
+	client := newTestClient(t, cache.FlagGuilds)
+	var guildsReady int
+	client.AddEventListeners(bot.NewListenerFunc(func(*events.GuildsReady) { guildsReady++ }))
+
+	gatewayHandlerReady(client, 0, 0, gateway.EventReady{Shard: [2]int{0, 1}, Guilds: []discord.UnavailableGuild{{ID: 1}, {ID: 2}, {ID: 3}}})
+	gatewayHandlerGuildCreate(client, 0, 0, guildCreate(t, 1))
+	gatewayHandlerGuildDelete(client, 0, 0, gateway.EventGuildDelete{UnavailableGuild: discord.UnavailableGuild{ID: 3, Unavailable: true}})
+	gatewayHandlerGuildDelete(client, 0, 0, gateway.EventGuildDelete{UnavailableGuild: discord.UnavailableGuild{ID: 2}})
+	gatewayHandlerGuildDelete(client, 0, 0, gateway.EventGuildDelete{UnavailableGuild: discord.UnavailableGuild{ID: 3}})
+
+	for _, guildID := range []snowflake.ID{2, 3} {
+		if client.Caches.IsGuildUnready(guildID) || client.Caches.IsGuildUnavailable(guildID) {
+			t.Errorf("guild %d left but still unready or unavailable", guildID)
+		}
+	}
+	if guildsReady != 1 {
+		t.Errorf("GuildsReady dispatched %d times, want 1", guildsReady)
+	}
+}

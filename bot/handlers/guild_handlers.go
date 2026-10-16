@@ -137,8 +137,11 @@ func gatewayHandlerGuildUpdate(client *bot.Client, sequenceNumber int, shardID i
 }
 
 func gatewayHandlerGuildDelete(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventGuildDelete) {
-	if event.Unavailable {
-		client.Caches.SetGuildUnavailable(event.ID, true)
+	// without unavailable the bot left the guild: it is no longer unavailable or awaited
+	wasUnready := !event.Unavailable && client.Caches.IsGuildUnready(event.ID)
+	client.Caches.SetGuildUnavailable(event.ID, event.Unavailable)
+	if wasUnready {
+		client.Caches.SetGuildUnready(event.ID, false)
 	}
 
 	guild, _ := client.Caches.RemoveGuild(event.ID)
@@ -159,6 +162,11 @@ func gatewayHandlerGuildDelete(client *bot.Client, sequenceNumber int, shardID i
 			GenericGuild: genericGuildEvent,
 			Guild:        guild,
 		})
+		if wasUnready && client.Caches.UnreadyGuildsLen() == 0 {
+			client.EventManager.DispatchEvent(&events.GuildsReady{
+				GenericEvent: events.NewGenericEvent(client, sequenceNumber, shardID),
+			})
+		}
 	}
 }
 
