@@ -463,3 +463,47 @@ func TestGatewaySkipsUndecodableData(t *testing.T) {
 		})
 	}
 }
+
+// Close stops a reconnect that is waiting to dial
+func TestGatewayCloseStopsReconnect(t *testing.T) {
+	t.Parallel()
+
+	dropped := make(chan struct{})
+	reconnected := make(chan struct{}, 1)
+	g := newTestGateway(t, func(n int, c *testConn) {
+		if n > 0 {
+			reconnected <- struct{}{}
+			c.serve(time.Minute, nil)
+			return
+		}
+		// drop the connection once READY is sent, as a network failure would
+		c.serve(time.Minute, func() {
+			_ = c.conn.UnderlyingConn().Close()
+			close(dropped)
+		})
+	})
+	openTestGateway(t, g)
+
+	<-dropped
+	deadline := time.Now().Add(5 * time.Second)
+	for g.Status() == StatusReady {
+		if time.Now().After(deadline) {
+			t.Fatal("the gateway did not see the connection drop")
+		}
+		time.Sleep(time.Millisecond)
+	}
+
+	// the gateway now waits a second before it reconnects
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	g.Close(ctx)
+
+	select {
+	case <-reconnected:
+		t.Fatal("the gateway reconnected after Close")
+	case <-time.After(2500 * time.Millisecond):
+	}
+	if status := g.Status(); status != StatusDisconnected {
+		t.Fatalf("status: %s, want Disconnected", status)
+	}
+}
