@@ -273,6 +273,9 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 
 	t := newTransport(g.config.Compression, conn, g.config.Logger)
 	g.conn = t
+	// the heartbeat lives as long as this connection: CloseWithCode cancels it together with closing the connection
+	heartbeatCtx, heartbeatCancel := context.WithCancel(context.Background())
+	g.heartbeatCancel = heartbeatCancel
 	g.connMu.Unlock()
 
 	// reset rate limiter when connecting
@@ -284,7 +287,7 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 
 	var readyOnce sync.Once
 	readyChan := make(chan error)
-	go g.listen(t, func(err error) { // nolint:gosec
+	go g.listen(heartbeatCtx, t, func(err error) { // nolint:gosec
 		readyOnce.Do(func() {
 			readyChan <- err
 			close(readyChan)
@@ -314,14 +317,12 @@ func (g *gatewayImpl) Close(ctx context.Context) {
 }
 
 func (g *gatewayImpl) CloseWithCode(ctx context.Context, code int, message string) {
-	if g.heartbeatCancel != nil {
-		g.config.Logger.DebugContext(ctx, "closing heartbeat goroutine")
-		g.heartbeatCancel()
-	}
-
 	g.connMu.Lock()
 	defer g.connMu.Unlock()
 	if g.conn != nil {
+		g.config.Logger.DebugContext(ctx, "closing heartbeat goroutine")
+		g.heartbeatCancel()
+
 		g.config.RateLimiter.Close(ctx)
 		g.config.Logger.DebugContext(ctx, "closing gateway connection", slog.Int("code", code), slog.String("message", message))
 		if err := g.conn.WriteClose(code, message); err != nil && !errors.Is(err, websocket.ErrCloseSent) {
@@ -444,11 +445,8 @@ func (g *gatewayImpl) reconnect() {
 	}
 }
 
-func (g *gatewayImpl) heartbeat() {
+func (g *gatewayImpl) heartbeat(ctx context.Context) {
 	defer g.config.Logger.Debug("exiting heartbeat goroutine")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	g.heartbeatCancel = cancel
 
 	g.lastHeartbeatReceived = time.Now()
 
@@ -551,7 +549,7 @@ func (g *gatewayImpl) resume() error {
 	return nil
 }
 
-func (g *gatewayImpl) listen(conn transport, ready func(error)) {
+func (g *gatewayImpl) listen(heartbeatCtx context.Context, conn transport, ready func(error)) {
 	defer g.config.Logger.Debug("exiting listen goroutine")
 
 	// Ensure that we never leave this function without calling ready
@@ -625,7 +623,7 @@ func (g *gatewayImpl) listen(conn transport, ready func(error)) {
 		switch message.Op {
 		case OpcodeHello:
 			g.heartbeatInterval = time.Duration(message.D.(MessageDataHello).HeartbeatInterval) * time.Millisecond
-			go g.heartbeat()
+			go g.heartbeat(heartbeatCtx)
 
 			if g.config.LastSequenceReceived == nil || g.config.SessionID == nil {
 				err = g.identify()
