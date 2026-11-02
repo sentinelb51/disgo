@@ -10,7 +10,7 @@ import (
 	"github.com/disgoorg/disgo/discord"
 )
 
-func guildChannel(t *testing.T, raw string) discord.GuildChannel {
+func guildChannel(t testing.TB, raw string) discord.GuildChannel {
 	t.Helper()
 	var v discord.UnmarshalChannel
 	if err := json.Unmarshal([]byte(raw), &v); err != nil {

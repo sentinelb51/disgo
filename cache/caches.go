@@ -158,12 +158,19 @@ type ChannelCache interface {
 
 func NewChannelCache(cache Cache[discord.GuildChannel]) ChannelCache {
 	return &channelCacheImpl{
-		cache: cache,
+		cache:   cache,
+		byGuild: make(map[snowflake.ID]map[snowflake.ID]struct{}),
 	}
 }
 
+// channelCacheImpl indexes the cached channels by guild, so a guild's channels cost what it holds rather than a pass
+// over every guild's. The index follows this type's methods alone: a channel put in the underlying cache directly
+// is missing from it until added here.
 type channelCacheImpl struct {
 	cache Cache[discord.GuildChannel]
+
+	indexMu sync.RWMutex
+	byGuild map[snowflake.ID]map[snowflake.ID]struct{}
 }
 
 func (c *channelCacheImpl) ChannelCache() Cache[discord.GuildChannel] {
@@ -178,13 +185,20 @@ func (c *channelCacheImpl) Channels() iter.Seq[discord.GuildChannel] {
 	return c.cache.All()
 }
 
+// ChannelsForGuild yields holding no lock, so the loop may change the cache.
 func (c *channelCacheImpl) ChannelsForGuild(guildID snowflake.ID) iter.Seq[discord.GuildChannel] {
 	return func(yield func(discord.GuildChannel) bool) {
-		for channel := range c.Channels() {
-			if channel.GuildID() == guildID {
-				if !yield(channel) {
-					return
-				}
+		c.indexMu.RLock()
+		indexed := c.byGuild[guildID]
+		ids := make([]snowflake.ID, 0, len(indexed))
+		for id := range indexed {
+			ids = append(ids, id)
+		}
+		c.indexMu.RUnlock()
+
+		for _, id := range ids {
+			if channel, ok := c.cache.Get(id); ok && !yield(channel) {
+				return
 			}
 		}
 	}
@@ -196,16 +210,68 @@ func (c *channelCacheImpl) ChannelsLen() int {
 
 func (c *channelCacheImpl) AddChannel(channel discord.GuildChannel) {
 	c.cache.Put(channel.ID(), channel)
+
+	// The policy may have kept it out, dropping any version cached before
+	if _, ok := c.cache.Get(channel.ID()); ok {
+		c.index(channel.GuildID(), channel.ID())
+	} else {
+		c.unindex(channel.GuildID(), channel.ID())
+	}
 }
 
 func (c *channelCacheImpl) RemoveChannel(channelID snowflake.ID) (discord.GuildChannel, bool) {
-	return c.cache.Remove(channelID)
+	channel, ok := c.cache.Remove(channelID)
+	if ok {
+		c.unindex(channel.GuildID(), channelID)
+	}
+	return channel, ok
 }
 
 func (c *channelCacheImpl) RemoveChannelsByGuildID(guildID snowflake.ID) {
-	c.cache.RemoveIf(func(channel discord.GuildChannel) bool {
-		return channel.GuildID() == guildID
-	})
+	c.indexMu.Lock()
+	indexed := c.byGuild[guildID]
+	delete(c.byGuild, guildID)
+	c.indexMu.Unlock()
+
+	for id := range indexed {
+		c.cache.Remove(id)
+	}
+}
+
+// index files a channel under its guild. A channel never changes guild, so only its first add takes the write lock.
+func (c *channelCacheImpl) index(guildID snowflake.ID, channelID snowflake.ID) {
+	c.indexMu.RLock()
+	_, indexed := c.byGuild[guildID][channelID]
+	c.indexMu.RUnlock()
+	if indexed {
+		return
+	}
+
+	c.indexMu.Lock()
+	defer c.indexMu.Unlock()
+	ids, ok := c.byGuild[guildID]
+	if !ok {
+		ids = make(map[snowflake.ID]struct{})
+		c.byGuild[guildID] = ids
+	}
+	ids[channelID] = struct{}{}
+}
+
+func (c *channelCacheImpl) unindex(guildID snowflake.ID, channelID snowflake.ID) {
+	c.indexMu.RLock()
+	_, indexed := c.byGuild[guildID][channelID]
+	c.indexMu.RUnlock()
+	if !indexed {
+		return
+	}
+
+	c.indexMu.Lock()
+	defer c.indexMu.Unlock()
+	ids := c.byGuild[guildID]
+	delete(ids, channelID)
+	if len(ids) == 0 {
+		delete(c.byGuild, guildID)
+	}
 }
 
 type StageInstanceCache interface {
