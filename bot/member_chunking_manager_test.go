@@ -113,6 +113,30 @@ func chunk(nonce string, count int, members ...discord.Member) gateway.EventGuil
 	return gateway.EventGuildMembersChunk{GuildID: 1, Members: members, ChunkCount: count, Nonce: nonce}
 }
 
+// Members by ID or by a username's start need no members intent; every member does. A bot without the intent was
+// refused members by ID, which Discord sends without it
+func TestMemberChunkingIntent(t *testing.T) {
+	m, g := newChunkingManager()
+	g.intents = gateway.IntentGuilds
+
+	members, cancel, err := m.RequestMembersChan(1, 2)
+	if err != nil {
+		t.Fatalf("by ID: %v", err)
+	}
+	cancel()
+	for range members {
+	}
+
+	if _, cancel, err = m.RequestMembersWithQueryChan(1, "jo", 5); err != nil {
+		t.Fatalf("by a query: %v", err)
+	}
+	cancel()
+
+	if _, err = m.RequestAllMembers(context.Background(), 1); !errors.Is(err, discord.ErrNoGuildMembersIntent) {
+		t.Fatalf("every member: %v", err)
+	}
+}
+
 func TestMemberChunkingCancelAfterLastChunk(t *testing.T) {
 	m, g := newChunkingManager()
 

@@ -63,14 +63,13 @@ type MemberChunkingManager interface {
 
 	// RequestMembers requests members from the given guildID and userIDs, at most 100 of them.
 	// It fails with ErrMemberRequestRateLimited or ErrMemberRequestSessionEnded when Discord will send none.
-	// Notice: This action requires the gateway.IntentGuildMembers.
 	RequestMembers(ctx context.Context, guildID snowflake.ID, userIDs ...snowflake.ID) ([]discord.Member, error)
 	// RequestAllMembers requests all members from the given guildID.
 	// Notice: This action requires the gateway.IntentGuildMembers.
 	RequestAllMembers(ctx context.Context, guildID snowflake.ID) ([]discord.Member, error)
 	// RequestMembersWithQuery requests members from the given guildID and query.
 	// query : string the username starts with
-	// Notice: This action requires the gateway.IntentGuildMembers.
+	// Notice: An empty query, every member, requires the gateway.IntentGuildMembers.
 	RequestMembersWithQuery(ctx context.Context, guildID snowflake.ID, query string, limit int) ([]discord.Member, error)
 	// RequestMembersWithFilter requests members from the given guildID and userIDs. memberFilterFunc is used to filter all returned members.
 	// Notice: This action requires the gateway.IntentGuildMembers.
@@ -79,7 +78,6 @@ type MemberChunkingManager interface {
 	// RequestMembersChan requests members from the given guildID and userIDs.
 	// Returns a channel which will receive the members.
 	// Returns a function which can be used to cancel the request and close the channel.
-	// Notice: This action requires the gateway.IntentGuildMembers.
 	RequestMembersChan(guildID snowflake.ID, userIDs ...snowflake.ID) (<-chan discord.Member, func(), error)
 	// RequestAllMembersChan requests all members from the given guildID.
 	// Returns a channel which will receive the members.
@@ -89,7 +87,7 @@ type MemberChunkingManager interface {
 	// RequestMembersWithQueryChan requests members from the given guildID and query.
 	// Returns a channel which will receive the members.
 	// Returns a function which can be used to cancel the request and close the channel.
-	// Notice: This action requires the gateway.IntentGuildMembers.
+	// Notice: An empty query, every member, requires the gateway.IntentGuildMembers.
 	RequestMembersWithQueryChan(guildID snowflake.ID, query string, limit int) (<-chan discord.Member, func(), error)
 	// RequestMembersWithFilterChan requests members from the given guildID and userIDs. memberFilterFunc is used to filter all returned members.
 	// Returns a channel which will receive the members.
@@ -236,7 +234,9 @@ func (m *memberChunkingManagerImpl) startRequest(ctx context.Context, guildID sn
 		return nil, nil, nil, err
 	}
 
-	if shard.Intents().Missing(gateway.IntentGuildMembers) {
+	// Only every member, an empty query, takes the intent: Discord sends members by ID or by a username's start
+	// without it
+	if query != nil && *query == "" && shard.Intents().Missing(gateway.IntentGuildMembers) {
 		return nil, nil, nil, discord.ErrNoGuildMembersIntent
 	}
 
