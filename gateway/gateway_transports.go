@@ -178,10 +178,14 @@ func (r *pipeBuffer) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// Write appends the contents of p to the buffer, growing the buffer as
-// needed. If the buffer becomes too large, Write will panic with [ErrTooLarge].
-func (r *pipeBuffer) Write(p []byte) {
-	_, _ = r.buffer.Write(p)
+// fill appends what r reads until EOF, straight into the buffer's storage, and reports whether it ended in
+// suffix. Not named ReadFrom, so the inflaters see nothing of bytes.Buffer in it
+func (r *pipeBuffer) fill(from io.Reader, suffix []byte) (bool, error) {
+	n, err := r.buffer.ReadFrom(from)
+	if err != nil {
+		return false, err
+	}
+	return n >= int64(len(suffix)) && bytes.HasSuffix(r.buffer.Bytes(), suffix), nil
 }
 
 // Reset resets the buffer to be empty, but it retains the underlying
@@ -211,7 +215,7 @@ func newZstdStreamTransport(conn *websocket.Conn, logger *slog.Logger, keepRaw b
 }
 
 func (t *zstdStreamTransport) ReceiveMessage() (*Message, error) {
-	mt, data, err := t.conn.ReadMessage()
+	mt, r, err := t.conn.NextReader()
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +227,11 @@ func (t *zstdStreamTransport) ReceiveMessage() (*Message, error) {
 		return nil, fmt.Errorf("expected binary message, received %d", mt)
 	}
 
-	t.buffer.Write(data)
+	// Read straight into the buffer: ReadMessage read each into a slice of its own first
+	if _, err = t.buffer.fill(r, nil); err != nil {
+		t.buffer.Reset()
+		return nil, err
+	}
 
 	if t.inflator == nil {
 		t.inflator, err = zstd.NewReader(t.buffer, zstd.WithDecoderConcurrency(1))
@@ -264,18 +272,11 @@ func newZlibStreamTransport(conn *websocket.Conn, logger *slog.Logger, keepRaw b
 	}
 }
 
-func isFrameEnd(data []byte) bool {
-	if len(data) < 4 {
-		return false
-	}
-
-	return bytes.Equal(data[len(data)-4:], syncFlush)
-}
-
 func (t *zlibStreamTransport) ReceiveMessage() (*Message, error) {
 	for {
-		mt, data, err := t.conn.ReadMessage()
+		mt, r, err := t.conn.NextReader()
 		if err != nil {
+			t.buffer.Reset()
 			return nil, err
 		}
 		if t.closed.Load() {
@@ -285,9 +286,13 @@ func (t *zlibStreamTransport) ReceiveMessage() (*Message, error) {
 			return nil, fmt.Errorf("expected binary message, received %d", mt)
 		}
 
-		t.buffer.Write(data)
-
-		if isFrameEnd(data) {
+		// Read straight into the buffer: ReadMessage read each into a slice of its own first
+		end, err := t.buffer.fill(r, syncFlush)
+		if err != nil {
+			t.buffer.Reset()
+			return nil, err
+		}
+		if end {
 			break
 		}
 	}

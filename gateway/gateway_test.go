@@ -60,7 +60,7 @@ func (c *testConn) write(op Opcode, s int, t EventType, d string) error {
 
 // streamCompressor compresses frames as Discord's zlib-stream and zstd-stream do: one stream for the connection,
 // flushed after every frame
-func streamCompressor(t *testing.T, compression CompressionType) func(frame []byte) []byte {
+func streamCompressor(t testing.TB, compression CompressionType) func(frame []byte) []byte {
 	var (
 		buf bytes.Buffer
 		w   interface {
