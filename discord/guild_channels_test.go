@@ -17,7 +17,10 @@ func TestGatewayGuild_UnmarshalJSONUnknownChannelType(t *testing.T) {
 		t.Fatalf("the guild failed to decode: %v", err)
 	}
 
-	if len(guild.Channels) != 1 || guild.Channels[0].ID() != 2 {
-		t.Fatalf("got channels %+v, want the text channel alone", guild.Channels)
+	if len(guild.Channels) != 2 || guild.Channels[0].ID() != 2 {
+		t.Fatalf("got channels %+v, want the text channel and the directory", guild.Channels)
+	}
+	if _, ok := guild.Channels[1].(UnknownChannel); !ok {
+		t.Fatalf("got %T, want the directory as an UnknownChannel", guild.Channels[1])
 	}
 }

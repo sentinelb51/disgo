@@ -1,7 +1,6 @@
 package discord
 
 import (
-	"errors"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -248,7 +247,7 @@ type GatewayGuild struct {
 func (g *GatewayGuild) UnmarshalJSON(data []byte) error {
 	type gatewayGuild GatewayGuild
 	var v struct {
-		Channels []gatewayGuildChannel `json:"channels"`
+		Channels []UnmarshalChannel `json:"channels"`
 		gatewayGuild
 	}
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -265,23 +264,6 @@ func (g *GatewayGuild) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
-}
-
-// gatewayGuildChannel is one of a guild's channels. One of a type this package doesn't model (a hub's directory, a
-// type Discord adds later) is left out rather than failing the whole guild, which would then never be cached
-type gatewayGuildChannel struct {
-	Channel
-}
-
-func (c *gatewayGuildChannel) UnmarshalJSON(data []byte) error {
-	cType, _ := peek(data, "type", "")
-	channel, err := unmarshalChannel(data, ChannelType(peekInt(cType)))
-	if errors.As(err, new(unknownChannelTypeError)) {
-		return nil
-	}
-
-	c.Channel = channel
-	return err
 }
 
 type UnavailableGuild struct {

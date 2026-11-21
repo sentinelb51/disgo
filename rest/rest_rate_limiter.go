@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -11,6 +12,9 @@ import (
 
 	"github.com/sasha-s/go-csync"
 )
+
+// ErrRateLimiterClosed is returned by RateLimiter.Wait after RateLimiter.Close has been called.
+var ErrRateLimiterClosed = errors.New("rate limiter closed")
 
 const (
 	// MaxRetries is the maximum number of retries the client should do
@@ -24,14 +28,13 @@ type RateLimiter interface {
 	// MaxRetries returns the maximum number of retries the client should do
 	MaxRetries() int
 
-	// Close gracefully closes the RateLimiter.
-	// If the context deadline is exceeded, the RateLimiter will be closed immediately.
+	// Close marks the RateLimiter closed and waits for requests already admitted by Wait to finish.
+	// Wait calls that have not been admitted fail with ErrRateLimiterClosed.
+	// If the context deadline is exceeded, Close returns immediately; new Wait calls are still rejected.
 	Close(ctx context.Context)
 
-	// Reset resets the rate limiter to its initial state
-	Reset()
-
-	// Wait waits for the given bucket to be available for new requests & locks it
+	// Wait waits for the given bucket to be available for new requests & locks it.
+	// After Close, Wait returns ErrRateLimiterClosed.
 	Wait(ctx context.Context, endpoint *CompiledEndpoint) error
 
 	// Unlock unlocks the given bucket and calculates the rate limit for the next request
@@ -68,6 +71,11 @@ type rateLimiterImpl struct {
 
 	// stops the cleanup goroutine
 	stopCleanup context.CancelFunc
+
+	// closed rejects Wait calls once Close has started.
+	// pending counts Wait calls admitted before closed was set.
+	closed  bool
+	pending sync.WaitGroup
 }
 
 func (l *rateLimiterImpl) MaxRetries() int {
@@ -108,34 +116,36 @@ func (l *rateLimiterImpl) doCleanup() {
 }
 
 func (l *rateLimiterImpl) Close(ctx context.Context) {
-	l.stopCleanup()
-
-	var wg sync.WaitGroup
 	l.bucketsMu.Lock()
-	for i := range l.buckets {
-		wg.Add(1)
-		b := l.buckets[i]
-		go func() {
-			// once we hold the bucket, its pending request is done
-			if b.mu.CLock(ctx) == nil {
-				b.mu.Unlock()
-			}
-			wg.Done()
-		}()
+	if !l.closed {
+		l.closed = true
+		if l.stopCleanup != nil {
+			l.stopCleanup()
+		}
 	}
-	// pending requests need bucketsMu in Unlock to release their bucket
 	l.bucketsMu.Unlock()
-	wg.Wait()
+
+	// Admitted requests still need bucketsMu inside Unlock, so wait without holding it.
+	done := make(chan struct{})
+	go func() {
+		l.pending.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-ctx.Done():
+	}
 }
 
-func (l *rateLimiterImpl) Reset() {
+// admit reserves a slot on l.pending. The caller must Done it, either from Unlock or from a Wait path that returns before Unlock.
+func (l *rateLimiterImpl) admit() error {
 	l.bucketsMu.Lock()
 	defer l.bucketsMu.Unlock()
-
-	l.globalMu.Lock()
-	l.global = time.Time{}
-	l.globalMu.Unlock()
-	clear(l.buckets)
+	if l.closed {
+		return ErrRateLimiterClosed
+	}
+	l.pending.Add(1)
+	return nil
 }
 
 func (l *rateLimiterImpl) getRouteHash(endpoint *CompiledEndpoint) string {
@@ -170,11 +180,20 @@ func (l *rateLimiterImpl) getBucket(hash string, create bool) *bucket {
 	return b
 }
 
-func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) error {
+func (l *rateLimiterImpl) Wait(ctx context.Context, endpoint *CompiledEndpoint) (err error) {
+	if err = l.admit(); err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			l.pending.Done()
+		}
+	}()
+
 	hash := l.getRouteHash(endpoint)
 	b := l.getBucket(hash, true)
 	for {
-		if err := b.mu.CLock(ctx); err != nil {
+		if err = b.mu.CLock(ctx); err != nil {
 			return err
 		}
 		// the cleanup may have removed the bucket before we locked it,
@@ -221,6 +240,7 @@ func (l *rateLimiterImpl) Unlock(endpoint *CompiledEndpoint, rs *http.Response) 
 	if b == nil {
 		return nil
 	}
+	defer l.pending.Done()
 	defer func() {
 		l.config.Logger.LogAttrs(context.Background(), slog.LevelDebug, "unlocking rest bucket", slog.String("id", b.ID), slog.Int("limit", b.Limit), slog.Int("remaining", b.Remaining), slog.Time("reset", b.Reset))
 		b.mu.Unlock()

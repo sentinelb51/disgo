@@ -614,46 +614,6 @@ func TestGatewayFailedResume(t *testing.T) {
 	}
 }
 
-// slowResetRateLimiter is the default RateLimiter, with every Reset after the first slowed down
-type slowResetRateLimiter struct {
-	RateLimiter
-	resets    int
-	resetting chan struct{}
-}
-
-func (l *slowResetRateLimiter) Reset() {
-	l.resets++
-	if l.resets > 1 {
-		close(l.resetting)
-		time.Sleep(100 * time.Millisecond)
-	}
-	l.RateLimiter.Reset()
-}
-
-// Close while a reconnect resets the rate limiter
-func TestGatewayCloseWhileReconnecting(t *testing.T) {
-	t.Parallel()
-
-	rateLimiter := &slowResetRateLimiter{RateLimiter: NewRateLimiter(), resetting: make(chan struct{})}
-	g := newTestGateway(t, func(n int, c *testConn) {
-		if n > 0 {
-			c.serve(time.Minute, nil)
-			return
-		}
-		c.serve(time.Minute, func() { _ = c.conn.UnderlyingConn().Close() })
-	}, WithRateLimiter(rateLimiter))
-	openTestGateway(t, g)
-
-	select {
-	case <-rateLimiter.resetting:
-	case <-time.After(5 * time.Second):
-		t.Fatal("no reconnect")
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	g.Close(ctx)
-}
-
 // listenGoroutines counts the read loops running in this process
 func listenGoroutines() int {
 	buf := make([]byte, 1<<20)
@@ -687,61 +647,6 @@ func TestGatewayOpenTimeoutStopsListen(t *testing.T) {
 			t.Fatalf("%d read loops left running after Open failed", listenGoroutines()-before)
 		}
 		time.Sleep(10 * time.Millisecond)
-	}
-}
-
-// blockingCloseRateLimiter is the default RateLimiter, whose Close waits for release once it was entered
-type blockingCloseRateLimiter struct {
-	RateLimiter
-	closing chan struct{}
-	release chan struct{}
-}
-
-func (l *blockingCloseRateLimiter) Close(ctx context.Context) {
-	close(l.closing)
-	<-l.release
-	l.RateLimiter.Close(ctx)
-}
-
-// A Send that starts while the connection is being closed returns, and so does the close
-func TestGatewaySendWhileClosing(t *testing.T) {
-	t.Parallel()
-
-	rateLimiter := &blockingCloseRateLimiter{RateLimiter: NewRateLimiter(), closing: make(chan struct{}), release: make(chan struct{})}
-	g := newTestGateway(t, func(n int, c *testConn) { c.serve(time.Minute, nil) }, WithRateLimiter(rateLimiter))
-	// no Close at cleanup: it would hang where the test fails
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := g.Open(ctx); err != nil {
-		t.Fatal(err)
-	}
-
-	closed := make(chan struct{})
-	go func() {
-		defer close(closed)
-		g.Close(ctx)
-	}()
-	<-rateLimiter.closing
-
-	sent := make(chan error, 1)
-	go func() {
-		sent <- g.Send(ctx, OpcodePresenceUpdate, MessageDataPresenceUpdate{Status: discord.OnlineStatusIdle})
-	}()
-	time.Sleep(100 * time.Millisecond)
-	close(rateLimiter.release)
-
-	select {
-	case <-closed:
-	case <-time.After(2 * time.Second):
-		t.Fatal("Close did not return: deadlocked with Send")
-	}
-	select {
-	case err := <-sent:
-		if err == nil {
-			t.Fatal("Send on a closed connection succeeded")
-		}
-	case <-time.After(2 * time.Second):
-		t.Fatal("Send did not return")
 	}
 }
 

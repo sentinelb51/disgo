@@ -23,6 +23,7 @@ func gatewayHandlerGuildCreate(client *bot.Client, sequenceNumber int, shardID i
 	wasUnavailable := client.Caches.IsGuildUnavailable(event.ID)
 
 	client.Caches.AddGuild(event.CacheGuild)
+	removeGuildCollections(client, event.ID)
 
 	for _, channel := range event.Channels {
 		channel = discord.ApplyGuildIDToChannel(channel, event.ID) // populate unset field
@@ -170,39 +171,18 @@ func gatewayHandlerGuildDelete(client *bot.Client, sequenceNumber int, shardID i
 	}
 }
 
-// removeGuildEntities removes everything cached for the given guilds except the guilds themselves. It walks the
-// channel cache once, however many guilds it is given.
+// removeGuildEntities removes everything cached for the given guilds except the guilds themselves, finding each
+// guild's threads through the channel cache's guild index rather than a pass over every channel.
 func removeGuildEntities(client *bot.Client, guildIDs ...snowflake.ID) {
-	if len(guildIDs) == 0 {
-		return
-	}
-	removed := make(map[snowflake.ID]struct{}, len(guildIDs))
 	for _, guildID := range guildIDs {
-		removed[guildID] = struct{}{}
-		client.Caches.RemoveVoiceStatesByGuildID(guildID)
-		client.Caches.RemovePresencesByGuildID(guildID)
-		client.Caches.RemoveEmojisByGuildID(guildID)
-		client.Caches.RemoveStickersByGuildID(guildID)
-		client.Caches.RemoveRolesByGuildID(guildID)
+		for channel := range client.Caches.ChannelsForGuild(guildID) {
+			if _, ok := channel.(discord.GuildThread); ok {
+				client.Caches.RemoveThreadMembersByThreadID(channel.ID())
+			}
+		}
+		removeGuildCollections(client, guildID)
 		client.Caches.RemoveMembersByGuildID(guildID)
-		client.Caches.RemoveStageInstancesByGuildID(guildID)
-		client.Caches.RemoveGuildScheduledEventsByGuildID(guildID)
-		client.Caches.RemoveGuildSoundboardSoundsByGuildID(guildID)
 		client.Caches.RemoveMessagesByGuildID(guildID)
-	}
-
-	// TODO: figure out a better way to remove thread members from cache via guild id without requiring cached GuildThreads
-	var channels []discord.GuildChannel
-	for channel := range client.Caches.Channels() {
-		if _, ok := removed[channel.GuildID()]; ok {
-			channels = append(channels, channel)
-		}
-	}
-	for _, channel := range channels {
-		if _, ok := channel.(discord.GuildThread); ok {
-			client.Caches.RemoveThreadMembersByThreadID(channel.ID())
-		}
-		client.Caches.RemoveChannel(channel.ID())
 	}
 }
 
@@ -216,4 +196,18 @@ func gatewayHandlerGuildAuditLogEntryCreate(client *bot.Client, sequenceNumber i
 		GenericGuild:  genericGuildEvent,
 		AuditLogEntry: event.AuditLogEntry,
 	})
+}
+
+// removeGuildCollections removes the cached guild collections that GUILD_CREATE sends in full.
+// Members, thread members and messages are not part of it, GUILD_CREATE only sends a subset or none of them.
+func removeGuildCollections(client *bot.Client, guildID snowflake.ID) {
+	client.Caches.RemoveChannelsByGuildID(guildID)
+	client.Caches.RemoveRolesByGuildID(guildID)
+	client.Caches.RemoveEmojisByGuildID(guildID)
+	client.Caches.RemoveStickersByGuildID(guildID)
+	client.Caches.RemoveVoiceStatesByGuildID(guildID)
+	client.Caches.RemovePresencesByGuildID(guildID)
+	client.Caches.RemoveStageInstancesByGuildID(guildID)
+	client.Caches.RemoveGuildScheduledEventsByGuildID(guildID)
+	client.Caches.RemoveGuildSoundboardSoundsByGuildID(guildID)
 }

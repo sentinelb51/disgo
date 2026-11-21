@@ -109,12 +109,7 @@ func (d *ModalSubmitInteractionData) UnmarshalJSON(data []byte) error {
 	}
 
 	d.CustomID = iData.CustomID
-
-	components := make([]LayoutComponent, 0, len(iData.Components))
-	for _, containerComponent := range iData.Components {
-		components = append(components, placeComponent[LayoutComponent](containerComponent.Component))
-	}
-	d.Components = components
+	d.Components = unmarshalComponents(iData.Components)
 
 	d.Resolved = iData.Resolved
 	return nil
@@ -329,4 +324,19 @@ func (d ModalSubmitInteractionData) Attachments(customID string) []Attachment {
 		return attachments
 	}
 	return nil
+}
+
+func (d ModalSubmitInteractionData) Checkbox(customID string) (CheckboxComponent, bool) {
+	if component, ok := d.Component(customID); ok {
+		checkboxComponent, ok := component.(CheckboxComponent)
+		return checkboxComponent, ok
+	}
+	return CheckboxComponent{}, false
+}
+
+func (d ModalSubmitInteractionData) OptBool(customID string) (bool, bool) {
+	if checkbox, ok := d.Checkbox(customID); ok {
+		return checkbox.Value, ok
+	}
+	return false, false
 }

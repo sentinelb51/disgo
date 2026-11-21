@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
+	"sync/atomic"
 
 	"github.com/disgoorg/json/v2"
 	"github.com/gorilla/websocket"
@@ -88,6 +90,15 @@ type baseTransport struct {
 
 	// decoder is reset for each message, keeping the buffer the last one grew. Only the listen goroutine reads
 	decoder *jsontext.Decoder
+
+	closed atomic.Bool
+}
+
+// closeConn closes the underlying connection. websocket.Conn keeps returning frames it already
+// buffered after being closed, so ReceiveMessage has to check closed to stop delivering them.
+func (t *baseTransport) closeConn() error {
+	t.closed.Store(true)
+	return t.conn.Close()
 }
 
 func (t *baseTransport) parseMessage(r io.Reader) (*Message, error) {
@@ -200,6 +211,9 @@ func (t *zstdStreamTransport) ReceiveMessage() (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	if t.closed.Load() {
+		return nil, net.ErrClosed
+	}
 
 	if mt != websocket.BinaryMessage {
 		return nil, fmt.Errorf("expected binary message, received %d", mt)
@@ -223,7 +237,7 @@ func (t *zstdStreamTransport) Close() error {
 	// them, and which returns on the closed connection. Closing the decoder is a nil dereference inside it, and
 	// resetting the buffer under it a data race. Nothing leaks: WithDecoderConcurrency(1) above means the decoder
 	// runs synchronously with no goroutines of its own, so both are ordinary garbage with the transport.
-	return t.conn.Close()
+	return t.closeConn()
 }
 
 // zlibStreamTransport implements zlib-stream compression.
@@ -259,6 +273,9 @@ func (t *zlibStreamTransport) ReceiveMessage() (*Message, error) {
 		if err != nil {
 			return nil, err
 		}
+		if t.closed.Load() {
+			return nil, net.ErrClosed
+		}
 		if mt != websocket.BinaryMessage {
 			return nil, fmt.Errorf("expected binary message, received %d", mt)
 		}
@@ -286,7 +303,7 @@ func (t *zlibStreamTransport) ReceiveMessage() (*Message, error) {
 func (t *zlibStreamTransport) Close() error {
 	// Same as the zstd transport: only the connection, so nothing touches state the read loop may still be using.
 	// zlib's reader holds no goroutines either.
-	return t.conn.Close()
+	return t.closeConn()
 }
 
 // zlibPayloadTransport implements both no compression and payload zlib compression.
@@ -309,6 +326,9 @@ func (t *zlibPayloadTransport) ReceiveMessage() (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	if t.closed.Load() {
+		return nil, net.ErrClosed
+	}
 
 	if mt == websocket.BinaryMessage {
 		reader, err := zlib.NewReader(r)
@@ -325,5 +345,5 @@ func (t *zlibPayloadTransport) ReceiveMessage() (*Message, error) {
 }
 
 func (t *zlibPayloadTransport) Close() error {
-	return t.conn.Close()
+	return t.closeConn()
 }
