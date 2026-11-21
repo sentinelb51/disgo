@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -245,12 +247,18 @@ type GatewayGuild struct {
 }
 
 func (g *GatewayGuild) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, g)
+}
+
+// UnmarshalJSONFrom decodes the guild as it streams in: a GUILD_CREATE is the largest event, and through
+// UnmarshalJSON encoding/json/v2 reads it whole once before handing it over
+func (g *GatewayGuild) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type gatewayGuild GatewayGuild
 	var v struct {
 		Channels []UnmarshalChannel `json:"channels"`
 		gatewayGuild
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -646,7 +654,7 @@ func (r *GuildMessagesSearchResult) UnmarshalJSON(data []byte) error {
 		Messages [][]Message `json:"messages"`
 		guildMessagesSearchResult
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*r = GuildMessagesSearchResult(v.guildMessagesSearchResult)

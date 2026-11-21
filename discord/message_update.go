@@ -5,7 +5,6 @@ import (
 	"io"
 	"slices"
 
-	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -44,7 +43,7 @@ func (m *MessageUpdate) UnmarshalJSON(data []byte) error {
 		messageUpdate
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

@@ -1921,7 +1921,7 @@ func (c *UnknownComponent) UnmarshalJSON(data []byte) error {
 		Type ComponentType `json:"type"`
 		ID   int           `json:"id,omitempty"`
 	}
-	if err := json.Unmarshal(data, &unknownComponent); err != nil {
+	if err := unmarshalOnce(data, &unknownComponent); err != nil {
 		return err
 	}
 
@@ -1954,7 +1954,7 @@ func (c UnknownComponent) GetCustomID() string {
 	var data struct {
 		CustomID string `json:"custom_id"`
 	}
-	if err := json.Unmarshal(c.Data, &data); err != nil {
+	if err := unmarshalOnce(c.Data, &data); err != nil {
 		return ""
 	}
 

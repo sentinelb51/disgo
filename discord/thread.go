@@ -34,7 +34,7 @@ type ThreadChannelPost struct {
 
 func (c *ThreadChannelPost) UnmarshalJSON(data []byte) error {
 	var thread GuildThread
-	if err := json.Unmarshal(data, &thread); err != nil {
+	if err := unmarshalOnce(data, &thread); err != nil {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func (c *ThreadChannelPost) UnmarshalJSON(data []byte) error {
 	var v struct {
 		Message Message `json:"message"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

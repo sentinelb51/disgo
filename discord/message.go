@@ -2,12 +2,13 @@ package discord
 
 import (
 	"bytes"
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"iter"
 	"strconv"
 	"time"
 
-	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 
 	"github.com/disgoorg/disgo/internal/flags"
@@ -139,13 +140,19 @@ type Message struct {
 }
 
 func (m *Message) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, m)
+}
+
+// UnmarshalJSONFrom decodes the message as it streams in. Through UnmarshalJSON, encoding/json/v2 reads the whole
+// message once before handing it over, a pass of its own for every message
+func (m *Message) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type message Message
 	var v struct {
 		Components []UnmarshalComponent `json:"components"`
 		message
 	}
 
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -293,13 +300,18 @@ type PartialMessage struct {
 }
 
 func (m *PartialMessage) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, m)
+}
+
+// UnmarshalJSONFrom decodes the message as it streams in, as Message's does
+func (m *PartialMessage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type partialMessage PartialMessage
 	var v struct {
 		Components []UnmarshalComponent `json:"components"`
 		partialMessage
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/omit"
 	"github.com/disgoorg/snowflake/v2"
 
@@ -48,7 +47,7 @@ type Application struct {
 
 func (a *Application) UnmarshalJSON(data []byte) error {
 	type application Application
-	if err := json.Unmarshal(data, (*application)(a)); err != nil {
+	if err := unmarshalOnce(data, (*application)(a)); err != nil {
 		return err
 	}
 
@@ -64,7 +63,7 @@ func unmarshalFlagsNew(data any, flags ApplicationFlags) (ApplicationFlags, erro
 	var v struct {
 		FlagsNew *string `json:"flags_new,omitempty"`
 	}
-	if err := json.Unmarshal(data.([]byte), &v); err != nil || v.FlagsNew == nil {
+	if err := unmarshalOnce(data.([]byte), &v); err != nil || v.FlagsNew == nil {
 		return flags, err
 	}
 
@@ -115,7 +114,7 @@ type PartialApplication struct {
 
 func (a *PartialApplication) UnmarshalJSON(data []byte) error {
 	type partialApplication PartialApplication
-	if err := json.Unmarshal(data, (*partialApplication)(a)); err != nil {
+	if err := unmarshalOnce(data, (*partialApplication)(a)); err != nil {
 		return err
 	}
 

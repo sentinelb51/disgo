@@ -21,7 +21,7 @@ func (o *UnmarshalAutocompleteOption) UnmarshalJSON(data []byte) error {
 		Type ApplicationCommandOptionType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &oType); err != nil {
+	if err := unmarshalOnce(data, &oType); err != nil {
 		return err
 	}
 
@@ -33,17 +33,17 @@ func (o *UnmarshalAutocompleteOption) UnmarshalJSON(data []byte) error {
 	switch oType.Type {
 	case ApplicationCommandOptionTypeSubCommand:
 		var v AutocompleteOptionSubCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		autocompleteOption = v
 
 	case ApplicationCommandOptionTypeSubCommandGroup:
 		var v AutocompleteOptionSubCommandGroup
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		autocompleteOption = v
 
 	default:
 		var v AutocompleteOption
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		autocompleteOption = v
 	}
 
@@ -101,7 +101,7 @@ func (AutocompleteOption) autocompleteOption() {}
 // If the type is not ApplicationCommandOptionTypeString, it panics.
 func (o AutocompleteOption) String() string {
 	var v string
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -111,7 +111,7 @@ func (o AutocompleteOption) String() string {
 // If the type is not ApplicationCommandOptionTypeInt, it panics.
 func (o AutocompleteOption) Int() int {
 	var v int
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -121,7 +121,7 @@ func (o AutocompleteOption) Int() int {
 // If the type is not ApplicationCommandOptionTypeFloat, it panics.
 func (o AutocompleteOption) Float() float64 {
 	var v float64
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -131,7 +131,7 @@ func (o AutocompleteOption) Float() float64 {
 // If the type is not ApplicationCommandOptionTypeBool, it panics.
 func (o AutocompleteOption) Bool() bool {
 	var v bool
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -141,7 +141,7 @@ func (o AutocompleteOption) Bool() bool {
 // If the type is not ApplicationCommandOptionTypeUser, ApplicationCommandOptionTypeChannel, ApplicationCommandOptionTypeRole or ApplicationCommandOptionTypeMentionable, it panics.
 func (o AutocompleteOption) Snowflake() snowflake.ID {
 	var v snowflake.ID
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v

@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -70,6 +72,12 @@ type RoleTag struct {
 // UnmarshalJSON decodes PremiumSubscriber, AvailableForPurchase and GuildConnections, which Discord sends as null
 // when true and leaves out when false: decoded as plain bools they were never true
 func (t *RoleTag) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+// UnmarshalJSONFrom decodes the tags as they stream in, rather than read whole first: every role of a GUILD_CREATE
+// carries them
+func (t *RoleTag) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type roleTag RoleTag
 	var v struct {
 		PremiumSubscriber    json.RawMessage `json:"premium_subscriber"`
@@ -77,7 +85,7 @@ func (t *RoleTag) UnmarshalJSON(data []byte) error {
 		GuildConnections     json.RawMessage `json:"guild_connections"`
 		roleTag
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 

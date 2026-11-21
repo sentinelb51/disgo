@@ -255,7 +255,7 @@ func (l *AuditLog) UnmarshalJSON(data []byte) error {
 		Webhooks            []UnmarshalWebhook            `json:"webhooks"`
 		auditLog
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*l = AuditLog(v.auditLog)
@@ -308,12 +308,12 @@ type AuditLogChange struct {
 
 // UnmarshalNewValue unmarshals the NewValue field into the provided type.
 func (c *AuditLogChange) UnmarshalNewValue(v any) error {
-	return json.Unmarshal(c.NewValue, v)
+	return unmarshalOnce(c.NewValue, v)
 }
 
 // UnmarshalOldValue unmarshals the OldValue field into the provided type.
 func (c *AuditLogChange) UnmarshalOldValue(v any) error {
-	return json.Unmarshal(c.OldValue, v)
+	return unmarshalOnce(c.OldValue, v)
 }
 
 // OptionalAuditLogEntryInfo (https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info)

@@ -84,7 +84,7 @@ func (e *EventRateLimited) UnmarshalJSON(data []byte) error {
 		Meta       json.RawMessage `json:"meta"`
 	}
 
-	if err := json.Unmarshal(data, &event); err != nil {
+	if err := unmarshalData(data, &event); err != nil {
 		return err
 	}
 
@@ -96,7 +96,7 @@ func (e *EventRateLimited) UnmarshalJSON(data []byte) error {
 	switch event.Opcode {
 	case OpcodeRequestGuildMembers:
 		var v RateLimitedMetadataRequestGuildMembers
-		err = json.Unmarshal(event.Meta, &v)
+		err = unmarshalData(event.Meta, &v)
 		meta = v
 
 	default:
@@ -130,7 +130,7 @@ type EventChannelCreate struct {
 
 func (e *EventChannelCreate) UnmarshalJSON(data []byte) error {
 	var v discord.UnmarshalChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	e.GuildChannel = v.Channel.(discord.GuildChannel)
@@ -146,7 +146,7 @@ type EventChannelUpdate struct {
 
 func (e *EventChannelUpdate) UnmarshalJSON(data []byte) error {
 	var v discord.UnmarshalChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	e.GuildChannel = v.Channel.(discord.GuildChannel)
@@ -162,7 +162,7 @@ type EventChannelDelete struct {
 
 func (e *EventChannelDelete) UnmarshalJSON(data []byte) error {
 	var v discord.UnmarshalChannel
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	e.GuildChannel = v.Channel.(discord.GuildChannel)
@@ -185,7 +185,7 @@ func (c *ChannelInfo) UnmarshalJSON(data []byte) error {
 		VoiceStartTime *int64 `json:"voice_start_time,omitempty"`
 		channelInfo
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*c = ChannelInfo(v.channelInfo)
@@ -229,7 +229,7 @@ type EventThreadCreate struct {
 
 func (e *EventThreadCreate) UnmarshalJSON(data []byte) error {
 	var guildThread discord.GuildThread
-	if err := json.Unmarshal(data, &guildThread); err != nil {
+	if err := unmarshalData(data, &guildThread); err != nil {
 		return err
 	}
 
@@ -239,7 +239,7 @@ func (e *EventThreadCreate) UnmarshalJSON(data []byte) error {
 		ThreadMember discord.ThreadMember `json:"thread_member"`
 		NewlyCreated bool                 `json:"newly_created"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 
@@ -368,7 +368,7 @@ type EventMessageReactionAdd struct {
 func (e *EventMessageReactionAdd) UnmarshalJSON(data []byte) error {
 	type eventMessageReactionAdd EventMessageReactionAdd
 	var v eventMessageReactionAdd
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventMessageReactionAdd(v)
@@ -460,7 +460,7 @@ type EventGuildEmojisUpdate struct {
 func (e *EventGuildEmojisUpdate) UnmarshalJSON(data []byte) error {
 	type eventGuildEmojisUpdate EventGuildEmojisUpdate
 	var v eventGuildEmojisUpdate
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventGuildEmojisUpdate(v)
@@ -518,7 +518,7 @@ type EventGuildRoleCreate struct {
 func (e *EventGuildRoleCreate) UnmarshalJSON(data []byte) error {
 	type eventGuildRoleCreate EventGuildRoleCreate
 	var v eventGuildRoleCreate
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventGuildRoleCreate(v)
@@ -551,7 +551,7 @@ type EventGuildRoleUpdate struct {
 func (e *EventGuildRoleUpdate) UnmarshalJSON(data []byte) error {
 	type eventGuildRoleUpdate EventGuildRoleUpdate
 	var v eventGuildRoleUpdate
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventGuildRoleUpdate(v)
@@ -800,7 +800,7 @@ func (e *EventTypingStart) UnmarshalJSON(data []byte) error {
 		Timestamp int64 `json:"timestamp"`
 		typingStartEvent
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventTypingStart(v.typingStartEvent)
@@ -835,7 +835,7 @@ func (e *EventVoiceChannelEffectSend) UnmarshalJSON(data []byte) error {
 		SoundID *json.Number `json:"sound_id"`
 		eventVoiceChannelEffectSend
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventVoiceChannelEffectSend(v.eventVoiceChannelEffectSend)
@@ -876,7 +876,7 @@ func (e *EventVoiceChannelStartTimeUpdate) UnmarshalJSON(data []byte) error {
 		VoiceStartTime *int64 `json:"voice_start_time"`
 		eventVoiceChannelStartTimeUpdate
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventVoiceChannelStartTimeUpdate(v.eventVoiceChannelStartTimeUpdate)
@@ -914,7 +914,7 @@ type EventVoiceStateUpdate struct {
 func (e *EventVoiceStateUpdate) UnmarshalJSON(data []byte) error {
 	type eventVoiceStateUpdate EventVoiceStateUpdate
 	var v eventVoiceStateUpdate
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	*e = EventVoiceStateUpdate(v)
@@ -949,14 +949,14 @@ type EventIntegrationCreate struct {
 
 func (e *EventIntegrationCreate) UnmarshalJSON(data []byte) error {
 	var integration discord.UnmarshalIntegration
-	if err := json.Unmarshal(data, &integration); err != nil {
+	if err := unmarshalData(data, &integration); err != nil {
 		return err
 	}
 
 	var v struct {
 		GuildID snowflake.ID `json:"guild_id"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 
@@ -993,14 +993,14 @@ type EventIntegrationUpdate struct {
 
 func (e *EventIntegrationUpdate) UnmarshalJSON(data []byte) error {
 	var integration discord.UnmarshalIntegration
-	if err := json.Unmarshal(data, &integration); err != nil {
+	if err := unmarshalData(data, &integration); err != nil {
 		return err
 	}
 
 	var v struct {
 		GuildID snowflake.ID `json:"guild_id"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 

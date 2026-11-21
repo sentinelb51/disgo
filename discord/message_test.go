@@ -1,6 +1,7 @@
 package discord
 
 import (
+	jsonv1 "encoding/json"
 	"testing"
 )
 
@@ -25,6 +26,28 @@ func BenchmarkMessage_UnmarshalJSON(b *testing.B) {
 				}
 			}
 		})
+	}
+}
+
+// BenchmarkMessages_Page decodes a page of 100 messages with encoding/json, as the REST client decodes GET
+// /channels/{id}/messages
+func BenchmarkMessages_Page(b *testing.B) {
+	page := []byte{'['}
+	for i := range 100 {
+		if i > 0 {
+			page = append(page, ',')
+		}
+		page = append(page, benchmarkMessages[i%len(benchmarkMessages)].data...)
+	}
+	page = append(page, ']')
+
+	b.SetBytes(int64(len(page)))
+	b.ReportAllocs()
+	for b.Loop() {
+		var messages []Message
+		if err := jsonv1.Unmarshal(page, &messages); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 

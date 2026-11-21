@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -47,12 +49,17 @@ type Activity struct {
 }
 
 func (a *Activity) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, a)
+}
+
+// UnmarshalJSONFrom decodes the activity as it streams in, rather than read whole first
+func (a *Activity) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type activity Activity
 	var v struct {
 		CreatedAt int64 `json:"created_at"`
 		activity
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*a = Activity(v.activity)
@@ -124,7 +131,7 @@ func (a *ActivityTimestamps) UnmarshalJSON(data []byte) error {
 		Start int64 `json:"start"`
 		End   int64 `json:"end"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	a.Start = time.UnixMilli(v.Start)

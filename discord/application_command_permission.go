@@ -36,7 +36,7 @@ func (p *ApplicationCommandPermissions) UnmarshalJSON(data []byte) error {
 		applicationCommandPermissions
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*p = ApplicationCommandPermissions(v.applicationCommandPermissions)
@@ -59,7 +59,7 @@ func (p *UnmarshalApplicationCommandPermission) UnmarshalJSON(data []byte) error
 		Type ApplicationCommandPermissionType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &pType); err != nil {
+	if err := unmarshalOnce(data, &pType); err != nil {
 		return err
 	}
 
@@ -71,22 +71,22 @@ func (p *UnmarshalApplicationCommandPermission) UnmarshalJSON(data []byte) error
 	switch pType.Type {
 	case ApplicationCommandPermissionTypeRole:
 		var v ApplicationCommandPermissionRole
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandPermission = v
 
 	case ApplicationCommandPermissionTypeUser:
 		var v ApplicationCommandPermissionUser
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandPermission = v
 
 	case ApplicationCommandPermissionTypeChannel:
 		var v ApplicationCommandPermissionChannel
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandPermission = v
 
 	default:
 		var v UnknownApplicationCommandPermission
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandPermission = v
 	}
 

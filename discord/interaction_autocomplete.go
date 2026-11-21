@@ -1,6 +1,9 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
+
 	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 )
@@ -88,12 +91,16 @@ type rawAutocompleteInteractionData struct {
 }
 
 func (d *rawAutocompleteInteractionData) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, d)
+}
+
+func (d *rawAutocompleteInteractionData) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type alias rawAutocompleteInteractionData
 	var v struct {
 		Options []UnmarshalAutocompleteOption `json:"options"`
 		alias
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -118,9 +125,14 @@ type AutocompleteInteractionData struct {
 }
 
 func (d *AutocompleteInteractionData) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, d)
+}
+
+// UnmarshalJSONFrom decodes the data as it streams in, rather than read whole first
+func (d *AutocompleteInteractionData) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var iData rawAutocompleteInteractionData
 
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &iData); err != nil {
 		return err
 	}
 	d.CommandID = iData.ID
@@ -220,7 +232,7 @@ func (d AutocompleteInteractionData) Option(name string) (AutocompleteOption, bo
 func (d AutocompleteInteractionData) OptString(name string) (string, bool) {
 	if option, ok := d.Option(name); ok {
 		var v string
-		if err := json.Unmarshal(option.Value, &v); err == nil {
+		if err := unmarshalOnce(option.Value, &v); err == nil {
 			return v, true
 		}
 	}

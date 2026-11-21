@@ -2,8 +2,6 @@ package discord
 
 import (
 	"slices"
-
-	"github.com/disgoorg/json/v2"
 )
 
 var _ InteractionResponseData = (*ModalCreate)(nil)
@@ -29,7 +27,7 @@ func (m *ModalCreate) UnmarshalJSON(data []byte) error {
 		modalCreate
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

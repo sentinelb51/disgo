@@ -33,7 +33,7 @@ type rawMessage struct {
 
 func (e *Message) UnmarshalJSON(data []byte) error {
 	var v rawMessage
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalData(data, &v); err != nil {
 		return err
 	}
 	return e.unmarshal(v, data)

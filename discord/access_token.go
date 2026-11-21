@@ -27,7 +27,7 @@ func (e *AccessTokenResponse) UnmarshalJSON(data []byte) error {
 		Scope     string `json:"scope"`
 		accessTokenResponse
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

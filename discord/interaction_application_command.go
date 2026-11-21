@@ -157,7 +157,7 @@ func (d *rawSlashCommandInteractionData) UnmarshalJSON(data []byte) error {
 		Options []UnmarshalSlashCommandOption `json:"options"`
 		alias
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -185,7 +185,7 @@ type SlashCommandInteractionData struct {
 func (d *SlashCommandInteractionData) UnmarshalJSON(data []byte) error {
 	var iData rawSlashCommandInteractionData
 
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := unmarshalOnce(data, &iData); err != nil {
 		return err
 	}
 	d.build(iData)
@@ -629,7 +629,7 @@ type UserCommandInteractionData struct {
 
 func (d *UserCommandInteractionData) UnmarshalJSON(data []byte) error {
 	var iData rawUserCommandInteractionData
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := unmarshalOnce(data, &iData); err != nil {
 		return err
 	}
 	d.id = iData.ID
@@ -690,7 +690,7 @@ type UserCommandResolved struct {
 func (r *UserCommandResolved) UnmarshalJSON(data []byte) error {
 	type userCommandResolved UserCommandResolved
 	var v userCommandResolved
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*r = UserCommandResolved(v)
@@ -727,7 +727,7 @@ type MessageCommandInteractionData struct {
 
 func (d *MessageCommandInteractionData) UnmarshalJSON(data []byte) error {
 	var iData rawMessageCommandInteractionData
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := unmarshalOnce(data, &iData); err != nil {
 		return err
 	}
 	d.id = iData.ID
@@ -795,7 +795,7 @@ type EntryPointCommandInteractionData struct {
 
 func (d *EntryPointCommandInteractionData) UnmarshalJSON(data []byte) error {
 	var iData rawEntryPointCommandInteractionData
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := unmarshalOnce(data, &iData); err != nil {
 		return err
 	}
 	d.id = iData.ID

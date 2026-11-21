@@ -178,7 +178,7 @@ type ButtonInteractionData struct {
 
 func (d *ButtonInteractionData) UnmarshalJSON(data []byte) error {
 	var v rawButtonInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.Custom
@@ -234,7 +234,7 @@ type StringSelectMenuInteractionData struct {
 
 func (d *StringSelectMenuInteractionData) UnmarshalJSON(data []byte) error {
 	var v stringSelectMenuInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.CustomID
@@ -274,7 +274,7 @@ type UserSelectMenuResolved struct {
 
 func (d *UserSelectMenuInteractionData) UnmarshalJSON(data []byte) error {
 	var v snowflakeSelectMenuInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.CustomID
@@ -341,7 +341,7 @@ type RoleSelectMenuResolved struct {
 
 func (d *RoleSelectMenuInteractionData) UnmarshalJSON(data []byte) error {
 	var v snowflakeSelectMenuInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.CustomID
@@ -398,7 +398,7 @@ type MentionableSelectMenuResolved struct {
 
 func (d *MentionableSelectMenuInteractionData) UnmarshalJSON(data []byte) error {
 	var v snowflakeSelectMenuInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.CustomID
@@ -477,7 +477,7 @@ type ChannelSelectMenuResolved struct {
 
 func (d *ChannelSelectMenuInteractionData) UnmarshalJSON(data []byte) error {
 	var v snowflakeSelectMenuInteractionData
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	d.customID = v.CustomID

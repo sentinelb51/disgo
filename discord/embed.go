@@ -1,10 +1,10 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"time"
-
-	"github.com/disgoorg/json/v2"
 
 	"github.com/disgoorg/disgo/internal/flags"
 )
@@ -52,13 +52,18 @@ type Embed struct {
 // UnmarshalJSON unmarshals the Embed from JSON. Components are only present on EmbedTypeComponents embeds.
 // https://docs.discord.com/developers/link-previews/component-embeds
 func (e *Embed) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, e)
+}
+
+// UnmarshalJSONFrom decodes the embed as it streams in, rather than read whole first, as UnmarshalJSON is handed it
+func (e *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type embed Embed
 	var v struct {
 		Components []UnmarshalComponent `json:"components"`
 		embed
 	}
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 

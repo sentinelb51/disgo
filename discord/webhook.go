@@ -40,7 +40,7 @@ func (w *UnmarshalWebhook) UnmarshalJSON(data []byte) error {
 		Type WebhookType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &wType); err != nil {
+	if err := unmarshalOnce(data, &wType); err != nil {
 		return err
 	}
 
@@ -52,22 +52,22 @@ func (w *UnmarshalWebhook) UnmarshalJSON(data []byte) error {
 	switch wType.Type {
 	case WebhookTypeIncoming:
 		var v IncomingWebhook
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		webhook = v
 
 	case WebhookTypeChannelFollower:
 		var v ChannelFollowerWebhook
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		webhook = v
 
 	case WebhookTypeApplication:
 		var v ApplicationWebhook
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		webhook = v
 
 	default:
 		var v UnknownWebhook
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		webhook = v
 	}
 
@@ -101,7 +101,7 @@ func (w *IncomingWebhook) UnmarshalJSON(data []byte) error {
 		Avatar *string      `json:"avatar"`
 		incomingWebhook
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*w = IncomingWebhook(v.incomingWebhook)
@@ -188,7 +188,7 @@ func (w *ChannelFollowerWebhook) UnmarshalJSON(data []byte) error {
 		Avatar *string      `json:"avatar"`
 		channelFollowerWebhook
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*w = ChannelFollowerWebhook(v.channelFollowerWebhook)
@@ -272,7 +272,7 @@ func (w *ApplicationWebhook) UnmarshalJSON(data []byte) error {
 		Avatar *string      `json:"avatar"`
 		applicationWebhook
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*w = ApplicationWebhook(v.applicationWebhook)
@@ -360,7 +360,7 @@ func (w *UnknownWebhook) UnmarshalJSON(data []byte) error {
 		Avatar *string      `json:"avatar"`
 		unknownWebhook
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*w = UnknownWebhook(v.unknownWebhook)

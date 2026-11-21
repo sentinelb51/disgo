@@ -52,7 +52,7 @@ func (i *UnmarshalIntegration) UnmarshalJSON(data []byte) error {
 		Type IntegrationType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &cType); err != nil {
+	if err := unmarshalOnce(data, &cType); err != nil {
 		return err
 	}
 
@@ -64,27 +64,27 @@ func (i *UnmarshalIntegration) UnmarshalJSON(data []byte) error {
 	switch cType.Type {
 	case IntegrationTypeTwitch:
 		var v TwitchIntegration
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		integration = v
 
 	case IntegrationTypeYouTube:
 		var v YouTubeIntegration
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		integration = v
 
 	case IntegrationTypeBot:
 		var v BotIntegration
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		integration = v
 
 	case IntegrationTypeGuildSubscription:
 		var v GuildSubscriptionIntegration
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		integration = v
 
 	default:
 		var v UnknownIntegration
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		integration = v
 	}
 
@@ -256,7 +256,7 @@ type UnknownIntegration struct {
 func (i *UnknownIntegration) UnmarshalJSON(data []byte) error {
 	type unknownIntegration UnknownIntegration
 	var v unknownIntegration
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*i = UnknownIntegration(v)

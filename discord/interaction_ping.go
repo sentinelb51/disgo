@@ -19,7 +19,7 @@ type PingInteraction struct {
 func (i *PingInteraction) UnmarshalJSON(data []byte) error {
 	var v rawInteraction
 
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

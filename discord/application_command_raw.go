@@ -1,7 +1,6 @@
 package discord
 
 import (
-	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -32,7 +31,7 @@ func (c *rawSlashCommand) UnmarshalJSON(data []byte) error {
 		alias
 	}
 
-	if err := json.Unmarshal(data, &sc); err != nil {
+	if err := unmarshalOnce(data, &sc); err != nil {
 		return err
 	}
 

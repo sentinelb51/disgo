@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"iter"
 
 	"github.com/disgoorg/json/v2"
@@ -98,13 +100,18 @@ type ModalSubmitInteractionData struct {
 }
 
 func (d *ModalSubmitInteractionData) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, d)
+}
+
+// UnmarshalJSONFrom decodes the data as it streams in, rather than read whole first
+func (d *ModalSubmitInteractionData) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var iData struct {
 		CustomID   string               `json:"custom_id"`
 		Components []UnmarshalComponent `json:"components"`
 		Resolved   ResolvedData         `json:"resolved"`
 	}
 
-	if err := json.Unmarshal(data, &iData); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &iData); err != nil {
 		return err
 	}
 

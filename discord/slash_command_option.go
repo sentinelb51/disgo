@@ -20,7 +20,7 @@ func (o *UnmarshalSlashCommandOption) UnmarshalJSON(data []byte) error {
 	var oType struct {
 		Type ApplicationCommandOptionType `json:"type"`
 	}
-	if err := json.Unmarshal(data, &oType); err != nil {
+	if err := unmarshalOnce(data, &oType); err != nil {
 		return err
 	}
 
@@ -32,17 +32,17 @@ func (o *UnmarshalSlashCommandOption) UnmarshalJSON(data []byte) error {
 	switch oType.Type {
 	case ApplicationCommandOptionTypeSubCommand:
 		var v SlashCommandOptionSubCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		slashCommandOption = v
 
 	case ApplicationCommandOptionTypeSubCommandGroup:
 		var v SlashCommandOptionSubCommandGroup
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		slashCommandOption = v
 
 	default:
 		var v SlashCommandOption
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		slashCommandOption = v
 	}
 	if err != nil {
@@ -96,7 +96,7 @@ func (SlashCommandOption) slashCommandOption() {}
 // If the type is not ApplicationCommandOptionTypeString, it panics.
 func (o SlashCommandOption) String() string {
 	var v string
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -106,7 +106,7 @@ func (o SlashCommandOption) String() string {
 // If the type is not ApplicationCommandOptionTypeInt, it panics.
 func (o SlashCommandOption) Int() int {
 	var v int
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -116,7 +116,7 @@ func (o SlashCommandOption) Int() int {
 // If the type is not ApplicationCommandOptionTypeFloat, it panics.
 func (o SlashCommandOption) Float() float64 {
 	var v float64
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -126,7 +126,7 @@ func (o SlashCommandOption) Float() float64 {
 // If the type is not ApplicationCommandOptionTypeBool, it panics.
 func (o SlashCommandOption) Bool() bool {
 	var v bool
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v
@@ -136,7 +136,7 @@ func (o SlashCommandOption) Bool() bool {
 // If the type is not ApplicationCommandOptionTypeUser, ApplicationCommandOptionTypeChannel, ApplicationCommandOptionTypeRole or ApplicationCommandOptionTypeMentionable, it panics.
 func (o SlashCommandOption) Snowflake() snowflake.ID {
 	var v snowflake.ID
-	if err := json.Unmarshal(o.Value, &v); err != nil {
+	if err := unmarshalOnce(o.Value, &v); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal value of option %s: %v", o.Name, err))
 	}
 	return v

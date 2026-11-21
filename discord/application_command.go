@@ -45,7 +45,7 @@ func (u *UnmarshalApplicationCommand) UnmarshalJSON(data []byte) error {
 		Type ApplicationCommandType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &cType); err != nil {
+	if err := unmarshalOnce(data, &cType); err != nil {
 		return err
 	}
 
@@ -57,27 +57,27 @@ func (u *UnmarshalApplicationCommand) UnmarshalJSON(data []byte) error {
 	switch cType.Type {
 	case ApplicationCommandTypeSlash:
 		var v SlashCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommand = v
 
 	case ApplicationCommandTypeUser:
 		var v UserCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommand = v
 
 	case ApplicationCommandTypeMessage:
 		var v MessageCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommand = v
 
 	case ApplicationCommandTypePrimaryEntryPoint:
 		var v EntryPointCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommand = v
 
 	default:
 		var v UnknownApplicationCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommand = v
 	}
 
@@ -112,7 +112,7 @@ type SlashCommand struct {
 
 func (c *SlashCommand) UnmarshalJSON(data []byte) error {
 	var v rawSlashCommand
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -238,7 +238,7 @@ type UserCommand struct {
 
 func (c *UserCommand) UnmarshalJSON(data []byte) error {
 	var v rawContextCommand
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -352,7 +352,7 @@ type MessageCommand struct {
 
 func (c *MessageCommand) UnmarshalJSON(data []byte) error {
 	var v rawContextCommand
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -467,7 +467,7 @@ type EntryPointCommand struct {
 
 func (c *EntryPointCommand) UnmarshalJSON(data []byte) error {
 	var v rawEntryPointCommand
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -594,7 +594,7 @@ type UnknownApplicationCommand struct {
 
 func (c *UnknownApplicationCommand) UnmarshalJSON(data []byte) error {
 	var v rawContextCommand
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 

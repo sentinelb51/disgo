@@ -1604,7 +1604,7 @@ func (c *UnknownChannel) UnmarshalJSON(data []byte) error {
 		LastPinTimestamp     *time.Time                     `json:"last_pin_timestamp"`
 		Flags                ChannelFlags                   `json:"flags"`
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -1642,7 +1642,7 @@ func (c UnknownChannel) MarshalJSON() ([]byte, error) {
 
 	// Raw values rather than json.Merge, which would turn every number into a float64.
 	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(c.Data, &fields); err != nil {
+	if err := unmarshalOnce(c.Data, &fields); err != nil {
 		return nil, err
 	}
 	guildID, err := json.Marshal(c.guildID)

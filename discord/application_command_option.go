@@ -41,7 +41,7 @@ func (u *UnmarshalApplicationCommandOption) UnmarshalJSON(data []byte) error {
 		Type ApplicationCommandOptionType `json:"type"`
 	}
 
-	if err := json.Unmarshal(data, &oType); err != nil {
+	if err := unmarshalOnce(data, &oType); err != nil {
 		return err
 	}
 
@@ -53,62 +53,62 @@ func (u *UnmarshalApplicationCommandOption) UnmarshalJSON(data []byte) error {
 	switch oType.Type {
 	case ApplicationCommandOptionTypeSubCommand:
 		var v ApplicationCommandOptionSubCommand
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeSubCommandGroup:
 		var v ApplicationCommandOptionSubCommandGroup
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeString:
 		var v ApplicationCommandOptionString
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeInt:
 		var v ApplicationCommandOptionInt
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeBool:
 		var v ApplicationCommandOptionBool
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeUser:
 		var v ApplicationCommandOptionUser
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeChannel:
 		var v ApplicationCommandOptionChannel
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeRole:
 		var v ApplicationCommandOptionRole
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeMentionable:
 		var v ApplicationCommandOptionMentionable
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeFloat:
 		var v ApplicationCommandOptionFloat
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	case ApplicationCommandOptionTypeAttachment:
 		var v ApplicationCommandOptionAttachment
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 
 	default:
 		var v UnknownApplicationCommandOption
-		err = json.Unmarshal(data, &v)
+		err = unmarshalOnce(data, &v)
 		applicationCommandOption = v
 	}
 
@@ -147,7 +147,7 @@ func (o *ApplicationCommandOptionSubCommand) UnmarshalJSON(data []byte) error {
 		Options []UnmarshalApplicationCommandOption `json:"options"`
 		applicationCommandOptionSubCommand
 	}
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 
@@ -590,7 +590,7 @@ type UnknownApplicationCommandOption struct {
 func (o *UnknownApplicationCommandOption) UnmarshalJSON(data []byte) error {
 	type unknownApplicationCommandOption UnknownApplicationCommandOption
 	var v unknownApplicationCommandOption
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := unmarshalOnce(data, &v); err != nil {
 		return err
 	}
 	*o = UnknownApplicationCommandOption(v)
