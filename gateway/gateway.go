@@ -466,6 +466,14 @@ func (g *gatewayImpl) sendInternal(ctx context.Context, commandType RateLimiterC
 	}
 
 	if err := limiter.Wait(ctx, commandType); err != nil {
+		// A wait that ran out on a connection since replaced is that connection's end, not the new one's failure: a
+		// heartbeat would close the new one for it
+		g.connMu.Lock()
+		replaced := g.conn != conn
+		g.connMu.Unlock()
+		if replaced {
+			return discord.ErrShardNotConnected
+		}
 		return err
 	}
 	defer limiter.Unlock()
