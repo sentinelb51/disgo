@@ -188,6 +188,18 @@ func openTestGateway(t *testing.T, g Gateway) {
 	})
 }
 
+// Open connects at once: the backoff waits only between tries that failed
+func TestGatewayOpenConnectsAtOnce(t *testing.T) {
+	t.Parallel()
+
+	g := newTestGateway(t, func(n int, c *testConn) { c.serve(time.Minute, nil) })
+	start := time.Now()
+	openTestGateway(t, g)
+	if took := time.Since(start); took > 500*time.Millisecond {
+		t.Fatalf("Open took %s, want no wait before the first try", took)
+	}
+}
+
 // Close stops the heartbeat started for the connection it closes, which runs on its own goroutine
 func TestGatewayCloseStopsHeartbeat(t *testing.T) {
 	t.Parallel()
@@ -469,32 +481,31 @@ func TestGatewaySkipsUndecodableData(t *testing.T) {
 func TestGatewayCloseStopsReconnect(t *testing.T) {
 	t.Parallel()
 
-	dropped := make(chan struct{})
+	failed := make(chan struct{})
 	reconnected := make(chan struct{}, 1)
 	g := newTestGateway(t, func(n int, c *testConn) {
-		if n > 0 {
+		switch n {
+		case 0:
+			// drop the connection once READY is sent, as a network failure would
+			c.serve(time.Minute, func() { _ = c.conn.UnderlyingConn().Close() })
+		case 1:
+			// the reconnect's first try fails, so it waits before the next
+			_ = c.conn.UnderlyingConn().Close()
+			close(failed)
+		default:
 			reconnected <- struct{}{}
 			c.serve(time.Minute, nil)
-			return
 		}
-		// drop the connection once READY is sent, as a network failure would
-		c.serve(time.Minute, func() {
-			_ = c.conn.UnderlyingConn().Close()
-			close(dropped)
-		})
 	})
 	openTestGateway(t, g)
 
-	<-dropped
-	deadline := time.Now().Add(5 * time.Second)
-	for g.Status() == StatusReady {
-		if time.Now().After(deadline) {
-			t.Fatal("the gateway did not see the connection drop")
-		}
-		time.Sleep(time.Millisecond)
+	select {
+	case <-failed:
+	case <-time.After(5 * time.Second):
+		t.Fatal("the gateway did not try to reconnect")
 	}
 
-	// the gateway now waits a second before it reconnects
+	// the gateway now waits a second before it tries again
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	g.Close(ctx)

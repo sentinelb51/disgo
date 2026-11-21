@@ -488,27 +488,11 @@ func (g *gatewayImpl) Presence() *MessageDataPresenceUpdate {
 }
 
 func (g *gatewayImpl) doReconnect(ctx context.Context) error {
-	var (
-		try              int
-		backoffIncrement int
-	)
+	var backoffIncrement int
 
-	for {
-		// Exponentially backoff up to a limit of 10s
-		delay := time.Duration(1<<backoffIncrement) * time.Second
-		if delay > maximumConnectDelay {
-			delay = maximumConnectDelay
-		} else {
-			backoffIncrement++
-		}
-
-		timer := time.NewTimer(delay)
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-timer.C:
-		}
-
+	for try := 0; ; try++ {
+		// The first try goes at once: Open, and a reconnect after Discord asked for one or the connection dropped,
+		// waits only once a try has failed
 		err := g.open(ctx)
 		if err == nil {
 			// Successfully connected, our job here is done
@@ -526,12 +510,26 @@ func (g *gatewayImpl) doReconnect(ctx context.Context) error {
 			return err
 		}
 
+		// Exponentially back off between failed tries, up to maximumConnectDelay
+		delay := time.Duration(1<<backoffIncrement) * time.Second
+		if delay > maximumConnectDelay {
+			delay = maximumConnectDelay
+		} else {
+			backoffIncrement++
+		}
+
 		g.config.Logger.ErrorContext(ctx, "failed to reconnect gateway", slog.Any("err", err), slog.Int("try", try), slog.Duration("delay", delay))
 		g.statusMu.Lock()
 		g.status = StatusDisconnected
 		g.statusMu.Unlock()
 
-		try++
+		timer := time.NewTimer(delay)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return ctx.Err()
+		case <-timer.C:
+		}
 	}
 }
 
