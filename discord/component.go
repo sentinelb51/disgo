@@ -3,6 +3,7 @@ package discord
 import (
 	"fmt"
 	"iter"
+	"slices"
 
 	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
@@ -1927,7 +1928,9 @@ func (c *UnknownComponent) UnmarshalJSON(data []byte) error {
 
 	c.ComponentType = unknownComponent.Type
 	c.ID = unknownComponent.ID
-	c.Data = data
+	// data may be a decoder's buffer, read over again: a component of a type this version doesn't know kept bytes
+	// that turned into whatever came after it
+	c.Data = slices.Clone(data)
 	return nil
 }
 
