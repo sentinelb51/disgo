@@ -197,7 +197,13 @@ type MessageThread struct {
 
 // UnmarshalJSON also fills Member, which GuildThread's UnmarshalJSON, promoted, would leave zero
 func (t *MessageThread) UnmarshalJSON(data []byte) error {
-	if err := t.GuildThread.UnmarshalJSON(data); err != nil {
+	return unmarshalOnce(data, t)
+}
+
+// UnmarshalJSONFrom decodes the thread as it streams in. Without it, encoding/json/v2 would call GuildThread's,
+// promoted, and leave Member zero
+func (t *MessageThread) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	if err := t.GuildThread.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 

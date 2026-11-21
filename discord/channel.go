@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"slices"
 	"strconv"
@@ -174,9 +176,50 @@ func (u *UnmarshalChannel) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// unmarshalChannel calls each channel's UnmarshalJSON directly: through json.Unmarshal the channel is read once
-// more before the method is handed it
+// UnmarshalJSONFrom decodes the channel as its type as it streams in, the type peeked in what dec has buffered: a
+// GUILD_CREATE carries every channel of the server
+func (u *UnmarshalChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	cType, _, ok := peekUnread(dec, "type", "")
+	if !ok {
+		data, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		return u.UnmarshalJSON(data)
+	}
+
+	channel, err := decodeChannel(ChannelType(peekInt(cType)), dec)
+	if err != nil {
+		return err
+	}
+
+	u.Channel = channel
+	return nil
+}
+
+// unmarshalChannel decodes data as a channel of channelType
 func unmarshalChannel(data []byte, channelType ChannelType) (Channel, error) {
+	v := typedChannel{channelType: channelType}
+	if err := unmarshalOnce(data, &v); err != nil {
+		return nil, err
+	}
+	return v.channel, nil
+}
+
+// typedChannel decodes a channel of a type known beforehand
+type typedChannel struct {
+	channelType ChannelType
+	channel     Channel
+}
+
+func (c *typedChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) (err error) {
+	c.channel, err = decodeChannel(c.channelType, dec)
+	return err
+}
+
+// decodeChannel decodes the channel dec reads next as channelType. Each kind's UnmarshalJSONFrom is called
+// directly, where handing a pointer to it through encoding/json/v2 would move it to the heap
+func decodeChannel(channelType ChannelType, dec *jsontext.Decoder) (Channel, error) {
 	var (
 		channel Channel
 		err     error
@@ -185,64 +228,98 @@ func unmarshalChannel(data []byte, channelType ChannelType) (Channel, error) {
 	switch channelType {
 	case ChannelTypeGuildText:
 		var v GuildTextChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeDM:
 		var v DMChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildVoice:
 		var v GuildVoiceChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGroupDM:
 		var v GroupDMChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildCategory:
 		var v GuildCategoryChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildNews:
 		var v GuildNewsChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildNewsThread, ChannelTypeGuildPublicThread, ChannelTypeGuildPrivateThread:
 		var v GuildThread
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildStageVoice:
 		var v GuildStageVoiceChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildForum:
 		var v GuildForumChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	case ChannelTypeGuildMedia:
 		var v GuildMediaChannel
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		channel = v
 
 	default:
-		var v UnknownChannel
-		err = v.UnmarshalJSON(data)
-		channel = v
+		// Kept whole as Data
+		var data []byte
+		if data, err = dec.ReadValue(); err == nil {
+			var v UnknownChannel
+			err = v.UnmarshalJSON(data)
+			channel = v
+		}
 	}
 
 	if err != nil {
 		return nil, err
 	}
 	return channel, nil
+}
+
+// peekUnread is peek over what dec has buffered of the object it reads next, so the object can be decoded as its
+// type as it streams in, read once. ok is false unless the buffer holds the value of every key asked for whole: the
+// object is longer than dec has read so far, isn't an object, or lacks a key. The caller then reads the object
+// whole and peeks it there. The values are dec's buffer, valid until it reads on
+func peekUnread(dec *jsontext.Decoder, first, second string) (firstValue, secondValue []byte, ok bool) {
+	if dec.PeekKind() != '{' {
+		return nil, nil, false
+	}
+
+	// The buffer starts at the delimiter before the value, if any
+	buffer := dec.UnreadBuffer()
+	index := peekSpace(buffer, 0)
+	if index < len(buffer) && (buffer[index] == ',' || buffer[index] == ':') {
+		index = peekSpace(buffer, index+1)
+	}
+	buffer = buffer[index:]
+
+	// A value running to the end of the buffer may go on past it
+	whole := func(value []byte) bool {
+		return value != nil && cap(buffer)-cap(value)+len(value) < len(buffer)
+	}
+
+	// The second key may be absent, which only the object's end, buffered, tells
+	firstValue, secondValue, closed := peekObject(buffer, first, second)
+	if !whole(firstValue) || second != "" && !whole(secondValue) && (secondValue != nil || !closed) {
+		return nil, nil, false
+	}
+	return firstValue, secondValue, true
 }
 
 // peek returns the raw values of up to two top-level keys of the object in data, reading only as far as it must
@@ -253,9 +330,15 @@ func unmarshalChannel(data []byte, channelType ChannelType) (Channel, error) {
 // byte for byte and the first of duplicates wins, where encoding/json folds case and keeps the last; Discord
 // sends neither
 func peek(data []byte, first, second string) (firstValue, secondValue []byte) {
+	firstValue, secondValue, _ = peekObject(data, first, second)
+	return firstValue, secondValue
+}
+
+// peekObject is peek, and whether it read to the object's closing brace
+func peekObject(data []byte, first, second string) (firstValue, secondValue []byte, closed bool) {
 	index := peekSpace(data, 0)
 	if index == len(data) || data[index] != '{' {
-		return nil, nil
+		return nil, nil, false
 	}
 
 	wanted := 1
@@ -266,7 +349,7 @@ func peek(data []byte, first, second string) (firstValue, secondValue []byte) {
 	for found := 0; found < wanted; {
 		index = peekSpace(data, index+1)
 		if index == len(data) || data[index] != '"' {
-			return firstValue, secondValue
+			return firstValue, secondValue, index < len(data) && data[index] == '}'
 		}
 
 		end := peekValue(data, index)
@@ -274,7 +357,7 @@ func peek(data []byte, first, second string) (firstValue, secondValue []byte) {
 
 		index = peekSpace(data, end)
 		if index == len(data) || data[index] != ':' {
-			return firstValue, secondValue
+			return firstValue, secondValue, false
 		}
 
 		start := peekSpace(data, index+1)
@@ -291,11 +374,11 @@ func peek(data []byte, first, second string) (firstValue, secondValue []byte) {
 
 		index = peekSpace(data, index)
 		if index == len(data) || data[index] != ',' {
-			return firstValue, secondValue
+			return firstValue, secondValue, index < len(data) && data[index] == '}'
 		}
 	}
 
-	return firstValue, secondValue
+	return firstValue, secondValue, false
 }
 
 // peekValue returns the index just past the JSON value starting at index
@@ -382,8 +465,13 @@ type GuildTextChannel struct {
 }
 
 func (c *GuildTextChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildTextChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildTextChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -508,8 +596,13 @@ type DMChannel struct {
 }
 
 func (c *DMChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *DMChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v dmChannel
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -580,8 +673,13 @@ type GroupDMChannel struct {
 }
 
 func (c *GroupDMChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GroupDMChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v groupDMChannel
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -679,8 +777,13 @@ type GuildVoiceChannel struct {
 }
 
 func (c *GuildVoiceChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildVoiceChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildVoiceChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -821,8 +924,13 @@ type GuildCategoryChannel struct {
 }
 
 func (c *GuildCategoryChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildCategoryChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildCategoryChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -919,8 +1027,13 @@ type GuildNewsChannel struct {
 }
 
 func (c *GuildNewsChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildNewsChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildNewsChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -1059,8 +1172,14 @@ type GuildThread struct {
 }
 
 func (c *GuildThread) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the thread as it streams in, rather than read whole first. A type embedding GuildThread
+// with an UnmarshalJSON of its own needs an UnmarshalJSONFrom too, or encoding/json/v2 calls this one in its place
+func (c *GuildThread) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildThread
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
@@ -1211,8 +1330,13 @@ type GuildStageVoiceChannel struct {
 }
 
 func (c *GuildStageVoiceChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildStageVoiceChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildStageVoiceChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -1361,8 +1485,13 @@ type GuildForumChannel struct {
 }
 
 func (c *GuildForumChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildForumChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildForumChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 
@@ -1478,8 +1607,13 @@ type GuildMediaChannel struct {
 }
 
 func (c *GuildMediaChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+// UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
+func (c *GuildMediaChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildMediaChannel
-	if err := v.UnmarshalJSON(data); err != nil {
+	if err := v.UnmarshalJSONFrom(dec); err != nil {
 		return err
 	}
 

@@ -1,6 +1,9 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
+
 	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 )
@@ -50,36 +53,66 @@ type UnmarshalPermissionOverwrite struct {
 }
 
 func (o *UnmarshalPermissionOverwrite) UnmarshalJSON(data []byte) error {
-	var (
-		overwrite PermissionOverwrite
-		err       error
-	)
-
 	// The type is peeked rather than probed, and the overwrite decoded in one pass, as channels are
 	oType, _ := peek(data, "type", "")
-	switch PermissionOverwriteType(peekInt(oType)) {
-	case PermissionOverwriteTypeRole:
-		var v RolePermissionOverwrite
-		err = unmarshalOnce(data, &v)
-		overwrite = v
-
-	case PermissionOverwriteTypeMember:
-		var v MemberPermissionOverwrite
-		err = unmarshalOnce(data, &v)
-		overwrite = v
-
-	default:
-		var v UnknownPermissionOverwrite
-		err = unmarshalOnce(data, &v)
-		overwrite = v
-	}
-
+	overwrite, err := decodeOverwrite(PermissionOverwriteType(peekInt(oType)), func(v any) error { return unmarshalOnce(data, v) })
 	if err != nil {
 		return err
 	}
 
 	o.PermissionOverwrite = overwrite
 	return nil
+}
+
+// UnmarshalJSONFrom decodes the overwrite as its type as it streams in, the type peeked in what dec has buffered
+func (o *UnmarshalPermissionOverwrite) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	oType, _, ok := peekUnread(dec, "type", "")
+	if !ok {
+		data, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		return o.UnmarshalJSON(data)
+	}
+
+	overwrite, err := decodeOverwrite(PermissionOverwriteType(peekInt(oType)), func(v any) error { return jsonv2.UnmarshalDecode(dec, v) })
+	if err != nil {
+		return err
+	}
+
+	o.PermissionOverwrite = overwrite
+	return nil
+}
+
+// decodeOverwrite decodes an overwrite of oType through decode, which reads one JSON value into the pointer it is
+// handed
+func decodeOverwrite(oType PermissionOverwriteType, decode func(v any) error) (PermissionOverwrite, error) {
+	var (
+		overwrite PermissionOverwrite
+		err       error
+	)
+
+	switch oType {
+	case PermissionOverwriteTypeRole:
+		var v RolePermissionOverwrite
+		err = decode(&v)
+		overwrite = v
+
+	case PermissionOverwriteTypeMember:
+		var v MemberPermissionOverwrite
+		err = decode(&v)
+		overwrite = v
+
+	default:
+		var v UnknownPermissionOverwrite
+		err = decode(&v)
+		overwrite = v
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return overwrite, nil
 }
 
 type RolePermissionOverwrite struct {

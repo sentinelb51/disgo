@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+
 	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
 )
@@ -30,6 +32,16 @@ func (c ThreadChannelPostCreate) ToBody() (any, error) {
 type ThreadChannelPost struct {
 	GuildThread
 	Message Message `json:"message"`
+}
+
+// UnmarshalJSONFrom reads the post whole for UnmarshalJSON. Without it, encoding/json/v2 would call GuildThread's,
+// promoted, and leave Message zero
+func (c *ThreadChannelPost) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	data, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+	return c.UnmarshalJSON(data)
 }
 
 func (c *ThreadChannelPost) UnmarshalJSON(data []byte) error {

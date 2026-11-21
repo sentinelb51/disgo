@@ -1,0 +1,3142 @@
+gateway.Message{
+  Op: 0
+  S: 3
+  T: "GUILD_CREATE"
+  D: (gateway.EventGuildCreate) gateway.EventGuildCreate{
+    GatewayGuild: discord.GatewayGuild{
+      CacheGuild: discord.CacheGuild{
+        Guild: discord.Guild{
+          ID: 1102938475610293840
+          Name: "A server"
+          Icon: &"a1b2c3d4e5f60718293a4b5c6d7e8f90"
+          Splash: nil
+          DiscoverySplash: nil
+          OwnerID: 300000000000000001
+          AfkChannelID: nil
+          AfkTimeout: 300
+          WidgetEnabled: false
+          WidgetChannelID: 0
+          VerificationLevel: 2
+          DefaultMessageNotifications: 1
+          ExplicitContentFilter: 2
+          Features: [
+            "COMMUNITY"
+            "NEWS"
+            "INVITE_SPLASH"
+            "VANITY_URL"
+            "ANIMATED_ICON"
+            "THREADS_ENABLED"
+            "AUTO_MODERATION"
+            "SOUNDBOARD"
+          ]
+          MFALevel: 1
+          ApplicationID: nil
+          SystemChannelID: &1102938475610295841
+          SystemChannelFlags: 0
+          RulesChannelID: &1102938475610295842
+          MaxPresences: nil
+          MaxMembers: 500000
+          VanityURLCode: &"aserver"
+          Description: &"A community server"
+          Banner: nil
+          PremiumTier: 2
+          PremiumSubscriptionCount: 9
+          PreferredLocale: "en-US"
+          PublicUpdatesChannelID: &1102938475610295844
+          MaxVideoChannelUsers: 25
+          MaxStageVideoChannelUsers: 50
+          WelcomeScreen: discord.GuildWelcomeScreen{
+            Description: nil
+            WelcomeChannels: nil
+          }
+          NSFWLevel: 0
+          PremiumProgressBarEnabled: true
+          SafetyAlertsChannelID: &1102938475610295843
+          IncidentsData: nil
+        }
+        JoinedAt: 2024-03-01T10:00:00Z
+        Large: true
+        MemberCount: 2412
+      }
+      Unavailable: false
+      VoiceStates: [
+        discord.VoiceState{
+          GuildID: 0
+          ChannelID: &1102938475610295867
+          UserID: 300000000000000000
+          SessionID: "abcdef0123456789abcdef0123456789"
+          GuildDeaf: false
+          GuildMute: false
+          SelfDeaf: false
+          SelfMute: false
+          SelfStream: false
+          SelfVideo: false
+          Suppress: false
+          RequestToSpeakTimestamp: nil
+        }
+        discord.VoiceState{
+          GuildID: 0
+          ChannelID: &1102938475610295867
+          UserID: 300000000000000001
+          SessionID: "abcdef0123456789abcdef0123456789"
+          GuildDeaf: false
+          GuildMute: false
+          SelfDeaf: false
+          SelfMute: true
+          SelfStream: false
+          SelfVideo: false
+          Suppress: false
+          RequestToSpeakTimestamp: nil
+        }
+        discord.VoiceState{
+          GuildID: 0
+          ChannelID: &1102938475610295867
+          UserID: 300000000000000002
+          SessionID: "abcdef0123456789abcdef0123456789"
+          GuildDeaf: false
+          GuildMute: false
+          SelfDeaf: false
+          SelfMute: false
+          SelfStream: false
+          SelfVideo: false
+          Suppress: false
+          RequestToSpeakTimestamp: nil
+        }
+      ]
+      Members: [
+        discord.Member{
+          User: discord.User{
+            ID: 912345678901234567
+            Username: "VOID"
+            Discriminator: "1234"
+            GlobalName: nil
+            Avatar: &"abcdef0123456789abcdef0123456789"
+            Banner: nil
+            AccentColor: nil
+            Bot: true
+            System: false
+            PublicFlags: 0
+            AvatarDecorationData: nil
+            Collectibles: nil
+            PrimaryGuild: nil
+          }
+          Nick: nil
+          Avatar: nil
+          Banner: nil
+          RoleIDs: [
+            1102938475610293941
+          ]
+          JoinedAt: &2024-03-01T10:00:00Z
+          PremiumSince: nil
+          Deaf: false
+          Mute: false
+          Flags: 0
+          Pending: false
+          CommunicationDisabledUntil: nil
+          AvatarDecorationData: nil
+          Collectibles: nil
+          GuildID: 0
+        }
+      ]
+      Channels: [
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294840
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293950
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293944
+              Allow: 1024
+              Deny: 0
+            }
+          ]
+          name: "category 0"
+          flags: 0
+        }
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294841
+          guildID: 0
+          position: 1
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293964
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293973
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000445
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "category 1"
+          flags: 0
+        }
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294842
+          guildID: 0
+          position: 2
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293945
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293946
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000580
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "category 2"
+          flags: 0
+        }
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294843
+          guildID: 0
+          position: 3
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293977
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000227
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "category 3"
+          flags: 0
+        }
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294844
+          guildID: 0
+          position: 4
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293976
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293959
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000121
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "category 4"
+          flags: 0
+        }
+        (discord.GuildCategoryChannel) discord.GuildCategoryChannel{
+          id: 1102938475610294845
+          guildID: 0
+          position: 5
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293976
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293947
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "category 5"
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295841
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293954
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-1"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987001
+          rateLimitPerUser: 5
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295842
+          guildID: 0
+          position: 1
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293964
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293956
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293956
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293977
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-2"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987002
+          rateLimitPerUser: 30
+          parentID: &1102938475610294842
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295843
+          guildID: 0
+          position: 2
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293951
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293950
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-3"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987003
+          rateLimitPerUser: 0
+          parentID: &1102938475610294845
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295844
+          guildID: 0
+          position: 3
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293963
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293978
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293945
+              Allow: 1024
+              Deny: 0
+            }
+          ]
+          name: "channel-4"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987004
+          rateLimitPerUser: 0
+          parentID: &1102938475610294843
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295845
+          guildID: 0
+          position: 4
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293977
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000396
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-5"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987005
+          rateLimitPerUser: 5
+          parentID: &1102938475610294845
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295846
+          guildID: 0
+          position: 5
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293963
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-6"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987006
+          rateLimitPerUser: 0
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295847
+          guildID: 0
+          position: 6
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293949
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293966
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-7"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987007
+          rateLimitPerUser: 0
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295848
+          guildID: 0
+          position: 7
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293966
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293949
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-8"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987008
+          rateLimitPerUser: 30
+          parentID: &1102938475610294842
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295849
+          guildID: 0
+          position: 8
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293946
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293950
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-9"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987009
+          rateLimitPerUser: 30
+          parentID: &1102938475610294840
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295850
+          guildID: 0
+          position: 9
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293959
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293950
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-10"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987010
+          rateLimitPerUser: 5
+          parentID: &1102938475610294844
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295851
+          guildID: 0
+          position: 10
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293970
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293966
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-11"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987011
+          rateLimitPerUser: 30
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295852
+          guildID: 0
+          position: 11
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293945
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-12"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987012
+          rateLimitPerUser: 5
+          parentID: &1102938475610294840
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295853
+          guildID: 0
+          position: 12
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293941
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-13"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987013
+          rateLimitPerUser: 0
+          parentID: &1102938475610294842
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295854
+          guildID: 0
+          position: 13
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293965
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-14"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987014
+          rateLimitPerUser: 5
+          parentID: &1102938475610294842
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295855
+          guildID: 0
+          position: 14
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293970
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293971
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293946
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000351
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-15"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987015
+          rateLimitPerUser: 5
+          parentID: &1102938475610294845
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295856
+          guildID: 0
+          position: 15
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293974
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293954
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293950
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293974
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-16"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987016
+          rateLimitPerUser: 5
+          parentID: &1102938475610294840
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295857
+          guildID: 0
+          position: 16
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293963
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293975
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-17"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987017
+          rateLimitPerUser: 0
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295858
+          guildID: 0
+          position: 17
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293963
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293942
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-18"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987018
+          rateLimitPerUser: 5
+          parentID: &1102938475610294841
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295859
+          guildID: 0
+          position: 18
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293964
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293953
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000640
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-19"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987019
+          rateLimitPerUser: 0
+          parentID: &1102938475610294844
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295860
+          guildID: 0
+          position: 19
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293946
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293965
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293971
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293968
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000969
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-20"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987020
+          rateLimitPerUser: 30
+          parentID: &1102938475610294845
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295861
+          guildID: 0
+          position: 20
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293946
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293951
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293942
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293978
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-21"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987021
+          rateLimitPerUser: 30
+          parentID: &1102938475610294841
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295862
+          guildID: 0
+          position: 21
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293976
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293942
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293947
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-22"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987022
+          rateLimitPerUser: 0
+          parentID: &1102938475610294841
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295863
+          guildID: 0
+          position: 22
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 3072
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293954
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-23"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987023
+          rateLimitPerUser: 5
+          parentID: &1102938475610294844
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295864
+          guildID: 0
+          position: 23
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293949
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293963
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293978
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-24"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987024
+          rateLimitPerUser: 0
+          parentID: &1102938475610294844
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295865
+          guildID: 0
+          position: 24
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293969
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293979
+              Allow: 1024
+              Deny: 0
+            }
+          ]
+          name: "channel-25"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987025
+          rateLimitPerUser: 0
+          parentID: &1102938475610294841
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildTextChannel) discord.GuildTextChannel{
+          id: 1102938475610295866
+          guildID: 0
+          position: 25
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293961
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-26"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987026
+          rateLimitPerUser: 0
+          parentID: &1102938475610294840
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295867
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293958
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293947
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-27"
+          bitrate: 64000
+          UserLimit: 5
+          parentID: &1102938475610294840
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295868
+          guildID: 0
+          position: 1
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293958
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293973
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293973
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-28"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294842
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295869
+          guildID: 0
+          position: 2
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293949
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-29"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294840
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295870
+          guildID: 0
+          position: 3
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293945
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293960
+              Allow: 1024
+              Deny: 0
+            }
+          ]
+          name: "channel-30"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294841
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295871
+          guildID: 0
+          position: 4
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293957
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293970
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293947
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-31"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294841
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295872
+          guildID: 0
+          position: 5
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293968
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293962
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000327
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-32"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294840
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295873
+          guildID: 0
+          position: 6
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293962
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293969
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293965
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-33"
+          bitrate: 64000
+          UserLimit: 10
+          parentID: &1102938475610294842
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildVoiceChannel) discord.GuildVoiceChannel{
+          id: 1102938475610295874
+          guildID: 0
+          position: 7
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293955
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000279
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-34"
+          bitrate: 64000
+          UserLimit: 0
+          parentID: &1102938475610294840
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+        (discord.GuildNewsChannel) discord.GuildNewsChannel{
+          id: 1102938475610295875
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293968
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293966
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293975
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-35"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987035
+          rateLimitPerUser: 5
+          parentID: &1102938475610294840
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildNewsChannel) discord.GuildNewsChannel{
+          id: 1102938475610295876
+          guildID: 0
+          position: 1
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293968
+              Allow: 1024
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000018
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-36"
+          topic: nil
+          nsfw: false
+          lastMessageID: &1422876543210987036
+          rateLimitPerUser: 0
+          parentID: &1102938475610294845
+          lastPinTimestamp: &2026-09-30T22:14:05Z
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildNewsChannel) discord.GuildNewsChannel{
+          id: 1102938475610295877
+          guildID: 0
+          position: 2
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293979
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293945
+              Allow: 2048
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000567
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-37"
+          topic: &"Read the rules before posting. Be nice."
+          nsfw: false
+          lastMessageID: &1422876543210987037
+          rateLimitPerUser: 5
+          parentID: &1102938475610294843
+          lastPinTimestamp: nil
+          defaultAutoArchiveDuration: 0
+          flags: 0
+        }
+        (discord.GuildForumChannel) discord.GuildForumChannel{
+          id: 1102938475610295878
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293974
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293948
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.MemberPermissionOverwrite) discord.MemberPermissionOverwrite{
+              UserID: 300000000000000186
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-38"
+          parentID: &1102938475610294841
+          LastPostID: &1422876543210987038
+          Topic: &"Read the rules before posting. Be nice."
+          NSFW: false
+          RateLimitPerUser: 5
+          flags: 0
+          AvailableTags: [
+            discord.ChannelTag{
+              ID: 1102938475610299220
+              Name: "tag0"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299221
+              Name: "tag1"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299222
+              Name: "tag2"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+          ]
+          DefaultReactionEmoji: &discord.DefaultReactionEmoji{
+            EmojiID: nil
+            EmojiName: &"👍"
+          }
+          DefaultThreadRateLimitPerUser: 0
+          DefaultSortOrder: nil
+          DefaultForumLayout: 0
+        }
+        (discord.GuildForumChannel) discord.GuildForumChannel{
+          id: 1102938475610295879
+          guildID: 0
+          position: 1
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 2048
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293959
+              Allow: 1049600
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293973
+              Allow: 3072
+              Deny: 0
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293958
+              Allow: 2048
+              Deny: 0
+            }
+          ]
+          name: "channel-39"
+          parentID: &1102938475610294842
+          LastPostID: &1422876543210987039
+          Topic: nil
+          NSFW: false
+          RateLimitPerUser: 0
+          flags: 0
+          AvailableTags: [
+            discord.ChannelTag{
+              ID: 1102938475610299230
+              Name: "tag0"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299231
+              Name: "tag1"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299232
+              Name: "tag2"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+          ]
+          DefaultReactionEmoji: &discord.DefaultReactionEmoji{
+            EmojiID: nil
+            EmojiName: &"👍"
+          }
+          DefaultThreadRateLimitPerUser: 0
+          DefaultSortOrder: nil
+          DefaultForumLayout: 0
+        }
+        (discord.GuildForumChannel) discord.GuildForumChannel{
+          id: 1102938475610295880
+          guildID: 0
+          position: 2
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 1024
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293973
+              Allow: 3072
+              Deny: 0
+            }
+          ]
+          name: "channel-40"
+          parentID: &1102938475610294841
+          LastPostID: &1422876543210987040
+          Topic: &"Read the rules before posting. Be nice."
+          NSFW: false
+          RateLimitPerUser: 30
+          flags: 0
+          AvailableTags: [
+            discord.ChannelTag{
+              ID: 1102938475610299240
+              Name: "tag0"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299241
+              Name: "tag1"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+            discord.ChannelTag{
+              ID: 1102938475610299242
+              Name: "tag2"
+              Moderated: false
+              EmojiID: nil
+              EmojiName: &"✅"
+            }
+          ]
+          DefaultReactionEmoji: &discord.DefaultReactionEmoji{
+            EmojiID: nil
+            EmojiName: &"👍"
+          }
+          DefaultThreadRateLimitPerUser: 0
+          DefaultSortOrder: nil
+          DefaultForumLayout: 0
+        }
+        (discord.GuildStageVoiceChannel) discord.GuildStageVoiceChannel{
+          id: 1102938475610295881
+          guildID: 0
+          position: 0
+          permissionOverwrites: [
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293840
+              Allow: 0
+              Deny: 68608
+            }
+            (discord.RolePermissionOverwrite) discord.RolePermissionOverwrite{
+              RoleID: 1102938475610293972
+              Allow: 1049600
+              Deny: 0
+            }
+          ]
+          name: "channel-41"
+          bitrate: 64000
+          parentID: &1102938475610294842
+          rtcRegion: ""
+          VideoQualityMode: 1
+          lastMessageID: nil
+          nsfw: false
+          rateLimitPerUser: 0
+          flags: 0
+        }
+      ]
+      Threads: [
+        discord.GuildThread{
+          id: 1102938475610302840
+          channelType: 11
+          guildID: 1102938475610293840
+          name: "thread 0"
+          lastMessageID: &1422876543210990000
+          lastPinTimestamp: nil
+          rateLimitPerUser: 0
+          OwnerID: 300000000000000001
+          parentID: 1102938475610295841
+          MessageCount: 12
+          TotalMessageSent: 12
+          AppliedTags: nil
+          MemberCount: 3
+          ThreadMetadata: discord.ThreadMetadata{
+            Archived: false
+            AutoArchiveDuration: 1440
+            ArchiveTimestamp: 2026-09-30T20:00:00Z
+            Locked: false
+            Invitable: false
+            CreateTimestamp: 2026-09-30T20:00:00Z
+          }
+          flags: 0
+          Member: nil
+        }
+        discord.GuildThread{
+          id: 1102938475610302841
+          channelType: 11
+          guildID: 1102938475610293840
+          name: "thread 1"
+          lastMessageID: &1422876543210990001
+          lastPinTimestamp: nil
+          rateLimitPerUser: 0
+          OwnerID: 300000000000000001
+          parentID: 1102938475610295841
+          MessageCount: 12
+          TotalMessageSent: 12
+          AppliedTags: nil
+          MemberCount: 3
+          ThreadMetadata: discord.ThreadMetadata{
+            Archived: false
+            AutoArchiveDuration: 1440
+            ArchiveTimestamp: 2026-09-30T20:00:00Z
+            Locked: false
+            Invitable: false
+            CreateTimestamp: 2026-09-30T20:00:00Z
+          }
+          flags: 0
+          Member: nil
+        }
+      ]
+      Presences: [
+      ]
+      StageInstances: [
+      ]
+      GuildScheduledEvents: [
+      ]
+      SoundboardSounds: [
+      ]
+      Stickers: [
+        discord.Sticker{
+          ID: 1102938475610301840
+          PackID: nil
+          Name: "sticker0"
+          Description: "a sticker"
+          Tags: "smile"
+          Type: 2
+          FormatType: 1
+          Available: &true
+          GuildID: &1102938475610293840
+          User: nil
+          SortValue: nil
+        }
+        discord.Sticker{
+          ID: 1102938475610301841
+          PackID: nil
+          Name: "sticker1"
+          Description: "a sticker"
+          Tags: "smile"
+          Type: 2
+          FormatType: 1
+          Available: &true
+          GuildID: &1102938475610293840
+          User: nil
+          SortValue: nil
+        }
+        discord.Sticker{
+          ID: 1102938475610301842
+          PackID: nil
+          Name: "sticker2"
+          Description: "a sticker"
+          Tags: "smile"
+          Type: 2
+          FormatType: 1
+          Available: &true
+          GuildID: &1102938475610293840
+          User: nil
+          SortValue: nil
+        }
+        discord.Sticker{
+          ID: 1102938475610301843
+          PackID: nil
+          Name: "sticker3"
+          Description: "a sticker"
+          Tags: "smile"
+          Type: 2
+          FormatType: 1
+          Available: &true
+          GuildID: &1102938475610293840
+          User: nil
+          SortValue: nil
+        }
+        discord.Sticker{
+          ID: 1102938475610301844
+          PackID: nil
+          Name: "sticker4"
+          Description: "a sticker"
+          Tags: "smile"
+          Type: 2
+          FormatType: 1
+          Available: &true
+          GuildID: &1102938475610293840
+          User: nil
+          SortValue: nil
+        }
+      ]
+      Roles: [
+        discord.Role{
+          ID: 1102938475610293840
+          GuildID: 0
+          Name: "@everyone"
+          Description: nil
+          Color: 0
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 0
+          Permissions: 2248473465835073
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293941
+          GuildID: 0
+          Name: "role 1"
+          Description: nil
+          Color: 7702965
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 1
+          Permissions: 1024
+          Managed: true
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: &discord.RoleTag{
+            BotID: &400000000000000001
+            IntegrationID: nil
+            PremiumSubscriber: false
+            SubscriptionListingID: nil
+            AvailableForPurchase: false
+            GuildConnections: false
+          }
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293942
+          GuildID: 0
+          Name: "role 2"
+          Description: nil
+          Color: 6664731
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 2
+          Permissions: 2048
+          Managed: true
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: &discord.RoleTag{
+            BotID: &400000000000000002
+            IntegrationID: nil
+            PremiumSubscriber: false
+            SubscriptionListingID: nil
+            AvailableForPurchase: false
+            GuildConnections: false
+          }
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293943
+          GuildID: 0
+          Name: "role 3"
+          Description: nil
+          Color: 13579401
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 3
+          Permissions: 1024
+          Managed: true
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: &discord.RoleTag{
+            BotID: &400000000000000003
+            IntegrationID: nil
+            PremiumSubscriber: false
+            SubscriptionListingID: nil
+            AvailableForPurchase: false
+            GuildConnections: false
+          }
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293944
+          GuildID: 0
+          Name: "role 4"
+          Description: nil
+          Color: 1824976
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 4
+          Permissions: 2048
+          Managed: true
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: &discord.RoleTag{
+            BotID: nil
+            IntegrationID: nil
+            PremiumSubscriber: true
+            SubscriptionListingID: nil
+            AvailableForPurchase: false
+            GuildConnections: false
+          }
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293945
+          GuildID: 0
+          Name: "role 5"
+          Description: nil
+          Color: 478322
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 5
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293946
+          GuildID: 0
+          Name: "role 6"
+          Description: nil
+          Color: 8576307
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 6
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293947
+          GuildID: 0
+          Name: "role 7"
+          Description: nil
+          Color: 5477644
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 7
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: true
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293948
+          GuildID: 0
+          Name: "role 8"
+          Description: nil
+          Color: 2834841
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 8
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293949
+          GuildID: 0
+          Name: "role 9"
+          Description: nil
+          Color: 9460111
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 9
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293950
+          GuildID: 0
+          Name: "role 10"
+          Description: nil
+          Color: 8127317
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 10
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293951
+          GuildID: 0
+          Name: "role 11"
+          Description: nil
+          Color: 1517918
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 11
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293952
+          GuildID: 0
+          Name: "role 12"
+          Description: nil
+          Color: 6219382
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 12
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293953
+          GuildID: 0
+          Name: "role 13"
+          Description: nil
+          Color: 9027373
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 13
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293954
+          GuildID: 0
+          Name: "role 14"
+          Description: nil
+          Color: 121558
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 14
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: true
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293955
+          GuildID: 0
+          Name: "role 15"
+          Description: nil
+          Color: 12218556
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 15
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293956
+          GuildID: 0
+          Name: "role 16"
+          Description: nil
+          Color: 10855996
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 16
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293957
+          GuildID: 0
+          Name: "role 17"
+          Description: nil
+          Color: 1155840
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 17
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293958
+          GuildID: 0
+          Name: "role 18"
+          Description: nil
+          Color: 7310365
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 18
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293959
+          GuildID: 0
+          Name: "role 19"
+          Description: nil
+          Color: 6139048
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 19
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293960
+          GuildID: 0
+          Name: "role 20"
+          Description: nil
+          Color: 11251901
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 20
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293961
+          GuildID: 0
+          Name: "role 21"
+          Description: nil
+          Color: 2814900
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 21
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: true
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293962
+          GuildID: 0
+          Name: "role 22"
+          Description: nil
+          Color: 9359299
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 22
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293963
+          GuildID: 0
+          Name: "role 23"
+          Description: nil
+          Color: 6743771
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 23
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293964
+          GuildID: 0
+          Name: "role 24"
+          Description: nil
+          Color: 166112
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 24
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293965
+          GuildID: 0
+          Name: "role 25"
+          Description: nil
+          Color: 8864030
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 25
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293966
+          GuildID: 0
+          Name: "role 26"
+          Description: nil
+          Color: 4827313
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 26
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293967
+          GuildID: 0
+          Name: "role 27"
+          Description: nil
+          Color: 1398111
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 27
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293968
+          GuildID: 0
+          Name: "role 28"
+          Description: nil
+          Color: 754778
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 28
+          Permissions: 104324673
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: true
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293969
+          GuildID: 0
+          Name: "role 29"
+          Description: nil
+          Color: 10208753
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 29
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293970
+          GuildID: 0
+          Name: "role 30"
+          Description: nil
+          Color: 2834769
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 30
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293971
+          GuildID: 0
+          Name: "role 31"
+          Description: nil
+          Color: 5209397
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 31
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293972
+          GuildID: 0
+          Name: "role 32"
+          Description: nil
+          Color: 13070003
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 32
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293973
+          GuildID: 0
+          Name: "role 33"
+          Description: nil
+          Color: 16582290
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 33
+          Permissions: 2048
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293974
+          GuildID: 0
+          Name: "role 34"
+          Description: nil
+          Color: 9535383
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 34
+          Permissions: 1024
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293975
+          GuildID: 0
+          Name: "role 35"
+          Description: nil
+          Color: 4857078
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: true
+          Position: 35
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: true
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293976
+          GuildID: 0
+          Name: "role 36"
+          Description: nil
+          Color: 14403062
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 36
+          Permissions: 0
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293977
+          GuildID: 0
+          Name: "role 37"
+          Description: nil
+          Color: 4674387
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 37
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293978
+          GuildID: 0
+          Name: "role 38"
+          Description: nil
+          Color: 539547
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 38
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+        discord.Role{
+          ID: 1102938475610293979
+          GuildID: 0
+          Name: "role 39"
+          Description: nil
+          Color: 7715530
+          RoleColors: discord.RoleColors{
+            PrimaryColor: 0
+            SecondaryColor: nil
+            TertiaryColor: nil
+          }
+          Hoist: false
+          Position: 39
+          Permissions: 8
+          Managed: false
+          Icon: nil
+          Emoji: nil
+          Mentionable: false
+          Tags: nil
+          Flags: 0
+        }
+      ]
+      Emojis: [
+        discord.Emoji{
+          ID: 1102938475610300840
+          GuildID: 0
+          Name: "emoji0"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: true
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300841
+          GuildID: 0
+          Name: "emoji1"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300842
+          GuildID: 0
+          Name: "emoji2"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300843
+          GuildID: 0
+          Name: "emoji3"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300844
+          GuildID: 0
+          Name: "emoji4"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300845
+          GuildID: 0
+          Name: "emoji5"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300846
+          GuildID: 0
+          Name: "emoji6"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: true
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300847
+          GuildID: 0
+          Name: "emoji7"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300848
+          GuildID: 0
+          Name: "emoji8"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300849
+          GuildID: 0
+          Name: "emoji9"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300850
+          GuildID: 0
+          Name: "emoji10"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300851
+          GuildID: 0
+          Name: "emoji11"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300852
+          GuildID: 0
+          Name: "emoji12"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: true
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300853
+          GuildID: 0
+          Name: "emoji13"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300854
+          GuildID: 0
+          Name: "emoji14"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300855
+          GuildID: 0
+          Name: "emoji15"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300856
+          GuildID: 0
+          Name: "emoji16"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300857
+          GuildID: 0
+          Name: "emoji17"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300858
+          GuildID: 0
+          Name: "emoji18"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: true
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300859
+          GuildID: 0
+          Name: "emoji19"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300860
+          GuildID: 0
+          Name: "emoji20"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300861
+          GuildID: 0
+          Name: "emoji21"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300862
+          GuildID: 0
+          Name: "emoji22"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300863
+          GuildID: 0
+          Name: "emoji23"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300864
+          GuildID: 0
+          Name: "emoji24"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: true
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300865
+          GuildID: 0
+          Name: "emoji25"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300866
+          GuildID: 0
+          Name: "emoji26"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300867
+          GuildID: 0
+          Name: "emoji27"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300868
+          GuildID: 0
+          Name: "emoji28"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+        discord.Emoji{
+          ID: 1102938475610300869
+          GuildID: 0
+          Name: "emoji29"
+          Roles: [
+          ]
+          Creator: nil
+          RequireColons: true
+          Managed: false
+          Animated: false
+          Available: true
+        }
+      ]
+    }
+  }
+  RawD: bytes("{\"id\":\"1102938475610293840\",\"name\":\"A server\",\"icon\":\"a1b2c3d4e5f60718293a4b5c6d7e8f90\",\"description\":\"A community server\",\"home_header\":null,\"splash\":null,\"discovery_splash\":null,\"features\":[\"COMMUNITY\",\"NEWS\",\"INVITE_SPLASH\",\"VANITY_URL\",\"ANIMATED_ICON\",\"THREADS_ENABLED\",\"AUTO_MODERATION\",\"SOUNDBOARD\"],\"banner\":null,\"owner_id\":\"300000000000000001\",\"application_id\":null,\"region\":\"deprecated\",\"afk_channel_id\":null,\"afk_timeout\":300,\"system_channel_id\":\"1102938475610295841\",\"system_channel_flags\":0,\"widget_enabled\":false,\"widget_channel_id\":null,\"verification_level\":2,\"default_message_notifications\":1,\"mfa_level\":1,\"explicit_content_filter\":2,\"max_presences\":null,\"max_members\":500000,\"max_stage_video_channel_users\":50,\"max_video_channel_users\":25,\"vanity_url_code\":\"aserver\",\"premium_tier\":2,\"premium_subscription_count\":9,\"preferred_locale\":\"en-US\",\"rules_channel_id\":\"1102938475610295842\",\"safety_alerts_channel_id\":\"1102938475610295843\",\"public_updates_channel_id\":\"1102938475610295844\",\"hub_type\":null,\"premium_progress_bar_enabled\":true,\"latest_onboarding_question_id\":null,\"nsfw\":false,\"nsfw_level\":0,\"incidents_data\":null,\"inventory_settings\":null,\"version\":1727734445000,\"profile\":null,\"soundboard_sounds\":[],\"embedded_activities\":[],\"activity_instances\":[],\"guild_scheduled_events\":[],\"stage_instances\":[],\"threads\":[{\"type\":11,\"total_message_sent\":12,\"thread_metadata\":{\"locked\":false,\"create_timestamp\":\"2026-09-30T20:00:00.000000+00:00\",\"auto_archive_duration\":1440,\"archived\":false,\"archive_timestamp\":\"2026-09-30T20:00:00.000000+00:00\"},\"rate_limit_per_user\":0,\"parent_id\":\"1102938475610295841\",\"owner_id\":\"300000000000000001\",\"name\":\"thread 0\",\"message_count\":12,\"member_count\":3,\"last_message_id\":\"1422876543210990000\",\"id\":\"1102938475610302840\",\"guild_id\":\"1102938475610293840\",\"flags\":0},{\"type\":11,\"total_message_sent\":12,\"thread_metadata\":{\"locked\":false,\"create_timestamp\":\"2026-09-30T20:00:00.000000+00:00\",\"auto_archive_duration\":1440,\"archived\":false,\"archive_timestamp\":\"2026-09-30T20:00:00.000000+00:00\"},\"rate_limit_per_user\":0,\"parent_id\":\"1102938475610295841\",\"owner_id\":\"300000000000000001\",\"name\":\"thread 1\",\"message_count\":12,\"member_count\":3,\"last_message_id\":\"1422876543210990001\",\"id\":\"1102938475610302841\",\"guild_id\":\"1102938475610293840\",\"flags\":0}],\"voice_states\":[{\"user_id\":\"300000000000000000\",\"suppress\":false,\"session_id\":\"abcdef0123456789abcdef0123456789\",\"self_video\":false,\"self_mute\":false,\"self_deaf\":false,\"request_to_speak_timestamp\":null,\"mute\":false,\"deaf\":false,\"channel_id\":\"1102938475610295867\"},{\"user_id\":\"300000000000000001\",\"suppress\":false,\"session_id\":\"abcdef0123456789abcdef0123456789\",\"self_video\":false,\"self_mute\":true,\"self_deaf\":false,\"request_to_speak_timestamp\":null,\"mute\":false,\"deaf\":false,\"channel_id\":\"1102938475610295867\"},{\"user_id\":\"300000000000000002\",\"suppress\":false,\"session_id\":\"abcdef0123456789abcdef0123456789\",\"self_video\":false,\"self_mute\":false,\"self_deaf\":false,\"request_to_speak_timestamp\":null,\"mute\":false,\"deaf\":false,\"channel_id\":\"1102938475610295867\"}],\"presences\":[],\"members\":[{\"user\":{\"username\":\"VOID\",\"public_flags\":0,\"primary_guild\":null,\"id\":\"912345678901234567\",\"global_name\":null,\"display_name_styles\":null,\"discriminator\":\"1234\",\"collectibles\":null,\"clan\":null,\"bot\":true,\"avatar_decoration_data\":null,\"avatar\":\"abcdef0123456789abcdef0123456789\"},\"roles\":[\"1102938475610293941\"],\"premium_since\":null,\"pending\":false,\"nick\":null,\"mute\":false,\"joined_at\":\"2024-03-01T10:00:00.000000+00:00\",\"flags\":0,\"deaf\":false,\"communication_disabled_until\":null,\"banner\":null,\"avatar\":null}],\"joined_at\":\"2024-03-01T10:00:00.000000+00:00\",\"large\":true,\"unavailable\":false,\"member_count\":2412,\"lazy\":true,\"application_command_counts\":{},\"roles\":[{\"id\":\"1102938475610293840\",\"name\":\"@everyone\",\"description\":null,\"permissions\":\"2248473465835073\",\"position\":0,\"color\":0,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293941\",\"name\":\"role 1\",\"description\":null,\"permissions\":\"1024\",\"position\":1,\"color\":7702965,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":true,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0,\"tags\":{\"bot_id\":\"400000000000000001\"}},{\"id\":\"1102938475610293942\",\"name\":\"role 2\",\"description\":null,\"permissions\":\"2048\",\"position\":2,\"color\":6664731,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":true,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0,\"tags\":{\"bot_id\":\"400000000000000002\"}},{\"id\":\"1102938475610293943\",\"name\":\"role 3\",\"description\":null,\"permissions\":\"1024\",\"position\":3,\"color\":13579401,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":true,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0,\"tags\":{\"bot_id\":\"400000000000000003\"}},{\"id\":\"1102938475610293944\",\"name\":\"role 4\",\"description\":null,\"permissions\":\"2048\",\"position\":4,\"color\":1824976,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":true,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0,\"tags\":{\"premium_subscriber\":null}},{\"id\":\"1102938475610293945\",\"name\":\"role 5\",\"description\":null,\"permissions\":\"1024\",\"position\":5,\"color\":478322,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293946\",\"name\":\"role 6\",\"description\":null,\"permissions\":\"0\",\"position\":6,\"color\":8576307,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293947\",\"name\":\"role 7\",\"description\":null,\"permissions\":\"104324673\",\"position\":7,\"color\":5477644,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":true,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293948\",\"name\":\"role 8\",\"description\":null,\"permissions\":\"0\",\"position\":8,\"color\":2834841,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293949\",\"name\":\"role 9\",\"description\":null,\"permissions\":\"104324673\",\"position\":9,\"color\":9460111,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293950\",\"name\":\"role 10\",\"description\":null,\"permissions\":\"8\",\"position\":10,\"color\":8127317,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293951\",\"name\":\"role 11\",\"description\":null,\"permissions\":\"2048\",\"position\":11,\"color\":1517918,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293952\",\"name\":\"role 12\",\"description\":null,\"permissions\":\"104324673\",\"position\":12,\"color\":6219382,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293953\",\"name\":\"role 13\",\"description\":null,\"permissions\":\"1024\",\"position\":13,\"color\":9027373,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293954\",\"name\":\"role 14\",\"description\":null,\"permissions\":\"104324673\",\"position\":14,\"color\":121558,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":true,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293955\",\"name\":\"role 15\",\"description\":null,\"permissions\":\"2048\",\"position\":15,\"color\":12218556,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293956\",\"name\":\"role 16\",\"description\":null,\"permissions\":\"2048\",\"position\":16,\"color\":10855996,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293957\",\"name\":\"role 17\",\"description\":null,\"permissions\":\"1024\",\"position\":17,\"color\":1155840,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293958\",\"name\":\"role 18\",\"description\":null,\"permissions\":\"2048\",\"position\":18,\"color\":7310365,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293959\",\"name\":\"role 19\",\"description\":null,\"permissions\":\"2048\",\"position\":19,\"color\":6139048,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293960\",\"name\":\"role 20\",\"description\":null,\"permissions\":\"0\",\"position\":20,\"color\":11251901,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293961\",\"name\":\"role 21\",\"description\":null,\"permissions\":\"104324673\",\"position\":21,\"color\":2814900,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":true,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293962\",\"name\":\"role 22\",\"description\":null,\"permissions\":\"104324673\",\"position\":22,\"color\":9359299,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293963\",\"name\":\"role 23\",\"description\":null,\"permissions\":\"8\",\"position\":23,\"color\":6743771,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293964\",\"name\":\"role 24\",\"description\":null,\"permissions\":\"1024\",\"position\":24,\"color\":166112,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293965\",\"name\":\"role 25\",\"description\":null,\"permissions\":\"0\",\"position\":25,\"color\":8864030,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293966\",\"name\":\"role 26\",\"description\":null,\"permissions\":\"0\",\"position\":26,\"color\":4827313,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293967\",\"name\":\"role 27\",\"description\":null,\"permissions\":\"104324673\",\"position\":27,\"color\":1398111,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293968\",\"name\":\"role 28\",\"description\":null,\"permissions\":\"104324673\",\"position\":28,\"color\":754778,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":true,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293969\",\"name\":\"role 29\",\"description\":null,\"permissions\":\"2048\",\"position\":29,\"color\":10208753,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293970\",\"name\":\"role 30\",\"description\":null,\"permissions\":\"1024\",\"position\":30,\"color\":2834769,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293971\",\"name\":\"role 31\",\"description\":null,\"permissions\":\"8\",\"position\":31,\"color\":5209397,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293972\",\"name\":\"role 32\",\"description\":null,\"permissions\":\"8\",\"position\":32,\"color\":13070003,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293973\",\"name\":\"role 33\",\"description\":null,\"permissions\":\"2048\",\"position\":33,\"color\":16582290,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293974\",\"name\":\"role 34\",\"description\":null,\"permissions\":\"1024\",\"position\":34,\"color\":9535383,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293975\",\"name\":\"role 35\",\"description\":null,\"permissions\":\"8\",\"position\":35,\"color\":4857078,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":true,\"managed\":false,\"mentionable\":true,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293976\",\"name\":\"role 36\",\"description\":null,\"permissions\":\"0\",\"position\":36,\"color\":14403062,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293977\",\"name\":\"role 37\",\"description\":null,\"permissions\":\"8\",\"position\":37,\"color\":4674387,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293978\",\"name\":\"role 38\",\"description\":null,\"permissions\":\"8\",\"position\":38,\"color\":539547,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0},{\"id\":\"1102938475610293979\",\"name\":\"role 39\",\"description\":null,\"permissions\":\"8\",\"position\":39,\"color\":7715530,\"colors\":{\"primary_color\":0,\"secondary_color\":null,\"tertiary_color\":null},\"hoist\":false,\"managed\":false,\"mentionable\":false,\"icon\":null,\"unicode_emoji\":null,\"flags\":0}],\"emojis\":[{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji0\",\"managed\":false,\"id\":\"1102938475610300840\",\"available\":true,\"animated\":true},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji1\",\"managed\":false,\"id\":\"1102938475610300841\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji2\",\"managed\":false,\"id\":\"1102938475610300842\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji3\",\"managed\":false,\"id\":\"1102938475610300843\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji4\",\"managed\":false,\"id\":\"1102938475610300844\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji5\",\"managed\":false,\"id\":\"1102938475610300845\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji6\",\"managed\":false,\"id\":\"1102938475610300846\",\"available\":true,\"animated\":true},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji7\",\"managed\":false,\"id\":\"1102938475610300847\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji8\",\"managed\":false,\"id\":\"1102938475610300848\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji9\",\"managed\":false,\"id\":\"1102938475610300849\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji10\",\"managed\":false,\"id\":\"1102938475610300850\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji11\",\"managed\":false,\"id\":\"1102938475610300851\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji12\",\"managed\":false,\"id\":\"1102938475610300852\",\"available\":true,\"animated\":true},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji13\",\"managed\":false,\"id\":\"1102938475610300853\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji14\",\"managed\":false,\"id\":\"1102938475610300854\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji15\",\"managed\":false,\"id\":\"1102938475610300855\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji16\",\"managed\":false,\"id\":\"1102938475610300856\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji17\",\"managed\":false,\"id\":\"1102938475610300857\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji18\",\"managed\":false,\"id\":\"1102938475610300858\",\"available\":true,\"animated\":true},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji19\",\"managed\":false,\"id\":\"1102938475610300859\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji20\",\"managed\":false,\"id\":\"1102938475610300860\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji21\",\"managed\":false,\"id\":\"1102938475610300861\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji22\",\"managed\":false,\"id\":\"1102938475610300862\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji23\",\"managed\":false,\"id\":\"1102938475610300863\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji24\",\"managed\":false,\"id\":\"1102938475610300864\",\"available\":true,\"animated\":true},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji25\",\"managed\":false,\"id\":\"1102938475610300865\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji26\",\"managed\":false,\"id\":\"1102938475610300866\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji27\",\"managed\":false,\"id\":\"1102938475610300867\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji28\",\"managed\":false,\"id\":\"1102938475610300868\",\"available\":true,\"animated\":false},{\"version\":0,\"roles\":[],\"require_colons\":true,\"name\":\"emoji29\",\"managed\":false,\"id\":\"1102938475610300869\",\"available\":true,\"animated\":false}],\"stickers\":[{\"version\":1,\"type\":2,\"tags\":\"smile\",\"name\":\"sticker0\",\"id\":\"1102938475610301840\",\"guild_id\":\"1102938475610293840\",\"format_type\":1,\"description\":\"a sticker\",\"available\":true,\"asset\":\"\"},{\"version\":1,\"type\":2,\"tags\":\"smile\",\"name\":\"sticker1\",\"id\":\"1102938475610301841\",\"guild_id\":\"1102938475610293840\",\"format_type\":1,\"description\":\"a sticker\",\"available\":true,\"asset\":\"\"},{\"version\":1,\"type\":2,\"tags\":\"smile\",\"name\":\"sticker2\",\"id\":\"1102938475610301842\",\"guild_id\":\"1102938475610293840\",\"format_type\":1,\"description\":\"a sticker\",\"available\":true,\"asset\":\"\"},{\"version\":1,\"type\":2,\"tags\":\"smile\",\"name\":\"sticker3\",\"id\":\"1102938475610301843\",\"guild_id\":\"1102938475610293840\",\"format_type\":1,\"description\":\"a sticker\",\"available\":true,\"asset\":\"\"},{\"version\":1,\"type\":2,\"tags\":\"smile\",\"name\":\"sticker4\",\"id\":\"1102938475610301844\",\"guild_id\":\"1102938475610293840\",\"format_type\":1,\"description\":\"a sticker\",\"available\":true,\"asset\":\"\"}],\"channels\":[{\"version\":1727734445000,\"type\":4,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293950\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293944\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"}],\"name\":\"category 0\",\"id\":\"1102938475610294840\",\"flags\":0},{\"version\":1727734445001,\"type\":4,\"position\":1,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293964\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293973\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"300000000000000445\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"name\":\"category 1\",\"id\":\"1102938475610294841\",\"flags\":0},{\"version\":1727734445002,\"type\":4,\"position\":2,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293945\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293946\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000580\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"name\":\"category 2\",\"id\":\"1102938475610294842\",\"flags\":0},{\"version\":1727734445003,\"type\":4,\"position\":3,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293977\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000227\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"name\":\"category 3\",\"id\":\"1102938475610294843\",\"flags\":0},{\"version\":1727734445004,\"type\":4,\"position\":4,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293976\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293959\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000121\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"name\":\"category 4\",\"id\":\"1102938475610294844\",\"flags\":0},{\"version\":1727734445005,\"type\":4,\"position\":5,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293976\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293947\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"name\":\"category 5\",\"id\":\"1102938475610294845\",\"flags\":0},{\"version\":1727734445001,\"type\":0,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293954\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-1\",\"id\":\"1102938475610295841\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987001\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445002,\"type\":0,\"position\":1,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293964\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293956\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293956\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293977\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-2\",\"id\":\"1102938475610295842\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987002\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445003,\"type\":0,\"position\":2,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293951\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293950\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294845\",\"name\":\"channel-3\",\"id\":\"1102938475610295843\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987003\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445004,\"type\":0,\"position\":3,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293963\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293978\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293945\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-4\",\"id\":\"1102938475610295844\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987004\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445005,\"type\":0,\"position\":4,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293977\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000396\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294845\",\"name\":\"channel-5\",\"id\":\"1102938475610295845\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987005\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445006,\"type\":0,\"position\":5,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293963\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-6\",\"id\":\"1102938475610295846\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987006\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445007,\"type\":0,\"position\":6,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293949\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293966\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-7\",\"id\":\"1102938475610295847\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987007\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445008,\"type\":0,\"position\":7,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293966\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293949\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-8\",\"id\":\"1102938475610295848\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987008\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445009,\"type\":0,\"position\":8,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293946\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293950\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-9\",\"id\":\"1102938475610295849\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987009\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445010,\"type\":0,\"position\":9,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293959\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293950\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294844\",\"name\":\"channel-10\",\"id\":\"1102938475610295850\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987010\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445011,\"type\":0,\"position\":10,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293970\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293966\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-11\",\"id\":\"1102938475610295851\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987011\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445012,\"type\":0,\"position\":11,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293945\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-12\",\"id\":\"1102938475610295852\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987012\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445013,\"type\":0,\"position\":12,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293941\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-13\",\"id\":\"1102938475610295853\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987013\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445014,\"type\":0,\"position\":13,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293965\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-14\",\"id\":\"1102938475610295854\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987014\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445015,\"type\":0,\"position\":14,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293970\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293971\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293946\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"300000000000000351\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294845\",\"name\":\"channel-15\",\"id\":\"1102938475610295855\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987015\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445016,\"type\":0,\"position\":15,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293974\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293954\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293950\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293974\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-16\",\"id\":\"1102938475610295856\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987016\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445017,\"type\":0,\"position\":16,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293963\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293975\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-17\",\"id\":\"1102938475610295857\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987017\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445018,\"type\":0,\"position\":17,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293963\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293942\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-18\",\"id\":\"1102938475610295858\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987018\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445019,\"type\":0,\"position\":18,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293964\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293953\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"300000000000000640\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294844\",\"name\":\"channel-19\",\"id\":\"1102938475610295859\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987019\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445020,\"type\":0,\"position\":19,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293946\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293965\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293971\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293968\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"300000000000000969\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294845\",\"name\":\"channel-20\",\"id\":\"1102938475610295860\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987020\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445021,\"type\":0,\"position\":20,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293946\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293951\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293942\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293978\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-21\",\"id\":\"1102938475610295861\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987021\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445022,\"type\":0,\"position\":21,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293976\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293942\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293947\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-22\",\"id\":\"1102938475610295862\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987022\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445023,\"type\":0,\"position\":22,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"3072\"},{\"id\":\"1102938475610293954\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294844\",\"name\":\"channel-23\",\"id\":\"1102938475610295863\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987023\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445024,\"type\":0,\"position\":23,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293949\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293963\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293978\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294844\",\"name\":\"channel-24\",\"id\":\"1102938475610295864\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987024\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445025,\"type\":0,\"position\":24,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293969\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293979\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-25\",\"id\":\"1102938475610295865\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987025\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445026,\"type\":0,\"position\":25,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293961\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-26\",\"id\":\"1102938475610295866\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987026\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445027,\"type\":2,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293958\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293947\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-27\",\"id\":\"1102938475610295867\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":5,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445028,\"type\":2,\"position\":1,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293958\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293973\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293973\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-28\",\"id\":\"1102938475610295868\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445029,\"type\":2,\"position\":2,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293949\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-29\",\"id\":\"1102938475610295869\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445030,\"type\":2,\"position\":3,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293945\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293960\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-30\",\"id\":\"1102938475610295870\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445031,\"type\":2,\"position\":4,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293957\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293970\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293947\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-31\",\"id\":\"1102938475610295871\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445032,\"type\":2,\"position\":5,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293968\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293962\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000327\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-32\",\"id\":\"1102938475610295872\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445033,\"type\":2,\"position\":6,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293962\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293969\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"1102938475610293965\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-33\",\"id\":\"1102938475610295873\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445034,\"type\":2,\"position\":7,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293955\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"300000000000000279\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-34\",\"id\":\"1102938475610295874\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":0,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null},{\"version\":1727734445035,\"type\":5,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293968\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293966\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293975\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294840\",\"name\":\"channel-35\",\"id\":\"1102938475610295875\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987035\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445036,\"type\":5,\"position\":1,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293968\",\"type\":0,\"allow\":\"1024\",\"deny\":\"0\"},{\"id\":\"300000000000000018\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294845\",\"name\":\"channel-36\",\"id\":\"1102938475610295876\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987036\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445037,\"type\":5,\"position\":2,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293979\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293945\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"300000000000000567\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294843\",\"name\":\"channel-37\",\"id\":\"1102938475610295877\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987037\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null},{\"version\":1727734445038,\"type\":15,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293974\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293948\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"300000000000000186\",\"type\":1,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-38\",\"id\":\"1102938475610295878\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":5,\"last_message_id\":\"1422876543210987038\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null,\"available_tags\":[{\"id\":\"1102938475610299220\",\"name\":\"tag0\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299221\",\"name\":\"tag1\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299222\",\"name\":\"tag2\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"}],\"default_reaction_emoji\":{\"emoji_id\":null,\"emoji_name\":\"👍\"},\"default_sort_order\":null,\"default_forum_layout\":0,\"default_thread_rate_limit_per_user\":0,\"template\":\"\"},{\"version\":1727734445039,\"type\":15,\"position\":1,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"2048\"},{\"id\":\"1102938475610293959\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"},{\"id\":\"1102938475610293973\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"},{\"id\":\"1102938475610293958\",\"type\":0,\"allow\":\"2048\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-39\",\"id\":\"1102938475610295879\",\"flags\":0,\"nsfw\":false,\"topic\":null,\"rate_limit_per_user\":0,\"last_message_id\":\"1422876543210987039\",\"last_pin_timestamp\":null,\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null,\"available_tags\":[{\"id\":\"1102938475610299230\",\"name\":\"tag0\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299231\",\"name\":\"tag1\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299232\",\"name\":\"tag2\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"}],\"default_reaction_emoji\":{\"emoji_id\":null,\"emoji_name\":\"👍\"},\"default_sort_order\":null,\"default_forum_layout\":0,\"default_thread_rate_limit_per_user\":0,\"template\":\"\"},{\"version\":1727734445040,\"type\":15,\"position\":2,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"1024\"},{\"id\":\"1102938475610293973\",\"type\":0,\"allow\":\"3072\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294841\",\"name\":\"channel-40\",\"id\":\"1102938475610295880\",\"flags\":0,\"nsfw\":false,\"topic\":\"Read the rules before posting. Be nice.\",\"rate_limit_per_user\":30,\"last_message_id\":\"1422876543210987040\",\"last_pin_timestamp\":\"2026-09-30T22:14:05+00:00\",\"icon_emoji\":{\"id\":null,\"name\":\"💬\"},\"theme_color\":null,\"available_tags\":[{\"id\":\"1102938475610299240\",\"name\":\"tag0\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299241\",\"name\":\"tag1\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"},{\"id\":\"1102938475610299242\",\"name\":\"tag2\",\"moderated\":false,\"emoji_id\":null,\"emoji_name\":\"✅\"}],\"default_reaction_emoji\":{\"emoji_id\":null,\"emoji_name\":\"👍\"},\"default_sort_order\":null,\"default_forum_layout\":0,\"default_thread_rate_limit_per_user\":0,\"template\":\"\"},{\"version\":1727734445041,\"type\":13,\"position\":0,\"permission_overwrites\":[{\"id\":\"1102938475610293840\",\"type\":0,\"allow\":\"0\",\"deny\":\"68608\"},{\"id\":\"1102938475610293972\",\"type\":0,\"allow\":\"1049600\",\"deny\":\"0\"}],\"parent_id\":\"1102938475610294842\",\"name\":\"channel-41\",\"id\":\"1102938475610295881\",\"flags\":0,\"nsfw\":false,\"bitrate\":64000,\"user_limit\":10,\"rtc_region\":null,\"video_quality_mode\":1,\"rate_limit_per_user\":0,\"last_message_id\":null,\"voice_background_display\":null,\"status\":null}]}")
+}

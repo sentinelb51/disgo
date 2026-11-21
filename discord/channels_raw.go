@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/snowflake/v2"
@@ -42,12 +44,16 @@ type guildTextChannel struct {
 }
 
 func (t *guildTextChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildTextChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildTextChannelAlias guildTextChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildTextChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildTextChannel(v.guildTextChannelAlias)
@@ -73,12 +79,16 @@ type guildNewsChannel struct {
 }
 
 func (t *guildNewsChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildNewsChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildNewsChannelAlias guildNewsChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildNewsChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildNewsChannel(v.guildNewsChannelAlias)
@@ -116,12 +126,16 @@ type guildCategoryChannel struct {
 }
 
 func (t *guildCategoryChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildCategoryChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildCategoryChannelAlias guildCategoryChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildCategoryChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildCategoryChannel(v.guildCategoryChannelAlias)
@@ -148,12 +162,16 @@ type guildVoiceChannel struct {
 }
 
 func (t *guildVoiceChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildVoiceChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildVoiceChannelAlias guildVoiceChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildVoiceChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildVoiceChannel(v.guildVoiceChannelAlias)
@@ -180,12 +198,16 @@ type guildStageVoiceChannel struct {
 }
 
 func (t *guildStageVoiceChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildStageVoiceChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildStageVoiceChannelAlias guildStageVoiceChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildStageVoiceChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildStageVoiceChannel(v.guildStageVoiceChannelAlias)
@@ -216,12 +238,16 @@ type guildForumChannel struct {
 }
 
 func (t *guildForumChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildForumChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildForumChannelAlias guildForumChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildForumChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildForumChannel(v.guildForumChannelAlias)
@@ -251,12 +277,16 @@ type guildMediaChannel struct {
 }
 
 func (t *guildMediaChannel) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, t)
+}
+
+func (t *guildMediaChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type guildMediaChannelAlias guildMediaChannel
 	var v struct {
 		PermissionOverwrites []UnmarshalPermissionOverwrite `json:"permission_overwrites"`
 		guildMediaChannelAlias
 	}
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 	*t = guildMediaChannel(v.guildMediaChannelAlias)

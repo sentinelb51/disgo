@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"io"
 	"time"
@@ -129,12 +130,27 @@ type EventChannelCreate struct {
 }
 
 func (e *EventChannelCreate) UnmarshalJSON(data []byte) error {
+	return unmarshalData(data, e)
+}
+
+func (e *EventChannelCreate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	channel, err := decodeGuildChannel(dec)
+	e.GuildChannel = channel
+	return err
+}
+
+// decodeGuildChannel decodes a guild channel as its type as it streams in. A channel of another kind (a DM) is an
+// error, where it was a panic on the gateway's read loop
+func decodeGuildChannel(dec *jsontext.Decoder) (discord.GuildChannel, error) {
 	var v discord.UnmarshalChannel
-	if err := unmarshalData(data, &v); err != nil {
-		return err
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+		return nil, err
 	}
-	e.GuildChannel = v.Channel.(discord.GuildChannel)
-	return nil
+	channel, ok := v.Channel.(discord.GuildChannel)
+	if !ok {
+		return nil, fmt.Errorf("not a guild channel: %T", v.Channel)
+	}
+	return channel, nil
 }
 
 func (EventChannelCreate) messageData() {}
@@ -145,12 +161,13 @@ type EventChannelUpdate struct {
 }
 
 func (e *EventChannelUpdate) UnmarshalJSON(data []byte) error {
-	var v discord.UnmarshalChannel
-	if err := unmarshalData(data, &v); err != nil {
-		return err
-	}
-	e.GuildChannel = v.Channel.(discord.GuildChannel)
-	return nil
+	return unmarshalData(data, e)
+}
+
+func (e *EventChannelUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	channel, err := decodeGuildChannel(dec)
+	e.GuildChannel = channel
+	return err
 }
 
 func (EventChannelUpdate) messageData() {}
@@ -161,12 +178,13 @@ type EventChannelDelete struct {
 }
 
 func (e *EventChannelDelete) UnmarshalJSON(data []byte) error {
-	var v discord.UnmarshalChannel
-	if err := unmarshalData(data, &v); err != nil {
-		return err
-	}
-	e.GuildChannel = v.Channel.(discord.GuildChannel)
-	return nil
+	return unmarshalData(data, e)
+}
+
+func (e *EventChannelDelete) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	channel, err := decodeGuildChannel(dec)
+	e.GuildChannel = channel
+	return err
 }
 
 func (EventChannelDelete) messageData() {}
@@ -225,6 +243,16 @@ type EventThreadCreate struct {
 	discord.GuildThread
 	ThreadMember discord.ThreadMember `json:"thread_member"`
 	NewlyCreated bool                 `json:"newly_created"`
+}
+
+// UnmarshalJSONFrom reads the event whole for UnmarshalJSON. Without it, encoding/json/v2 would call GuildThread's,
+// promoted, and leave ThreadMember and NewlyCreated zero
+func (e *EventThreadCreate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	data, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalJSON(data)
 }
 
 func (e *EventThreadCreate) UnmarshalJSON(data []byte) error {

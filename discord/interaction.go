@@ -220,6 +220,40 @@ func (c *InteractionChannel) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSONFrom decodes the channel as its type as it streams in, its type and permissions (a DM's has none)
+// peeked in what dec has buffered. A channel not buffered that far is read whole and peeked there
+func (c *InteractionChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	cType, rawPermissions, ok := peekUnread(dec, "type", "permissions")
+	if !ok {
+		data, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		return c.UnmarshalJSON(data)
+	}
+
+	// Before the channel is read: the peeked values are dec's buffer
+	var permissions Permissions
+	if rawPermissions != nil {
+		if err := permissions.UnmarshalJSON(rawPermissions); err != nil {
+			return err
+		}
+	}
+
+	channel, err := decodeChannel(ChannelType(peekInt(cType)), dec)
+	if err != nil {
+		return err
+	}
+	msgChannel, ok := channel.(MessageChannel)
+	if !ok {
+		return fmt.Errorf("unknown channel type: %T", channel)
+	}
+	c.MessageChannel = msgChannel
+	c.Permissions = permissions
+
+	return nil
+}
+
 func (c InteractionChannel) MarshalJSON() ([]byte, error) {
 	// A ping has no channel, and the channel's null can't be merged with the permissions
 	if c.MessageChannel == nil {
