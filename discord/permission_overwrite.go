@@ -3,6 +3,7 @@ package discord
 import (
 	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
+	"strconv"
 
 	"github.com/disgoorg/json/v2"
 	"github.com/disgoorg/snowflake/v2"
@@ -53,66 +54,79 @@ type UnmarshalPermissionOverwrite struct {
 }
 
 func (o *UnmarshalPermissionOverwrite) UnmarshalJSON(data []byte) error {
-	// The type is peeked rather than probed, and the overwrite decoded in one pass, as channels are
-	oType, _ := peek(data, "type", "")
-	overwrite, err := decodeOverwrite(PermissionOverwriteType(peekInt(oType)), func(v any) error { return unmarshalOnce(data, v) })
-	if err != nil {
+	return unmarshalOnce(data, o)
+}
+
+// UnmarshalJSONFrom decodes the overwrite by hand, in one pass and without reflection: a server's channels carry
+// hundreds, and through encoding/json/v2's reflection each cost more than its four fields are worth. Every kind has
+// the fields UnknownPermissionOverwrite has; its type picks the kind after. As before, null is a role's overwrite
+// with nothing set; names match byte for byte, where encoding/json folds case (Discord sends them lower case)
+func (o *UnmarshalPermissionOverwrite) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch dec.PeekKind() {
+	case 'n':
+		o.PermissionOverwrite = RolePermissionOverwrite{}
+		_, err := dec.ReadToken()
+		return err
+	case '{':
+	default:
+		// As the struct decoder words it, and reads past it
+		return jsonv2.UnmarshalDecode(dec, new(RolePermissionOverwrite))
+	}
+
+	if _, err := dec.ReadToken(); err != nil {
 		return err
 	}
 
-	o.PermissionOverwrite = overwrite
-	return nil
-}
-
-// UnmarshalJSONFrom decodes the overwrite as its type as it streams in, the type peeked in what dec has buffered
-func (o *UnmarshalPermissionOverwrite) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	oType, _, ok := peekUnread(dec, "type", "")
-	if !ok {
-		data, err := dec.ReadValue()
+	var v UnknownPermissionOverwrite
+	for dec.PeekKind() == '"' {
+		name, err := dec.ReadValue()
 		if err != nil {
 			return err
 		}
-		return o.UnmarshalJSON(data)
-	}
 
-	overwrite, err := decodeOverwrite(PermissionOverwriteType(peekInt(oType)), func(v any) error { return jsonv2.UnmarshalDecode(dec, v) })
-	if err != nil {
+		// The name is dec's buffer, read over by the value: matched first. Each field is decoded by its own
+		// method, called directly, so v stays on the stack
+		var value jsontext.Value
+		switch string(name) {
+		case `"id"`:
+			if value, err = dec.ReadValue(); err == nil {
+				err = v.OverwriteID.UnmarshalJSON(value)
+			}
+		case `"type"`:
+			if value, err = dec.ReadValue(); err == nil && value.Kind() != 'n' {
+				var number int
+				if number, err = strconv.Atoi(string(value)); err == nil {
+					v.OverwriteType = PermissionOverwriteType(number)
+				}
+			}
+		case `"allow"`:
+			if value, err = dec.ReadValue(); err == nil {
+				err = v.Allow.UnmarshalJSON(value)
+			}
+		case `"deny"`:
+			if value, err = dec.ReadValue(); err == nil {
+				err = v.Deny.UnmarshalJSON(value)
+			}
+		default:
+			err = dec.SkipValue()
+		}
+		if err != nil {
+			return err
+		}
+	}
+	if _, err := dec.ReadToken(); err != nil {
 		return err
 	}
 
-	o.PermissionOverwrite = overwrite
-	return nil
-}
-
-// decodeOverwrite decodes an overwrite of oType through decode, which reads one JSON value into the pointer it is
-// handed
-func decodeOverwrite(oType PermissionOverwriteType, decode func(v any) error) (PermissionOverwrite, error) {
-	var (
-		overwrite PermissionOverwrite
-		err       error
-	)
-
-	switch oType {
+	switch v.OverwriteType {
 	case PermissionOverwriteTypeRole:
-		var v RolePermissionOverwrite
-		err = decode(&v)
-		overwrite = v
-
+		o.PermissionOverwrite = RolePermissionOverwrite{RoleID: v.OverwriteID, Allow: v.Allow, Deny: v.Deny}
 	case PermissionOverwriteTypeMember:
-		var v MemberPermissionOverwrite
-		err = decode(&v)
-		overwrite = v
-
+		o.PermissionOverwrite = MemberPermissionOverwrite{UserID: v.OverwriteID, Allow: v.Allow, Deny: v.Deny}
 	default:
-		var v UnknownPermissionOverwrite
-		err = decode(&v)
-		overwrite = v
+		o.PermissionOverwrite = v
 	}
-
-	if err != nil {
-		return nil, err
-	}
-	return overwrite, nil
+	return nil
 }
 
 type RolePermissionOverwrite struct {
