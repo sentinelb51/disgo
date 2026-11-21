@@ -71,6 +71,27 @@ func TestUnmarshalComponent_Misplaced(t *testing.T) {
 	}
 }
 
+// TestUnmarshalComponent_Missing decodes components without the component they hold, or with null where one goes:
+// none stays none, where the decoder panicked (found by FuzzGeneratedDecoders)
+func TestUnmarshalComponent_Missing(t *testing.T) {
+	for _, data := range []string{
+		`{"components":[{"type":18,"label":"x"}]}`,
+		`{"components":[{"type":18,"label":"x","component":null}]}`,
+		`{"components":[null,{"type":1,"components":[null]},{"type":9,"components":[null],"accessory":null},{"type":17,"components":[null]}]}`,
+	} {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					t.Errorf("%s panicked: %v", data, r)
+				}
+			}()
+
+			var v Message
+			_ = v.UnmarshalJSON([]byte(data))
+		}()
+	}
+}
+
 func first[T Component](components []T) Component {
 	if len(components) == 0 {
 		return nil

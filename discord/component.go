@@ -2000,10 +2000,12 @@ func (c *UnknownComponent) UnmarshalJSON(data []byte) error {
 }
 
 // placeComponent returns the component as the kind of component its place holds. One whose type can't be there
-// is returned as an UnknownComponent, as one of an unknown type is, rather than panicking in the decoder. Its
-// data is the component marshaled again, which can't fail for a component just decoded
+// is returned as an UnknownComponent, as one of an unknown type is, rather than panicking in the decoder; none (a
+// label's component missing, say) stays none. Its data is the component marshaled again, which can't fail for a
+// component just decoded
 func placeComponent[T Component](component Component) T {
-	if placed, ok := component.(T); ok {
+	placed, ok := component.(T)
+	if ok || component == nil {
 		return placed
 	}
 	data, _ := component.MarshalJSON()
