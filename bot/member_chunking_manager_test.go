@@ -186,6 +186,36 @@ func TestMemberChunkingCancelDuringChunk(t *testing.T) {
 	m.HandleChunk(chunk(g.nonce, 2))
 }
 
+// A request whose context ends between chunks returns the members of those that came, where it returned none
+func TestMemberChunkingContextEnds(t *testing.T) {
+	m, g := newChunkingManager()
+	g.sent = make(chan string, 1)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	type result struct {
+		members []discord.Member
+		err     error
+	}
+	done := make(chan result, 1)
+	go func() {
+		members, err := m.RequestMembers(ctx, 1, 2, 3)
+		done <- result{members, err}
+	}()
+
+	// HandleChunk returns once the request took the member: the channel is unbuffered
+	m.HandleChunk(chunk(<-g.sent, 2, discord.Member{User: discord.User{ID: 2}}))
+	cancel()
+
+	select {
+	case r := <-done:
+		if !errors.Is(r.err, context.Canceled) || len(r.members) != 1 || r.members[0].User.ID != 2 {
+			t.Errorf("returned %d members, %v", len(r.members), r.err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("the request is still waiting")
+	}
+}
+
 func TestMemberChunkingSendError(t *testing.T) {
 	m, g := newChunkingManager()
 	g.err = errors.New("not sent")

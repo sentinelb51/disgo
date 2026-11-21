@@ -62,7 +62,8 @@ type MemberChunkingManager interface {
 	HandleReady(shardID int, sessionID string)
 
 	// RequestMembers requests members from the given guildID and userIDs, at most 100 of them.
-	// It fails with ErrMemberRequestRateLimited or ErrMemberRequestSessionEnded when Discord will send none.
+	// It fails with ErrMemberRequestRateLimited or ErrMemberRequestSessionEnded when Discord will send none, and
+	// with ctx's error, beside the members already received, when ctx ends first.
 	RequestMembers(ctx context.Context, guildID snowflake.ID, userIDs ...snowflake.ID) ([]discord.Member, error)
 	// RequestAllMembers requests all members from the given guildID.
 	// Notice: This action requires the gateway.IntentGuildMembers.
@@ -301,7 +302,8 @@ func (m *memberChunkingManagerImpl) requestGuildMembers(ctx context.Context, gui
 		select {
 		case <-ctx.Done():
 			cls()
-			return nil, ctx.Err()
+			// what came before the end is kept: a caller falling back to another way reads only the rest
+			return members, ctx.Err()
 		case member, ok := <-memberChan:
 			if !ok {
 				request.Lock()
