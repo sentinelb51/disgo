@@ -47,6 +47,10 @@ func NewMemberChunkingManager(client *Client, logger *slog.Logger, memberChunkin
 }
 
 // MemberChunkingManager is used to request members for guilds from the discord Gateway.
+//
+// The members come on the gateway's reader, which calls event listeners, by default one at a time on itself: a
+// listener requesting members waits on itself (until its context ends, or for ever). Request on a goroutine of
+// your own, or enable asynchronous events.
 type MemberChunkingManager interface {
 	// MemberChunkingFilter returns the configured MemberChunkingFilter used by this MemberChunkingManager.
 	MemberChunkingFilter() MemberChunkingFilter
