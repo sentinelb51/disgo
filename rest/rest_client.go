@@ -3,6 +3,8 @@ package rest
 import (
 	"bytes"
 	"context"
+	jsonv1 "encoding/json"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"io"
 	"log/slog"
@@ -14,6 +16,11 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 )
+
+// decodeOptions decode a response as encoding/json does, through encoding/json/v2 and but for its legacy errors:
+// encoding/json validates a whole body before decoding it, and hands every value with an UnmarshalJSON method its
+// bytes, where encoding/json/v2 streams them into UnmarshalJSONFrom
+var decodeOptions = jsonv2.JoinOptions(jsonv1.DefaultOptionsV1(), jsonv1.ReportErrorsWithLegacySemantics(false))
 
 // NewClient constructs a new Client with the given config struct
 func NewClient(botToken string, opts ...ClientConfigOpt) Client {
@@ -161,7 +168,7 @@ func (c *clientImpl) retry(endpoint *CompiledEndpoint, rqBody any, rsBody any, t
 		}
 
 		if rsBody != nil && rs.Body != nil {
-			if err = json.Unmarshal(rawRsBody, rsBody); err != nil {
+			if err = jsonv2.Unmarshal(rawRsBody, rsBody, decodeOptions); err != nil {
 				c.config.Logger.Error("error unmarshalling response body", slog.Any("err", err), slog.String("endpoint", endpoint.URL), slog.String("code", rs.Status), slog.String("body", string(rawRsBody)))
 				return fmt.Errorf("error unmarshalling response body: %w", err)
 			}
