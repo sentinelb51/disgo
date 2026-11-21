@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"encoding/json/jsontext"
 	"fmt"
 	"io"
 	"time"
@@ -647,6 +648,15 @@ func (e *EventInteractionCreate) UnmarshalJSON(data []byte) error {
 	}
 	e.Interaction = interaction
 	return nil
+}
+
+// UnmarshalJSONFrom reads the interaction once, its type then peeked and its kind decoded from what was read
+func (e *EventInteractionCreate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	data, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalJSON(data)
 }
 
 func (e EventInteractionCreate) MarshalJSON() ([]byte, error) {

@@ -452,21 +452,23 @@ func TestGatewaySkipsUndecodableData(t *testing.T) {
 				}
 				c.serve(time.Minute, func() {
 					_ = c.write(OpcodeDispatch, 2, EventTypeChannelCreate, `{"id":"1","type":999}`)
-					_ = c.write(OpcodeDispatch, 3, "TEST_EVENT", `{}`)
+					// Decoded as it streams in, and cut short by the error
+					_ = c.write(OpcodeDispatch, 3, EventTypeMessageCreate, `{"id":"1","channel_id":"2","content":5,"author":{"id":"3"}}`)
+					_ = c.write(OpcodeDispatch, 4, "TEST_EVENT", `{}`)
 				})
 			}, WithCompression(compression))
 			openTestGateway(t, g)
 
 			deadline := time.After(5 * time.Second)
 			for {
-				if sequence := g.LastSequenceReceived(); sequence != nil && *sequence == 3 {
+				if sequence := g.LastSequenceReceived(); sequence != nil && *sequence == 4 {
 					break
 				}
 				select {
 				case err := <-closed:
 					t.Fatalf("connection closed: %v", err)
 				case <-deadline:
-					t.Fatalf("last sequence received: %v, want 3", g.LastSequenceReceived())
+					t.Fatalf("last sequence received: %v, want 4", g.LastSequenceReceived())
 				case <-time.After(time.Millisecond):
 				}
 			}

@@ -55,23 +55,37 @@ func fixtures(t testing.TB) []fixture {
 	return loaded
 }
 
-// transports read a frame: decoder as upstream disgo's transport does, a json.Decoder per frame, and stream as this
-// fork's does, one reused jsontext.Decoder. Both run either way, so a benchmark compares the two
+// transports read a frame: decoder as upstream disgo's transport does, a json.Decoder per frame; stream through
+// Message's UnmarshalJSONFrom on one reused jsontext.Decoder, keeping RawD; and direct as this fork's transport does
+// without raw events, d decoded as it streams in and RawD left nil. All run either way, so a benchmark compares them
 var transports = []struct {
 	name   string
+	raw    bool
 	decode func(frame []byte) (*gateway.Message, error)
 }{
-	{"decoder", func(frame []byte) (*gateway.Message, error) {
+	{"decoder", true, func(frame []byte) (*gateway.Message, error) {
 		var message gateway.Message
 		err := json.NewDecoder(bytes.NewReader(frame)).Decode(&message)
 		return &message, err
 	}},
-	{"stream", func(frame []byte) (*gateway.Message, error) {
+	{"stream", true, func(frame []byte) (*gateway.Message, error) {
 		var message gateway.Message
 		reused.Reset(bytes.NewReader(frame), streamOptions)
 		err := jsonv2.UnmarshalDecode(reused, &message)
 		return &message, err
 	}},
+	{"direct", false, func(frame []byte) (*gateway.Message, error) {
+		var message gateway.Message
+		reused.Reset(bytes.NewReader(frame), streamOptions)
+		err := gateway.DecodeFrame(reused, &message, false)
+		return &message, err
+	}},
+}
+
+// withoutRawD is a dump without its RawD line, for a transport that doesn't keep it
+func withoutRawD(dump string) string {
+	lines := strings.Split(dump, "\n")
+	return strings.Join(slices.DeleteFunc(lines, func(line string) bool { return strings.HasPrefix(line, "  RawD: ") }), "\n")
 }
 
 var (
@@ -89,24 +103,36 @@ func TestDecodeGolden(t *testing.T) {
 					t.Fatal(err)
 				}
 
+				if !transport.raw && message.RawD != nil {
+					t.Errorf("RawD kept: %q", message.RawD)
+				}
+
 				var builder strings.Builder
 				dump(&builder, reflect.ValueOf(message).Elem(), 0)
 
 				path := filepath.Join("testdata", "frames", fixture.name+".golden")
 				if *update {
+					if !transport.raw {
+						return
+					}
 					if err = os.WriteFile(path, []byte(builder.String()), 0o644); err != nil {
 						t.Fatal(err)
 					}
 					return
 				}
 
-				golden, err := os.ReadFile(path)
+				read, err := os.ReadFile(path)
 				if err != nil {
 					t.Fatalf("%v (generate with -update)", err)
 				}
 
-				if got := builder.String(); got != string(golden) {
-					t.Errorf("decoded differently from upstream disgo:\n%s", difference(string(golden), got))
+				golden, got := string(read), builder.String()
+				if !transport.raw {
+					golden, got = withoutRawD(golden), withoutRawD(got)
+				}
+
+				if got != golden {
+					t.Errorf("decoded differently from upstream disgo:\n%s", difference(golden, got))
 				}
 			})
 		}
@@ -240,4 +266,31 @@ func difference(want, got string) string {
 	}
 
 	return ""
+}
+
+// Data arriving before op, or before t in a dispatch, is kept and decoded once the frame is read
+func TestDecodeDataFirst(t *testing.T) {
+	for _, frame := range []string{
+		`{"d":{"heartbeat_interval":41250},"op":10}`,
+		`{"op":0,"d":{"id":"5","channel_id":"6"},"t":"MESSAGE_DELETE","s":7}`,
+	} {
+		var message gateway.Message
+		reused.Reset(strings.NewReader(frame), streamOptions)
+		if err := gateway.DecodeFrame(reused, &message, false); err != nil {
+			t.Fatalf("%s: %v", frame, err)
+		}
+
+		switch data := message.D.(type) {
+		case gateway.MessageDataHello:
+			if data.HeartbeatInterval != 41250 {
+				t.Errorf("hello: %+v", data)
+			}
+		case gateway.EventMessageDelete:
+			if data.ID != 5 || data.ChannelID != 6 || message.S != 7 {
+				t.Errorf("message delete: %+v, s %d", data, message.S)
+			}
+		default:
+			t.Errorf("%s: decoded as %T", frame, message.D)
+		}
+	}
 }

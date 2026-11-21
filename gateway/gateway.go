@@ -332,7 +332,7 @@ func (g *gatewayImpl) open(ctx context.Context) error {
 		return nil
 	})
 
-	t := newTransport(g.config.Compression, conn, g.config.Logger)
+	t := newTransport(g.config.Compression, conn, g.config.Logger, g.config.EnableRawEvents)
 	g.conn = t
 	// the heartbeat lives as long as this connection: closeWithCode cancels it together with closing the connection
 	heartbeatCtx, heartbeatCancel := context.WithCancel(context.Background())

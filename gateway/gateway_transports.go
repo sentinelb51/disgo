@@ -50,19 +50,20 @@ func (t CompressionType) String() string {
 	return string(t)
 }
 
-func newTransport(typ CompressionType, conn *websocket.Conn, logger *slog.Logger) transport {
+// newTransport makes the transport for typ. keepRaw keeps each frame's data as Message.RawD, for EventRaw
+func newTransport(typ CompressionType, conn *websocket.Conn, logger *slog.Logger, keepRaw bool) transport {
 	switch typ {
 	case CompressionZlibStream:
-		return newZlibStreamTransport(conn, logger)
+		return newZlibStreamTransport(conn, logger, keepRaw)
 	case CompressionZstdStream:
-		return newZstdStreamTransport(conn, logger)
+		return newZstdStreamTransport(conn, logger, keepRaw)
 	default:
 		// zlibPayloadTransport supports both compressed (using zlib)
 		// and uncompressed payloads
 		//
 		// The identify payload will state whether (some) payloads
 		// will be compressed or not
-		return newZlibPayloadTransport(conn, logger)
+		return newZlibPayloadTransport(conn, logger, keepRaw)
 	}
 }
 
@@ -90,6 +91,8 @@ type baseTransport struct {
 
 	// decoder is reset for each message, keeping the buffer the last one grew. Only the listen goroutine reads
 	decoder *jsontext.Decoder
+	// keepRaw keeps each frame's data as Message.RawD, which costs a second read of it
+	keepRaw bool
 
 	closed atomic.Bool
 }
@@ -126,7 +129,7 @@ func (t *baseTransport) parseMessage(r io.Reader) (*Message, error) {
 	}
 
 	var message Message
-	err := jsonv2.UnmarshalDecode(t.decoder, &message)
+	err := message.decode(t.decoder, t.keepRaw)
 	if err != nil {
 		t.logger.Error("error while parsing gateway message", slog.Any("err", err))
 		// The frame was read whole and only its data didn't decode (a channel type this version doesn't know, say):
@@ -196,11 +199,12 @@ type zstdStreamTransport struct {
 	buffer   *pipeBuffer
 }
 
-func newZstdStreamTransport(conn *websocket.Conn, logger *slog.Logger) *zstdStreamTransport {
+func newZstdStreamTransport(conn *websocket.Conn, logger *slog.Logger, keepRaw bool) *zstdStreamTransport {
 	return &zstdStreamTransport{
 		baseTransport: baseTransport{
-			conn:   conn,
-			logger: logger,
+			conn:    conn,
+			logger:  logger,
+			keepRaw: keepRaw,
 		},
 		buffer: new(pipeBuffer),
 	}
@@ -249,11 +253,12 @@ type zlibStreamTransport struct {
 	buffer   *pipeBuffer
 }
 
-func newZlibStreamTransport(conn *websocket.Conn, logger *slog.Logger) *zlibStreamTransport {
+func newZlibStreamTransport(conn *websocket.Conn, logger *slog.Logger, keepRaw bool) *zlibStreamTransport {
 	return &zlibStreamTransport{
 		baseTransport: baseTransport{
-			conn:   conn,
-			logger: logger,
+			conn:    conn,
+			logger:  logger,
+			keepRaw: keepRaw,
 		},
 		buffer: new(pipeBuffer),
 	}
@@ -312,11 +317,12 @@ type zlibPayloadTransport struct {
 	baseTransport
 }
 
-func newZlibPayloadTransport(conn *websocket.Conn, logger *slog.Logger) *zlibPayloadTransport {
+func newZlibPayloadTransport(conn *websocket.Conn, logger *slog.Logger, keepRaw bool) *zlibPayloadTransport {
 	return &zlibPayloadTransport{
 		baseTransport: baseTransport{
-			conn:   conn,
-			logger: logger,
+			conn:    conn,
+			logger:  logger,
+			keepRaw: keepRaw,
 		},
 	}
 }
