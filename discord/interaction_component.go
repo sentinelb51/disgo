@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 
 	"github.com/disgoorg/json/v2"
@@ -16,12 +18,17 @@ type ComponentInteraction struct {
 }
 
 func (i *ComponentInteraction) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, i)
+}
+
+// UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
+func (i *ComponentInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var interaction struct {
 		rawInteraction
 		Data    json.RawMessage `json:"data"`
 		Message Message         `json:"message"`
 	}
-	if err := unmarshalOnce(data, &interaction); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
 		return err
 	}
 

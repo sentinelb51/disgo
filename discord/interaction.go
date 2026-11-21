@@ -76,42 +76,80 @@ type Interaction interface {
 }
 
 func UnmarshalInteraction(data []byte) (Interaction, error) {
+	// The type is peeked rather than probed, and the interaction decoded as it in one pass
+	iType, _ := peek(data, "type", "")
+	v := typedInteraction{interactionType: InteractionType(peekInt(iType))}
+	if err := unmarshalOnce(data, &v); err != nil {
+		return nil, err
+	}
+
+	return v.interaction, nil
+}
+
+// DecodeInteraction decodes the interaction dec reads next as its type as it streams in, the type peeked in what
+// dec has buffered. One not buffered that far is read whole and peeked there
+func DecodeInteraction(dec *jsontext.Decoder) (Interaction, error) {
+	iType, _, ok := peekUnread(dec, "type", "")
+	if !ok {
+		data, err := dec.ReadValue()
+		if err != nil {
+			return nil, err
+		}
+		return UnmarshalInteraction(data)
+	}
+
+	return decodeInteraction(InteractionType(peekInt(iType)), dec)
+}
+
+// typedInteraction decodes an interaction of a type known beforehand
+type typedInteraction struct {
+	interactionType InteractionType
+	interaction     Interaction
+}
+
+func (i *typedInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) (err error) {
+	i.interaction, err = decodeInteraction(i.interactionType, dec)
+	return err
+}
+
+// decodeInteraction decodes the interaction dec reads next as interactionType, each kind's UnmarshalJSONFrom
+// called directly
+func decodeInteraction(interactionType InteractionType, dec *jsontext.Decoder) (Interaction, error) {
 	var (
 		interaction Interaction
 		err         error
 	)
 
-	// The type is peeked, and each interaction's UnmarshalJSON called directly: through json.Unmarshal the
-	// payload is read once more before the method is handed it
-	iType, _ := peek(data, "type", "")
-	switch InteractionType(peekInt(iType)) {
+	switch interactionType {
 	case InteractionTypePing:
 		v := PingInteraction{}
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		interaction = v
 
 	case InteractionTypeApplicationCommand:
 		v := ApplicationCommandInteraction{}
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		interaction = v
 
 	case InteractionTypeComponent:
 		v := ComponentInteraction{}
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		interaction = v
 
 	case InteractionTypeAutocomplete:
 		v := AutocompleteInteraction{}
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		interaction = v
 
 	case InteractionTypeModalSubmit:
 		v := ModalSubmitInteraction{}
-		err = v.UnmarshalJSON(data)
+		err = v.UnmarshalJSONFrom(dec)
 		interaction = v
 
 	default:
-		err = fmt.Errorf("unknown rawInteraction with type %d received", peekInt(iType))
+		if err = dec.SkipValue(); err == nil {
+			err = fmt.Errorf("unknown rawInteraction with type %d received", interactionType)
+		}
 	}
 	if err != nil {
 		return nil, err

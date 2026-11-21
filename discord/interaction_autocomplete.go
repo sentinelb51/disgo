@@ -16,11 +16,16 @@ type AutocompleteInteraction struct {
 }
 
 func (i *AutocompleteInteraction) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, i)
+}
+
+// UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
+func (i *AutocompleteInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var interaction struct {
 		rawInteraction
 		Data AutocompleteInteractionData `json:"data"`
 	}
-	if err := unmarshalOnce(data, &interaction); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
 		return err
 	}
 

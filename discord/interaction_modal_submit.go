@@ -18,12 +18,17 @@ type ModalSubmitInteraction struct {
 }
 
 func (i *ModalSubmitInteraction) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, i)
+}
+
+// UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
+func (i *ModalSubmitInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var interaction struct {
 		rawInteraction
 		Data    ModalSubmitInteractionData `json:"data"`
 		Message *Message                   `json:"message,omitempty"`
 	}
-	if err := unmarshalOnce(data, &interaction); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
 		return err
 	}
 

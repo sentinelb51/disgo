@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -17,9 +19,13 @@ type PingInteraction struct {
 }
 
 func (i *PingInteraction) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, i)
+}
+
+func (i *PingInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v rawInteraction
 
-	if err := unmarshalOnce(data, &v); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
 		return err
 	}
 
