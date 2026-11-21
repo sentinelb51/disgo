@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"runtime"
 	"testing"
 	"time"
 
@@ -184,6 +185,45 @@ func TestMemberChunkingCancelDuringChunk(t *testing.T) {
 
 	// the request's last chunk arrives after it was cancelled
 	m.HandleChunk(chunk(g.nonce, 2))
+}
+
+// A new session's READY while the old connection's reader is blocked handing a member to a channel nobody reads:
+// the READY fails the request and goes on, where it waited on the blocked reader for ever
+func TestMemberChunkingReadyWhileHandingOver(t *testing.T) {
+	m, g := newChunkingManager()
+
+	members, _, err := m.RequestAllMembersChan(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := m.chunkingRequests[g.nonce]
+
+	handled := make(chan struct{})
+	go func() {
+		defer close(handled)
+		m.HandleChunk(chunk(g.nonce, 2, discord.Member{User: discord.User{ID: 2}}))
+	}()
+	// HandleChunk holds the request while it hands the member over
+	for request.TryLock() {
+		request.Unlock()
+		runtime.Gosched()
+	}
+
+	ready := make(chan struct{})
+	go func() {
+		defer close(ready)
+		m.HandleReady(0, "s2")
+	}()
+	for _, done := range []chan struct{}{ready, handled} {
+		select {
+		case <-done:
+		case <-time.After(5 * time.Second):
+			t.Fatal("still blocked")
+		}
+	}
+	if _, ok := <-members; ok {
+		t.Error("a member came after the request failed")
+	}
 }
 
 // A request whose context ends between chunks returns the members of those that came, where it returned none

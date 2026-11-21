@@ -146,16 +146,22 @@ func (m *memberChunkingManagerImpl) HandleChunk(payload gateway.EventGuildMember
 		return
 	}
 
+	delivering := true
 	for _, member := range payload.Members {
 		// try to cache member
 		m.client.Caches.AddMember(member)
-		if request.memberFilterFunc != nil && !request.memberFilterFunc(member) {
+		if !delivering || request.memberFilterFunc != nil && !request.memberFilterFunc(member) {
 			continue
 		}
 		select {
 		case request.memberChan <- member:
 		case <-request.cancelled:
+			delivering = false
 		}
+	}
+	// Cancelled or failed while handing a member over: whoever ended it cleans up, with its error
+	if !delivering {
+		return
 	}
 
 	// all chunks sent cleanup
@@ -179,8 +185,10 @@ func cleanupRequest(m *memberChunkingManagerImpl, request *chunkingRequest) {
 }
 
 // failRequest ends a request Discord will send no more members for, with err. Waiting on the context was all
-// that ended one before
+// that ended one before. It wakes a HandleChunk blocked handing a member to a reader not reading first: that one
+// holds the lock, on the old connection's reader, and the new one's READY would wait for it forever
 func failRequest(m *memberChunkingManagerImpl, request *chunkingRequest, err error) {
+	request.cancelOnce.Do(func() { close(request.cancelled) })
 	request.Lock()
 	defer request.Unlock()
 	if request.closed {
