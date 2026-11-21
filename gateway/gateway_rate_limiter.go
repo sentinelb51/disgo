@@ -128,11 +128,13 @@ func (l *rateLimiterImpl) Wait(ctx context.Context, commandType RateLimiterComma
 
 		now := time.Now()
 		if l.isRateLimited(now, commandType) {
+			// read under the lock: the next sender to take it may start a new window
+			wait := l.reset.Sub(now)
 			l.rateMu.Unlock()
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case <-time.After(l.reset.Sub(now)):
+			case <-time.After(wait):
 			}
 			continue
 		}
