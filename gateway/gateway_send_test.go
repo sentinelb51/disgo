@@ -61,3 +61,19 @@ func TestSendWaitOutlivesConnection(t *testing.T) {
 		t.Errorf("sent: %v", err)
 	}
 }
+
+// A command reaching a connection not yet ready (a new one, after Send saw the old one ready) isn't written: Discord
+// closes a connection for a command before its identify. A heartbeat or identify is
+func TestSendToConnectionNotReady(t *testing.T) {
+	g, conn := sendGateway(StatusWaitingForHello, NewRateLimiter())
+
+	if err := g.sendInternal(context.Background(), NormalCommandType, OpcodeRequestGuildMembers, MessageDataRequestGuildMembers{}); !errors.Is(err, discord.ErrShardNotReady) {
+		t.Errorf("command: %v", err)
+	}
+	if err := g.sendInternal(context.Background(), InternalCommandType, OpcodeHeartbeat, MessageDataHeartbeat(1)); err != nil {
+		t.Errorf("heartbeat: %v", err)
+	}
+	if len(conn.written) != 1 || conn.written[0] != OpcodeHeartbeat {
+		t.Errorf("written %v", conn.written)
+	}
+}

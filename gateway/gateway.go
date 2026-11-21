@@ -485,6 +485,11 @@ func (g *gatewayImpl) sendInternal(ctx context.Context, commandType RateLimiterC
 	if g.conn != conn {
 		return discord.ErrShardNotConnected
 	}
+	// A command goes to a ready connection alone: Send saw the status before taking conn, which may be a new one not
+	// yet identified, which Discord closes for it. connMu is held: the status of conn, not of the one before
+	if commandType != InternalCommandType && g.Status() != StatusReady {
+		return discord.ErrShardNotReady
+	}
 	return conn.WriteMessage(data)
 }
 
