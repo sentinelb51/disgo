@@ -4,8 +4,10 @@ import (
 	"context"
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"log/slog"
 	"sync"
+	"time"
 
 	"github.com/disgoorg/snowflake/v2"
 
@@ -17,6 +19,14 @@ var _ MemberChunkingManager = (*memberChunkingManagerImpl)(nil)
 
 // ErrNoUserIDs is returned when no user IDs are provided to request members.
 var ErrNoUserIDs = errors.New("no user ids to request")
+
+var (
+	// ErrMemberRequestRateLimited is a member request Discord rate-limited: it sends no members for it
+	ErrMemberRequestRateLimited = errors.New("member request rate limited")
+	// ErrMemberRequestSessionEnded is a member request whose gateway session ended before its members came: a new
+	// session sends none for it
+	ErrMemberRequestSessionEnded = errors.New("member request's session ended")
+)
 
 // NewMemberChunkingManager returns a new MemberChunkingManager with the given MemberChunkingFilter.
 func NewMemberChunkingManager(client *Client, logger *slog.Logger, memberChunkingFilter MemberChunkingFilter) MemberChunkingManager {
@@ -44,7 +54,15 @@ type MemberChunkingManager interface {
 	// HandleChunk handles the discord.EventGuildMembersChunk event payloads from the discord Gateway.
 	HandleChunk(payload gateway.EventGuildMembersChunk)
 
-	// RequestMembers requests members from the given guildID and userIDs.
+	// HandleRateLimited fails the member request a gateway.EventRateLimited names: Discord sends no members for it.
+	HandleRateLimited(payload gateway.EventRateLimited)
+
+	// HandleReady fails the member requests sent on an earlier session of the shard: a new session sends no
+	// members for them.
+	HandleReady(shardID int, sessionID string)
+
+	// RequestMembers requests members from the given guildID and userIDs, at most 100 of them.
+	// It fails with ErrMemberRequestRateLimited or ErrMemberRequestSessionEnded when Discord will send none.
 	// Notice: This action requires the gateway.IntentGuildMembers.
 	RequestMembers(ctx context.Context, guildID snowflake.ID, userIDs ...snowflake.ID) ([]discord.Member, error)
 	// RequestAllMembers requests all members from the given guildID.
@@ -84,11 +102,17 @@ type chunkingRequest struct {
 	sync.Mutex
 	nonce string
 
+	// shardID and sessionID are the session the request went out on: a new one sends no members for it
+	shardID   int
+	sessionID string
+
 	memberChan       chan<- discord.Member
 	memberFilterFunc func(member discord.Member) bool
 
 	chunks int
 	closed bool
+	// err is why the request ended before its last chunk, set before memberChan closes
+	err error
 
 	// cancelled is closed on cancel, to stop HandleChunk waiting to send on memberChan
 	cancelled  chan struct{}
@@ -155,14 +179,70 @@ func cleanupRequest(m *memberChunkingManagerImpl, request *chunkingRequest) {
 	m.chunkingRequestsMu.Unlock()
 }
 
+// failRequest ends a request Discord will send no more members for, with err. Waiting on the context was all
+// that ended one before
+func failRequest(m *memberChunkingManagerImpl, request *chunkingRequest, err error) {
+	request.Lock()
+	defer request.Unlock()
+	if request.closed {
+		return
+	}
+	request.err = err
+	cleanupRequest(m, request)
+}
+
+func (m *memberChunkingManagerImpl) HandleRateLimited(payload gateway.EventRateLimited) {
+	meta, ok := payload.Meta.(gateway.RateLimitedMetadataRequestGuildMembers)
+	if !ok {
+		return
+	}
+
+	m.chunkingRequestsMu.RLock()
+	request, ok := m.chunkingRequests[meta.Nonce]
+	m.chunkingRequestsMu.RUnlock()
+	if !ok {
+		return
+	}
+
+	retryAfter := time.Duration(payload.RetryAfter * float64(time.Second))
+	failRequest(m, request, fmt.Errorf("%w: retry after %s", ErrMemberRequestRateLimited, retryAfter))
+}
+
+func (m *memberChunkingManagerImpl) HandleReady(shardID int, sessionID string) {
+	var ended []*chunkingRequest
+	m.chunkingRequestsMu.RLock()
+	for _, request := range m.chunkingRequests {
+		if request.shardID == shardID && request.sessionID != sessionID {
+			ended = append(ended, request)
+		}
+	}
+	m.chunkingRequestsMu.RUnlock()
+
+	for _, request := range ended {
+		failRequest(m, request, ErrMemberRequestSessionEnded)
+	}
+}
+
 func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context, guildID snowflake.ID, query *string, limit *int, userIDs []snowflake.ID, memberFilterFunc func(member discord.Member) bool) (<-chan discord.Member, func(), error) {
+	_, memberChan, cancel, err := m.startRequest(ctx, guildID, query, limit, userIDs, memberFilterFunc)
+	return memberChan, cancel, err
+}
+
+// startRequest sends a member request, and returns it with the channel its members come on, closed once they're
+// all in or the request ends
+func (m *memberChunkingManagerImpl) startRequest(ctx context.Context, guildID snowflake.ID, query *string, limit *int, userIDs []snowflake.ID, memberFilterFunc func(member discord.Member) bool) (*chunkingRequest, <-chan discord.Member, func(), error) {
 	shard, err := m.client.Shard(guildID)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	if shard.Intents().Missing(gateway.IntentGuildMembers) {
-		return nil, nil, discord.ErrNoGuildMembersIntent
+		return nil, nil, nil, discord.ErrNoGuildMembersIntent
+	}
+
+	var sessionID string
+	if id := shard.SessionID(); id != nil {
+		sessionID = *id
 	}
 
 	var nonce string
@@ -178,6 +258,8 @@ func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context,
 	memberChan := make(chan discord.Member)
 	request := &chunkingRequest{
 		nonce:            nonce,
+		shardID:          shard.ShardID(),
+		sessionID:        sessionID,
 		memberChan:       memberChan,
 		memberFilterFunc: memberFilterFunc,
 		cancelled:        make(chan struct{}),
@@ -206,12 +288,12 @@ func (m *memberChunkingManagerImpl) requestGuildMembersChan(ctx context.Context,
 		// no chunks will come for a request that was never sent
 		cancel()
 	}
-	return memberChan, cancel, err
+	return request, memberChan, cancel, err
 }
 
 func (m *memberChunkingManagerImpl) requestGuildMembers(ctx context.Context, guildID snowflake.ID, query *string, limit *int, userIDs []snowflake.ID, memberFilterFunc func(member discord.Member) bool) ([]discord.Member, error) {
 	var members []discord.Member
-	memberChan, cls, err := m.requestGuildMembersChan(ctx, guildID, query, limit, userIDs, memberFilterFunc)
+	request, memberChan, cls, err := m.startRequest(ctx, guildID, query, limit, userIDs, memberFilterFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +304,10 @@ func (m *memberChunkingManagerImpl) requestGuildMembers(ctx context.Context, gui
 			return nil, ctx.Err()
 		case member, ok := <-memberChan:
 			if !ok {
-				return members, nil
+				request.Lock()
+				err = request.err
+				request.Unlock()
+				return members, err
 			}
 			members = append(members, member)
 		}

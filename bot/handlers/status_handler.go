@@ -24,6 +24,11 @@ func gatewayHandlerHeartbeatAck(client *bot.Client, sequenceNumber int, shardID 
 }
 
 func gatewayHandlerRateLimited(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventRateLimited) {
+	// A rate-limited member request gets no chunks: it fails now, where it waited out its context
+	if client.MemberChunkingManager != nil {
+		client.MemberChunkingManager.HandleRateLimited(event)
+	}
+
 	client.EventManager.DispatchEvent(&events.GatewayRateLimited{
 		GenericEvent:     events.NewGenericEvent(client, sequenceNumber, shardID),
 		EventRateLimited: event,
@@ -32,6 +37,11 @@ func gatewayHandlerRateLimited(client *bot.Client, sequenceNumber int, shardID i
 
 func gatewayHandlerReady(client *bot.Client, sequenceNumber int, shardID int, event gateway.EventReady) {
 	client.Caches.SetSelfUser(event.User)
+
+	// Member requests of the session before get no chunks on this one
+	if client.MemberChunkingManager != nil {
+		client.MemberChunkingManager.HandleReady(shardID, event.SessionID)
+	}
 
 	// A new session sends a GUILD_CREATE for each guild of the shard and nothing for what changed without a session
 	// (guilds left, channels or roles deleted): drop what earlier sessions cached for the shard's guilds.
