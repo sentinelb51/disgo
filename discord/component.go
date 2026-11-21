@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"iter"
 	"slices"
@@ -170,125 +172,172 @@ type UnmarshalComponent struct {
 }
 
 func (u *UnmarshalComponent) UnmarshalJSON(data []byte) error {
-	var (
-		component Component
-		err       error
-	)
-
-	// The type is peeked rather than probed, and the component decoded in one pass. Components that nest others
-	// have their UnmarshalJSON called directly: through unmarshalOnce they are read once more before it runs
+	// The type is peeked rather than probed, and the component decoded in one pass
 	cType, _ := peek(data, "type", "")
-	switch ComponentType(peekInt(cType)) {
-	case ComponentTypeActionRow:
-		var v ActionRowComponent
-		err = v.UnmarshalJSON(data)
-		component = v
-
-	case ComponentTypeButton:
-		var v ButtonComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeStringSelectMenu:
-		var v StringSelectMenuComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeTextInput:
-		var v TextInputComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeUserSelectMenu:
-		var v UserSelectMenuComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeRoleSelectMenu:
-		var v RoleSelectMenuComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeMentionableSelectMenu:
-		var v MentionableSelectMenuComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeChannelSelectMenu:
-		var v ChannelSelectMenuComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeSection:
-		var v SectionComponent
-		err = v.UnmarshalJSON(data)
-		component = v
-
-	case ComponentTypeTextDisplay:
-		var v TextDisplayComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeThumbnail:
-		var v ThumbnailComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeMediaGallery:
-		var v MediaGalleryComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeFile:
-		var v FileComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeSeparator:
-		var v SeparatorComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeContainer:
-		var v ContainerComponent
-		err = v.UnmarshalJSON(data)
-		component = v
-
-	case ComponentTypeLabel:
-		var v LabelComponent
-		err = v.UnmarshalJSON(data)
-		component = v
-
-	case ComponentTypeFileUpload:
-		var v FileUploadComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeRadioGroup:
-		var v RadioGroupComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeCheckboxGroup:
-		var v CheckboxGroupComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-
-	case ComponentTypeCheckbox:
-		var v CheckboxComponent
-		err = unmarshalOnce(data, &v)
-		component = v
-	default:
-		var v UnknownComponent
-		err = unmarshalOnce(data, &v)
-		component = v
+	v := typedComponent{componentType: ComponentType(peekInt(cType))}
+	if err := unmarshalOnce(data, &v); err != nil {
+		return err
 	}
+
+	u.Component = v.component
+	return nil
+}
+
+// UnmarshalJSONFrom decodes the component as its type as it streams in, the type peeked in what dec has buffered:
+// a message carries its components, nested in rows, sections and containers
+func (u *UnmarshalComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	cType, _, ok := peekUnread(dec, "type", "")
+	if !ok {
+		data, err := dec.ReadValue()
+		if err != nil {
+			return err
+		}
+		return u.UnmarshalJSON(data)
+	}
+
+	component, err := decodeComponent(ComponentType(peekInt(cType)), dec)
 	if err != nil {
 		return err
 	}
 
 	u.Component = component
 	return nil
+}
+
+// typedComponent decodes a component of a type known beforehand
+type typedComponent struct {
+	componentType ComponentType
+	component     Component
+}
+
+func (c *typedComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) (err error) {
+	c.component, err = decodeComponent(c.componentType, dec)
+	return err
+}
+
+// decodeComponent decodes the component dec reads next as componentType. Components that nest others have their
+// UnmarshalJSONFrom called directly, keeping them on the stack
+func decodeComponent(componentType ComponentType, dec *jsontext.Decoder) (Component, error) {
+	var (
+		component Component
+		err       error
+	)
+
+	switch componentType {
+	case ComponentTypeActionRow:
+		var v ActionRowComponent
+		err = v.UnmarshalJSONFrom(dec)
+		component = v
+
+	case ComponentTypeButton:
+		var v ButtonComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeStringSelectMenu:
+		var v StringSelectMenuComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeTextInput:
+		var v TextInputComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeUserSelectMenu:
+		var v UserSelectMenuComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeRoleSelectMenu:
+		var v RoleSelectMenuComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeMentionableSelectMenu:
+		var v MentionableSelectMenuComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeChannelSelectMenu:
+		var v ChannelSelectMenuComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeSection:
+		var v SectionComponent
+		err = v.UnmarshalJSONFrom(dec)
+		component = v
+
+	case ComponentTypeTextDisplay:
+		var v TextDisplayComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeThumbnail:
+		var v ThumbnailComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeMediaGallery:
+		var v MediaGalleryComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeFile:
+		var v FileComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeSeparator:
+		var v SeparatorComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeContainer:
+		var v ContainerComponent
+		err = v.UnmarshalJSONFrom(dec)
+		component = v
+
+	case ComponentTypeLabel:
+		var v LabelComponent
+		err = v.UnmarshalJSONFrom(dec)
+		component = v
+
+	case ComponentTypeFileUpload:
+		var v FileUploadComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeRadioGroup:
+		var v RadioGroupComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeCheckboxGroup:
+		var v CheckboxGroupComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	case ComponentTypeCheckbox:
+		var v CheckboxComponent
+		err = jsonv2.UnmarshalDecode(dec, &v)
+		component = v
+
+	default:
+		// Kept whole as Data
+		var data []byte
+		if data, err = dec.ReadValue(); err == nil {
+			var v UnknownComponent
+			err = v.UnmarshalJSON(data)
+			component = v
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return component, nil
 }
 
 type ComponentEmoji struct {
@@ -347,11 +396,15 @@ func (c ActionRowComponent) MarshalJSON() ([]byte, error) {
 }
 
 func (c *ActionRowComponent) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+func (c *ActionRowComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var actionRowComponent struct {
 		ID         int                  `json:"id,omitempty"`
 		Components []UnmarshalComponent `json:"components"`
 	}
-	if err := unmarshalOnce(data, &actionRowComponent); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &actionRowComponent); err != nil {
 		return err
 	}
 
@@ -824,12 +877,16 @@ func (c SectionComponent) MarshalJSON() ([]byte, error) {
 }
 
 func (c *SectionComponent) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+func (c *SectionComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var sectionComponent struct {
 		ID         int                  `json:"id,omitempty"`
 		Components []UnmarshalComponent `json:"components"`
 		Accessory  *UnmarshalComponent  `json:"accessory"`
 	}
-	if err := unmarshalOnce(data, &sectionComponent); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &sectionComponent); err != nil {
 		return err
 	}
 
@@ -1279,13 +1336,17 @@ func (c ContainerComponent) MarshalJSON() ([]byte, error) {
 }
 
 func (c *ContainerComponent) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+func (c *ContainerComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var containerComponent struct {
 		ID          int                  `json:"id,omitempty"`
 		AccentColor int                  `json:"accent_color,omitempty"`
 		Spoiler     bool                 `json:"spoiler,omitempty"`
 		Components  []UnmarshalComponent `json:"components"`
 	}
-	if err := unmarshalOnce(data, &containerComponent); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &containerComponent); err != nil {
 		return err
 	}
 
@@ -1408,13 +1469,17 @@ func (c LabelComponent) MarshalJSON() ([]byte, error) {
 }
 
 func (c *LabelComponent) UnmarshalJSON(data []byte) error {
+	return unmarshalOnce(data, c)
+}
+
+func (c *LabelComponent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var labelComponent struct {
 		ID          int                `json:"id,omitempty"`
 		Label       string             `json:"label"`
 		Description string             `json:"description,omitempty"`
 		Component   UnmarshalComponent `json:"component"`
 	}
-	if err := unmarshalOnce(data, &labelComponent); err != nil {
+	if err := jsonv2.UnmarshalDecode(dec, &labelComponent); err != nil {
 		return err
 	}
 
