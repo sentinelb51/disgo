@@ -396,8 +396,8 @@ func (g *gatewayImpl) closeWithCode(ctx context.Context, code int, message strin
 		g.config.Logger.DebugContext(ctx, "closing heartbeat goroutine")
 		g.heartbeatCancel()
 
-		// The rate limiter is left as it is: no send is in flight while connMu is held, and the next connection
-		// starts the default one afresh
+		// The rate limiter is left as it is: a send still waiting on it finds the connection gone and sends
+		// nothing, and the next connection starts the default one afresh
 		g.config.Logger.DebugContext(ctx, "closing gateway connection", slog.Int("code", code), slog.String("message", message))
 		if err := g.conn.WriteClose(code, message); err != nil && !errors.Is(err, websocket.ErrCloseSent) {
 			g.config.Logger.DebugContext(ctx, "error writing close code", slog.Any("err", err))
@@ -455,18 +455,29 @@ func (g *gatewayImpl) sendInternal(ctx context.Context, commandType RateLimiterC
 		D:  d,
 	}
 
+	// The wait for the rate limiter (up to a minute, once the budget is spent) holds no connMu, which every
+	// heartbeat takes: waited under it, one rate-limited command held heartbeats back until Discord dropped the
+	// connection. The limiter's own lock keeps sends in order
 	g.connMu.Lock()
-	defer g.connMu.Unlock()
-	if g.conn == nil {
+	conn, limiter := g.conn, g.config.RateLimiter
+	g.connMu.Unlock()
+	if conn == nil {
 		return discord.ErrShardNotConnected
 	}
 
-	if err := g.config.RateLimiter.Wait(ctx, commandType); err != nil {
+	if err := limiter.Wait(ctx, commandType); err != nil {
 		return err
 	}
+	defer limiter.Unlock()
 
-	defer g.config.RateLimiter.Unlock()
-	return g.conn.WriteMessage(data)
+	g.connMu.Lock()
+	defer g.connMu.Unlock()
+	// Sent on the connection it waited for, or not at all: a new connection is a new session, with a budget of its
+	// own, for which a heartbeat or command of the old one is wrong
+	if g.conn != conn {
+		return discord.ErrShardNotConnected
+	}
+	return conn.WriteMessage(data)
 }
 
 func (g *gatewayImpl) Latency() time.Duration {

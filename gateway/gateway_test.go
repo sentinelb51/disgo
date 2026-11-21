@@ -403,6 +403,50 @@ func TestGatewayPresenceWhileIdentifying(t *testing.T) {
 	}
 }
 
+// A command waiting out the rate limit holds no heartbeat back. It waited holding connMu, which every heartbeat
+// takes, so a bot that had spent its command budget sent no heartbeat until the minute was up, and Discord dropped
+// the connection
+func TestGatewayHeartbeatWhileSendRateLimited(t *testing.T) {
+	t.Parallel()
+
+	acks := make(chan struct{}, 64)
+	g := newTestGatewayWithHandler(t, func(n int, c *testConn) { c.serve(20*time.Millisecond, nil) }, func(_ Gateway, eventType EventType, _ int, _ EventData) {
+		if eventType == EventTypeHeartbeatAck {
+			select {
+			case acks <- struct{}{}:
+			default:
+			}
+		}
+	}, WithRateLimiterConfigOpts(WithCommandsPerMinute(40), WithReservedCommandSlots(39)))
+	openTestGateway(t, g)
+
+	// The identify took one command, this one the last a normal command may: the next waits out the minute
+	if err := g.Send(context.Background(), OpcodePresenceUpdate, MessageDataPresenceUpdate{}); err != nil {
+		t.Fatal(err)
+	}
+
+	waiting, cancel := context.WithCancel(context.Background())
+	sent := make(chan error, 1)
+	go func() { sent <- g.Send(waiting, OpcodePresenceUpdate, MessageDataPresenceUpdate{}) }()
+	defer func() {
+		cancel()
+		if err := <-sent; !errors.Is(err, context.Canceled) {
+			t.Errorf("the waiting command: %v", err)
+		}
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+	for len(acks) > 0 {
+		<-acks
+	}
+
+	select {
+	case <-acks:
+	case <-time.After(time.Second):
+		t.Fatal("no heartbeat while a command waited on the rate limit")
+	}
+}
+
 // The heartbeat ACK event carries the time of the ACK before it, and of this one
 func TestGatewayHeartbeatAckEvent(t *testing.T) {
 	t.Parallel()
