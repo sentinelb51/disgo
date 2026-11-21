@@ -2,7 +2,6 @@ package discord
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
 	"fmt"
 
 	"github.com/disgoorg/json/v2"
@@ -21,14 +20,18 @@ func (i *ComponentInteraction) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, i)
 }
 
+// componentInteractionWire is a component's interaction as JSON carries it, its data kept to be decoded as its
+// component's kind. decodeComponentInteractionWire (decode_gen.go) decodes it
+type componentInteractionWire struct {
+	rawInteraction
+	Data    json.RawMessage `json:"data"`
+	Message Message         `json:"message"`
+}
+
 // UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
 func (i *ComponentInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	var interaction struct {
-		rawInteraction
-		Data    json.RawMessage `json:"data"`
-		Message Message         `json:"message"`
-	}
-	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
+	var interaction componentInteractionWire
+	if err := decodeComponentInteractionWire(dec, &interaction); err != nil {
 		return err
 	}
 

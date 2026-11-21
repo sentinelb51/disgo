@@ -143,20 +143,25 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, m)
 }
 
+// messageFields is Message without its methods, for messageWire to embed
+type messageFields Message
+
+// messageWire is a message as JSON carries it, its components as the kinds they are. decodeMessageWire
+// (decode_gen.go) decodes it
+type messageWire struct {
+	Components []UnmarshalComponent `json:"components"`
+	messageFields
+}
+
 // UnmarshalJSONFrom decodes the message as it streams in. Through UnmarshalJSON, encoding/json/v2 reads the whole
 // message once before handing it over, a pass of its own for every message
 func (m *Message) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type message Message
-	var v struct {
-		Components []UnmarshalComponent `json:"components"`
-		message
-	}
-
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	var v messageWire
+	if err := decodeMessageWire(dec, &v); err != nil {
 		return err
 	}
 
-	*m = Message(v.message)
+	*m = Message(v.messageFields)
 
 	if len(v.Components) > 0 {
 		m.Components = unmarshalComponents(v.Components)

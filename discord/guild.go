@@ -2,7 +2,6 @@ package discord
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
 	"time"
 
 	"github.com/disgoorg/json/v2"
@@ -250,15 +249,21 @@ func (g *GatewayGuild) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, g)
 }
 
+// gatewayGuild is GatewayGuild without its methods, for gatewayGuildWire to embed
+type gatewayGuild GatewayGuild
+
+// gatewayGuildWire is a GUILD_CREATE's guild as JSON carries it, its channels as the kinds they are.
+// decodeGatewayGuildWire (decode_gen.go) decodes it
+type gatewayGuildWire struct {
+	Channels []UnmarshalChannel `json:"channels"`
+	gatewayGuild
+}
+
 // UnmarshalJSONFrom decodes the guild as it streams in: a GUILD_CREATE is the largest event, and through
 // UnmarshalJSON encoding/json/v2 reads it whole once before handing it over
 func (g *GatewayGuild) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type gatewayGuild GatewayGuild
-	var v struct {
-		Channels []UnmarshalChannel `json:"channels"`
-		gatewayGuild
-	}
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	var v gatewayGuildWire
+	if err := decodeGatewayGuildWire(dec, &v); err != nil {
 		return err
 	}
 

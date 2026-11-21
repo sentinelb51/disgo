@@ -19,13 +19,17 @@ func (i *AutocompleteInteraction) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, i)
 }
 
+// autocompleteInteractionWire is an autocomplete's interaction as JSON carries it, decoded by
+// decodeAutocompleteInteractionWire (decode_gen.go)
+type autocompleteInteractionWire struct {
+	rawInteraction
+	Data AutocompleteInteractionData `json:"data"`
+}
+
 // UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
 func (i *AutocompleteInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	var interaction struct {
-		rawInteraction
-		Data AutocompleteInteractionData `json:"data"`
-	}
-	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
+	var interaction autocompleteInteractionWire
+	if err := decodeAutocompleteInteractionWire(dec, &interaction); err != nil {
 		return err
 	}
 

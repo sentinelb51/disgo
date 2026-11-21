@@ -2,7 +2,6 @@ package discord
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
 	"fmt"
 
 	"github.com/disgoorg/json/v2"
@@ -20,15 +19,19 @@ func (i *ApplicationCommandInteraction) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, i)
 }
 
+// applicationCommandInteractionWire is a command's interaction as JSON carries it, decoded by
+// decodeApplicationCommandInteractionWire (decode_gen.go)
+type applicationCommandInteractionWire struct {
+	rawInteraction
+	Data rawApplicationCommandData `json:"data"`
+}
+
 // UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
 func (i *ApplicationCommandInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	// The data is decoded in the interaction's pass, into the fields of every command type: decoded raw, probed
 	// for its type, then decoded as that type, it was read three times over
-	var interaction struct {
-		rawInteraction
-		Data rawApplicationCommandData `json:"data"`
-	}
-	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
+	var interaction applicationCommandInteractionWire
+	if err := decodeApplicationCommandInteractionWire(dec, &interaction); err != nil {
 		return err
 	}
 

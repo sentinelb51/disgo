@@ -21,14 +21,18 @@ func (i *ModalSubmitInteraction) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, i)
 }
 
+// modalSubmitInteractionWire is a modal's interaction as JSON carries it, decoded by
+// decodeModalSubmitInteractionWire (decode_gen.go)
+type modalSubmitInteractionWire struct {
+	rawInteraction
+	Data    ModalSubmitInteractionData `json:"data"`
+	Message *Message                   `json:"message,omitempty"`
+}
+
 // UnmarshalJSONFrom decodes the interaction as it streams in, rather than read whole first
 func (i *ModalSubmitInteraction) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	var interaction struct {
-		rawInteraction
-		Data    ModalSubmitInteractionData `json:"data"`
-		Message *Message                   `json:"message,omitempty"`
-	}
-	if err := jsonv2.UnmarshalDecode(dec, &interaction); err != nil {
+	var interaction modalSubmitInteractionWire
+	if err := decodeModalSubmitInteractionWire(dec, &interaction); err != nil {
 		return err
 	}
 

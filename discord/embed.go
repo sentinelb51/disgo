@@ -2,7 +2,6 @@ package discord
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
 	"fmt"
 	"time"
 
@@ -55,19 +54,24 @@ func (e *Embed) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, e)
 }
 
+// embedFields is Embed without its methods, for embedWire to embed
+type embedFields Embed
+
+// embedWire is an embed as JSON carries it, its components as the kinds they are. decodeEmbedWire (decode_gen.go)
+// decodes it
+type embedWire struct {
+	Components []UnmarshalComponent `json:"components"`
+	embedFields
+}
+
 // UnmarshalJSONFrom decodes the embed as it streams in, rather than read whole first, as UnmarshalJSON is handed it
 func (e *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type embed Embed
-	var v struct {
-		Components []UnmarshalComponent `json:"components"`
-		embed
-	}
-
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	var v embedWire
+	if err := decodeEmbedWire(dec, &v); err != nil {
 		return err
 	}
 
-	*e = Embed(v.embed)
+	*e = Embed(v.embedFields)
 
 	if len(v.Components) > 0 {
 		e.Components = unmarshalComponents(v.Components)

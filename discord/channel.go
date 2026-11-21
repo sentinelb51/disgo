@@ -2,7 +2,6 @@ package discord
 
 import (
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
 	"fmt"
 	"slices"
 	"strconv"
@@ -602,7 +601,7 @@ func (c *DMChannel) UnmarshalJSON(data []byte) error {
 // UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
 func (c *DMChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v dmChannel
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	if err := decodeDmChannel(dec, &v); err != nil {
 		return err
 	}
 
@@ -679,7 +678,7 @@ func (c *GroupDMChannel) UnmarshalJSON(data []byte) error {
 // UnmarshalJSONFrom decodes the channel as it streams in, rather than read whole first
 func (c *GroupDMChannel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v groupDMChannel
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	if err := decodeGroupDMChannel(dec, &v); err != nil {
 		return err
 	}
 
@@ -1179,7 +1178,7 @@ func (c *GuildThread) UnmarshalJSON(data []byte) error {
 // with an UnmarshalJSON of its own needs an UnmarshalJSONFrom too, or encoding/json/v2 calls this one in its place
 func (c *GuildThread) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var v guildThread
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	if err := decodeGuildThread(dec, &v); err != nil {
 		return err
 	}
 

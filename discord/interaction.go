@@ -180,11 +180,13 @@ func (r *ResolvedData) UnmarshalJSON(data []byte) error {
 	return unmarshalOnce(data, r)
 }
 
+// resolvedData is ResolvedData without its methods, decoded by decodeResolvedData (decode_gen.go)
+type resolvedData ResolvedData
+
 // UnmarshalJSONFrom decodes the resolved data as it streams in, rather than read whole first
 func (r *ResolvedData) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type resolvedData ResolvedData
 	var v resolvedData
-	if err := jsonv2.UnmarshalDecode(dec, &v); err != nil {
+	if err := decodeResolvedData(dec, &v); err != nil {
 		return err
 	}
 	*r = ResolvedData(v)
